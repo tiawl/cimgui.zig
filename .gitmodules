@@ -1,0 +1,6 @@
+[submodule "imgui"]
+	path = imgui
+	url = https://github.com/ocornut/imgui
+[submodule "dear_bindings"]
+	path = dear_bindings
+	url = https://github.com/dearimgui/dear_bindings
