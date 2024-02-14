@@ -1,10 +1,5 @@
 const std = @import ("std");
-
-const build = @import ("build_options");
-const IMCONFIG_H_PATH = build.IMCONFIG_H_PATH;
-const IMGUI_H_PATH = build.IMGUI_H_PATH;
-const IMGUI_IMPL_GLFW_H_PATH = build.IMGUI_IMPL_GLFW_H_PATH;
-const IMGUI_IMPL_VULKAN_H_PATH = build.IMGUI_IMPL_VULKAN_H_PATH;
+const pkg = .{ .name = "cimgui.zig", .version = "1.90.2" };
 
 fn exec (allocator: std.mem.Allocator, argv: [] const [] const u8) !void
 {
@@ -13,7 +8,7 @@ fn exec (allocator: std.mem.Allocator, argv: [] const [] const u8) !void
   errdefer { stdout.deinit (); stderr.deinit (); }
 
   std.debug.print ("\x1b[35m[{s}]\x1b[0m\n", .{ try std.mem.join (allocator, " ", argv), });
-
+    
   var child = std.ChildProcess.init (argv, allocator);
 
   child.stdin_behavior = .Ignore;
@@ -37,9 +32,20 @@ pub fn main () !void
   const allocator = arena.allocator ();
 
   const cwd = std.fs.cwd ();
+  const clone_dir = try std.fmt.allocPrint (allocator, "{s}/imgui", .{ try cwd.realpathAlloc (allocator, ".") });
 
-  if (cwd.access ("cimgui.cpp", .{}) == error.FileNotFound) try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--output", "cimgui", IMGUI_H_PATH });
-  if (cwd.access ("cimgui_impl_glfw.cpp", .{}) == error.FileNotFound) try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", IMCONFIG_H_PATH, "--output", "cimgui_impl_glfw", IMGUI_IMPL_GLFW_H_PATH, });
-  if (cwd.access ("cimgui_impl_vulkan.cpp", .{}) == error.FileNotFound) try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", IMCONFIG_H_PATH, "--output", "cimgui_impl_vulkan", IMGUI_IMPL_VULKAN_H_PATH, });
+  if (cwd.access (clone_dir, .{}) == error.FileNotFound)
+  {
+    try exec (allocator, &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", clone_dir });
+    try exec (allocator, &[_][] const u8 { "git", "-C", clone_dir, "checkout", "v" ++ pkg.version });
+    for ([_][] const u8 { ".git", ".github", ".gitattributes", ".gitignore", ".editorconfig", "docs", "examples", "LICENSE.txt", "misc", }) |sub|
+      try cwd.deleteTree (try std.fmt.allocPrint (allocator, "{s}/{s}", .{ clone_dir, sub }));
+  }
 
+  if (cwd.access ("cimgui.cpp", .{}) == error.FileNotFound or cwd.access ("cimgui.h", .{}) == error.FileNotFound)
+    try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--output", "cimgui", "imgui/imgui.h" });
+  if (cwd.access ("cimgui_impl_glfw.cpp", .{}) == error.FileNotFound or cwd.access ("cimgui_impl_glfw.h", .{}) == error.FileNotFound)
+    try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_glfw", "imgui/backends/imgui_impl_glfw.h", });
+  if (cwd.access ("cimgui_impl_vulkan.cpp", .{}) == error.FileNotFound or cwd.access ("cimgui_impl_vulkan.h", .{}) == error.FileNotFound)
+    try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_vulkan", "imgui/backends/imgui_impl_vulkan.h", });
 }

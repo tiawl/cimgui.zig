@@ -2,12 +2,6 @@
   .name = "cimgui.zig",
   .version = "1.90.2",
   .minimum_zig_version = "0.11.0",
-  .dependencies = .{
-    .imgui = .{
-      .url = "https://github.com/tiawl/imgui.zig/archive/dcc27c040991e438099a1f29d3712a8bcae6d9ef.tar.gz",
-      .hash = "12204907466880b616f38a5bc34498af18be25113cc74dbb3004f894ba2669f5e729",
-    },
-  },
   .paths = .{
     "build.zig",
     "build.zig.zon",
@@ -17,5 +11,6 @@
     "cimgui_impl_glfw.h",
     "cimgui_impl_vulkan.cpp",
     "cimgui_impl_vulkan.h",
+    "imgui",
   },
 }
