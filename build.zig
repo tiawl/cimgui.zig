@@ -22,6 +22,9 @@ pub fn build (builder: *std.Build) !void
     .optimize = optimize,
   });
 
+  lib.linkLibC ();
+  lib.linkLibCpp ();
+
   lib.addIncludePath (.{ .path = "imgui" });
   lib.addIncludePath (.{ .path = "imgui/backends" });
 
@@ -39,10 +42,11 @@ pub fn build (builder: *std.Build) !void
       "imgui/backends/imgui_impl_vulkan.cpp",
     },
   });
-  lib.linkLibC ();
+
   lib.installHeadersDirectory ("imgui", "imgui");
   lib.installHeader ("cimgui.h", "cimgui.h");
   lib.installHeader ("cimgui_impl_glfw.h", "cimgui_impl_glfw.h");
   lib.installHeader ("cimgui_impl_vulkan.h", "cimgui_impl_vulkan.h");
+
   builder.installArtifact (lib);
 }
