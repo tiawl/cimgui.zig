@@ -23,7 +23,7 @@ pub fn build (builder: *std.Build) !void
   });
 
   // lib.linkLibC ();
-  // lib.linkLibCpp ();
+  lib.linkLibCpp ();
 
   lib.addIncludePath (.{ .path = "imgui" });
   lib.addIncludePath (.{ .path = "imgui/backends" });
