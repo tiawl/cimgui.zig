@@ -19,9 +19,9 @@ namespace cimgui
 
 #ifndef IMGUI_DISABLE
 
-CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_Init(cimgui::ImGui_ImplVulkan_InitInfo* info, VkRenderPass render_pass)
+CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_Init(cimgui::ImGui_ImplVulkan_InitInfo* info)
 {
-    return ::ImGui_ImplVulkan_Init(reinterpret_cast<::ImGui_ImplVulkan_InitInfo*>(info), render_pass);
+    return ::ImGui_ImplVulkan_Init(reinterpret_cast<::ImGui_ImplVulkan_InitInfo*>(info));
 }
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_Shutdown(void)

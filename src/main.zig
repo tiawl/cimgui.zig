@@ -1,5 +1,5 @@
 const std = @import ("std");
-const pkg = .{ .name = "cimgui.zig", .version = "1.90.2" };
+const pkg = .{ .name = "cimgui.zig", .version = "1.90.3" };
 
 fn exec (allocator: std.mem.Allocator, argv: [] const [] const u8) !void
 {
@@ -8,7 +8,7 @@ fn exec (allocator: std.mem.Allocator, argv: [] const [] const u8) !void
   errdefer { stdout.deinit (); stderr.deinit (); }
 
   std.debug.print ("\x1b[35m[{s}]\x1b[0m\n", .{ try std.mem.join (allocator, " ", argv), });
-    
+
   var child = std.ChildProcess.init (argv, allocator);
 
   child.stdin_behavior = .Ignore;
@@ -34,18 +34,21 @@ pub fn main () !void
   const cwd = std.fs.cwd ();
   const clone_dir = try std.fmt.allocPrint (allocator, "{s}/imgui", .{ try cwd.realpathAlloc (allocator, ".") });
 
-  if (cwd.access (clone_dir, .{}) == error.FileNotFound)
+  std.fs.deleteTreeAbsolute (clone_dir) catch |err|
   {
-    try exec (allocator, &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", clone_dir });
-    try exec (allocator, &[_][] const u8 { "git", "-C", clone_dir, "checkout", "v" ++ pkg.version });
-    for ([_][] const u8 { ".git", ".github", ".gitattributes", ".gitignore", ".editorconfig", "docs", "examples", "LICENSE.txt", "misc", }) |sub|
-      try cwd.deleteTree (try std.fmt.allocPrint (allocator, "{s}/{s}", .{ clone_dir, sub }));
-  }
+    switch (err)
+    {
+      error.FileNotFound => {},
+      else => return err,
+    }
+  };
 
-  if (cwd.access ("cimgui.cpp", .{}) == error.FileNotFound or cwd.access ("cimgui.h", .{}) == error.FileNotFound)
-    try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--output", "cimgui", "imgui/imgui.h" });
-  if (cwd.access ("cimgui_impl_glfw.cpp", .{}) == error.FileNotFound or cwd.access ("cimgui_impl_glfw.h", .{}) == error.FileNotFound)
-    try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_glfw", "imgui/backends/imgui_impl_glfw.h", });
-  if (cwd.access ("cimgui_impl_vulkan.cpp", .{}) == error.FileNotFound or cwd.access ("cimgui_impl_vulkan.h", .{}) == error.FileNotFound)
-    try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_vulkan", "imgui/backends/imgui_impl_vulkan.h", });
+  try exec (allocator, &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", clone_dir });
+  try exec (allocator, &[_][] const u8 { "git", "-C", clone_dir, "checkout", "v" ++ pkg.version });
+  for ([_][] const u8 { ".git", ".github", ".gitattributes", ".gitignore", ".editorconfig", "docs", "examples", "LICENSE.txt", "misc", }) |sub|
+    try std.fs.deleteTreeAbsolute (try std.fmt.allocPrint (allocator, "{s}/{s}", .{ clone_dir, sub }));
+
+  try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--output", "cimgui", "imgui/imgui.h" });
+  try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_glfw", "imgui/backends/imgui_impl_glfw.h", });
+  try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_vulkan", "imgui/backends/imgui_impl_vulkan.h", });
 }

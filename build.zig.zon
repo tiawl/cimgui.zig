@@ -1,6 +1,6 @@
 .{
   .name = "cimgui.zig",
-  .version = "1.90.2",
+  .version = "1.90.3",
   .minimum_zig_version = "0.11.0",
   .paths = .{
     "build.zig",
