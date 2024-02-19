@@ -22,8 +22,8 @@ pub fn build (builder: *std.Build) !void
     .optimize = optimize,
   });
 
-  lib.linkLibC ();
-  lib.linkLibCpp ();
+  // lib.linkLibC ();
+  // lib.linkLibCpp ();
 
   lib.addIncludePath (.{ .path = "imgui" });
   lib.addIncludePath (.{ .path = "imgui/backends" });
