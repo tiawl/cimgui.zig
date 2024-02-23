@@ -2,7 +2,7 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-// dear imgui, v1.90.3
+// dear imgui, v1.90.4
 // (headers)
 
 // Help:
@@ -27,8 +27,8 @@
 
 // Library Version
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if IMGUI_VERSION_NUM >= 12345')
-#define IMGUI_VERSION       "1.90.3"
-#define IMGUI_VERSION_NUM   19030
+#define IMGUI_VERSION       "1.90.4"
+#define IMGUI_VERSION_NUM   19040
 #define IMGUI_HAS_TABLE
 
 /*
@@ -455,14 +455,15 @@ CIMGUI_API void  ImGui_PopTextWrapPos(void);
 
 // Style read access
 // - Use the ShowStyleEditor() function to interactively see/edit the colors.
-CIMGUI_API ImFont*       ImGui_GetFont(void);                                              // get current font
-CIMGUI_API float         ImGui_GetFontSize(void);                                          // get current font size (= height in pixels) of current font with current scale applied
-CIMGUI_API ImVec2        ImGui_GetFontTexUvWhitePixel(void);                               // get UV coordinate for a while pixel, useful to draw custom shapes via the ImDrawList API
-CIMGUI_API ImU32         ImGui_GetColorU32(ImGuiCol idx);                                  // Implied alpha_mul = 1.0f
-CIMGUI_API ImU32         ImGui_GetColorU32Ex(ImGuiCol idx, float alpha_mul /* = 1.0f */);  // retrieve given style color with style alpha applied and optional extra alpha multiplier, packed as a 32-bit value suitable for ImDrawList
-CIMGUI_API ImU32         ImGui_GetColorU32ImVec4(ImVec4 col);                              // retrieve given color with style alpha applied, packed as a 32-bit value suitable for ImDrawList
-CIMGUI_API ImU32         ImGui_GetColorU32ImU32(ImU32 col);                                // retrieve given color with style alpha applied, packed as a 32-bit value suitable for ImDrawList
-CIMGUI_API const ImVec4* ImGui_GetStyleColorVec4(ImGuiCol idx);                            // retrieve style color as stored in ImGuiStyle structure. use to feed back into PushStyleColor(), otherwise use GetColorU32() to get style color with style alpha baked in.
+CIMGUI_API ImFont*       ImGui_GetFont(void);                                                // get current font
+CIMGUI_API float         ImGui_GetFontSize(void);                                            // get current font size (= height in pixels) of current font with current scale applied
+CIMGUI_API ImVec2        ImGui_GetFontTexUvWhitePixel(void);                                 // get UV coordinate for a while pixel, useful to draw custom shapes via the ImDrawList API
+CIMGUI_API ImU32         ImGui_GetColorU32(ImGuiCol idx);                                    // Implied alpha_mul = 1.0f
+CIMGUI_API ImU32         ImGui_GetColorU32Ex(ImGuiCol idx, float alpha_mul /* = 1.0f */);    // retrieve given style color with style alpha applied and optional extra alpha multiplier, packed as a 32-bit value suitable for ImDrawList
+CIMGUI_API ImU32         ImGui_GetColorU32ImVec4(ImVec4 col);                                // retrieve given color with style alpha applied, packed as a 32-bit value suitable for ImDrawList
+CIMGUI_API ImU32         ImGui_GetColorU32ImU32(ImU32 col);                                  // Implied alpha_mul = 1.0f
+CIMGUI_API ImU32         ImGui_GetColorU32ImU32Ex(ImU32 col, float alpha_mul /* = 1.0f */);  // retrieve given color with style alpha applied, packed as a 32-bit value suitable for ImDrawList
+CIMGUI_API const ImVec4* ImGui_GetStyleColorVec4(ImGuiCol idx);                              // retrieve style color as stored in ImGuiStyle structure. use to feed back into PushStyleColor(), otherwise use GetColorU32() to get style color with style alpha baked in.
 
 // Layout cursor positioning
 // - By "cursor" we mean the current output position.
@@ -1047,6 +1048,7 @@ CIMGUI_API const char* ImGui_SaveIniSettingsToMemory(size_t* out_ini_size /* = N
 // - Your main debugging friend is the ShowMetricsWindow() function, which is also accessible from Demo->Tools->Metrics Debugger
 CIMGUI_API void ImGui_DebugTextEncoding(const char* text);
 CIMGUI_API void ImGui_DebugFlashStyleColor(ImGuiCol idx);
+CIMGUI_API void ImGui_DebugStartItemPicker(void);
 CIMGUI_API bool ImGui_DebugCheckVersionAndDataLayout(const char* version_str, size_t sz_io, size_t sz_style, size_t sz_vec2, size_t sz_vec4, size_t sz_drawvert, size_t sz_drawidx);  // This is called by IMGUI_CHECKVERSION() macro.
 
 // Memory Allocators
@@ -2963,7 +2965,8 @@ CIMGUI_API void        ImDrawList_AddImageQuad(ImDrawList* self, ImTextureID use
 CIMGUI_API void        ImDrawList_AddImageQuadEx(ImDrawList* self, ImTextureID user_texture_id, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImVec2 uv1 /* = ImVec2(0, 0) */, ImVec2 uv2 /* = ImVec2(1, 0) */, ImVec2 uv3 /* = ImVec2(1, 1) */, ImVec2 uv4 /* = ImVec2(0, 1) */, ImU32 col /* = IM_COL32_WHITE */);
 CIMGUI_API void        ImDrawList_AddImageRounded(ImDrawList* self, ImTextureID user_texture_id, ImVec2 p_min, ImVec2 p_max, ImVec2 uv_min, ImVec2 uv_max, ImU32 col, float rounding, ImDrawFlags flags /* = 0 */);
 // Stateful path API, add points then finish with PathFillConvex() or PathStroke()
-// - Filled shapes must always use clockwise winding order. The anti-aliasing fringe depends on it. Counter-clockwise shapes will have "inward" anti-aliasing.
+// - Important: filled shapes must always use clockwise winding order! The anti-aliasing fringe depends on it. Counter-clockwise shapes will have "inward" anti-aliasing.
+//   so e.g. 'PathArcTo(center, radius, PI * -0.5f, PI)' is ok, whereas 'PathArcTo(center, radius, PI, PI * -0.5f)' won't have correct anti-aliasing when followed by PathFillConvex().
 CIMGUI_API void        ImDrawList_PathClear(ImDrawList* self);
 CIMGUI_API void        ImDrawList_PathLineTo(ImDrawList* self, ImVec2 pos);
 CIMGUI_API void        ImDrawList_PathLineToMergeDuplicate(ImDrawList* self, ImVec2 pos);

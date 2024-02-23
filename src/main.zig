@@ -1,5 +1,5 @@
 const std = @import ("std");
-const pkg = .{ .name = "cimgui.zig", .version = "1.90.3" };
+const pkg = .{ .name = "cimgui.zig", .version = "1.90.4" };
 
 fn exec (allocator: std.mem.Allocator, argv: [] const [] const u8) !void
 {

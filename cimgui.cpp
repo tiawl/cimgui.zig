@@ -602,6 +602,11 @@ CIMGUI_API ImU32         cimgui::ImGui_GetColorU32ImU32(ImU32 col)
     return ::ImGui::GetColorU32(col);
 }
 
+CIMGUI_API ImU32         cimgui::ImGui_GetColorU32ImU32Ex(ImU32 col, float alpha_mul)
+{
+    return ::ImGui::GetColorU32(col, alpha_mul);
+}
+
 CIMGUI_API const cimgui::ImVec4* cimgui::ImGui_GetStyleColorVec4(ImGuiCol idx)
 {
     return reinterpret_cast<const ::cimgui::ImVec4*>(&::ImGui::GetStyleColorVec4(idx));
@@ -2394,6 +2399,11 @@ CIMGUI_API void cimgui::ImGui_DebugTextEncoding(const char* text)
 CIMGUI_API void cimgui::ImGui_DebugFlashStyleColor(ImGuiCol idx)
 {
     ::ImGui::DebugFlashStyleColor(idx);
+}
+
+CIMGUI_API void cimgui::ImGui_DebugStartItemPicker(void)
+{
+    ::ImGui::DebugStartItemPicker();
 }
 
 CIMGUI_API bool cimgui::ImGui_DebugCheckVersionAndDataLayout(const char* version_str, size_t sz_io, size_t sz_style, size_t sz_vec2, size_t sz_vec4, size_t sz_drawvert, size_t sz_drawidx)
