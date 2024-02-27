@@ -31,10 +31,10 @@ pub fn main () !void
   defer arena.deinit ();
   const allocator = arena.allocator ();
 
-  const cwd = std.fs.cwd ();
-  const clone_dir = try std.fmt.allocPrint (allocator, "{s}/imgui", .{ try cwd.realpathAlloc (allocator, ".") });
+  const cwd_path = try std.fs.cwd ().realpathAlloc (allocator, ".");
+  const imgui_path = try std.fs.path.join (allocator, &.{ cwd_path, "imgui", });
 
-  std.fs.deleteTreeAbsolute (clone_dir) catch |err|
+  std.fs.deleteTreeAbsolute (imgui_path) catch |err|
   {
     switch (err)
     {
@@ -43,10 +43,20 @@ pub fn main () !void
     }
   };
 
-  try exec (allocator, &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", clone_dir });
-  try exec (allocator, &[_][] const u8 { "git", "-C", clone_dir, "checkout", "v" ++ pkg.version });
-  for ([_][] const u8 { ".git", ".github", ".gitattributes", ".gitignore", ".editorconfig", "docs", "examples", "LICENSE.txt", "misc", }) |sub|
-    try std.fs.deleteTreeAbsolute (try std.fmt.allocPrint (allocator, "{s}/{s}", .{ clone_dir, sub }));
+  try exec (allocator, &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", imgui_path });
+  try exec (allocator, &[_][] const u8 { "git", "-C", imgui_path, "checkout", "v" ++ pkg.version });
+
+  var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true });
+  defer imgui.close ();
+
+  var it = imgui.iterate ();
+  while (try it.next ()) |*entry|
+  {
+    if (!std.mem.eql (u8, entry.name, "backends") and
+        !std.mem.startsWith (u8, entry.name, "imgui") and
+        !std.mem.startsWith (u8, entry.name, "imconfig"))
+      try std.fs.deleteTreeAbsolute (try std.fs.path.join (allocator, &.{ imgui_path, entry.name, }));
+  }
 
   try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--output", "cimgui", "imgui/imgui.h" });
   try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_glfw", "imgui/backends/imgui_impl_glfw.h", });

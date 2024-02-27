@@ -6,14 +6,14 @@ pub fn build (builder: *std.Build) !void
   const optimize = builder.standardOptimizeOption (.{});
 
   const exe = builder.addExecutable (.{
-    .name = "binding_generator",
+    .name = "updater",
     .root_source_file = .{ .path = "src/main.zig" },
     .target = target,
     .optimize = optimize,
   });
   builder.installArtifact (exe);
   const run_cmd = builder.addRunArtifact (exe);
-  const run_step = builder.step ("run", "Run the app");
+  const run_step = builder.step ("run", "Update the lib");
   run_step.dependOn (&run_cmd.step);
 
   const lib = builder.addStaticLibrary (.{
