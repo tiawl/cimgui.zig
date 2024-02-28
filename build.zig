@@ -1,93 +1,79 @@
 const std = @import ("std");
+const pkg = .{ .name = "cimgui.zig", .version = "1.90.4" };
 
-const LinkStep = struct
+fn exec (builder: *std.Build, argv: [] const [] const u8) !void
 {
-  step: std.Build.Step,
-  includes: std.BoundedArray ([] const u8, 64),
-  sources: std.BoundedArray ([] const u8, 64),
-  headers: std.BoundedArray ([] const u8, 64),
+  var stdout = std.ArrayList (u8).init (builder.allocator);
+  var stderr = std.ArrayList (u8).init (builder.allocator);
+  errdefer { stdout.deinit (); stderr.deinit (); }
 
-  fn init (builder: *std.Build) !*@This ()
+  std.debug.print ("\x1b[35m[{s}]\x1b[0m\n", .{ try std.mem.join (builder.allocator, " ", argv), });
+
+  var child = std.ChildProcess.init (argv, builder.allocator);
+
+  child.stdin_behavior = .Ignore;
+  child.stdout_behavior = .Pipe;
+  child.stderr_behavior = .Pipe;
+
+  try child.spawn ();
+  try child.collectOutput (&stdout, &stderr, 1000);
+
+  const term = try child.wait ();
+
+  if (stdout.items.len > 0) std.debug.print ("{s}", .{ stdout.items });
+  if (stderr.items.len > 0 and !std.meta.eql (term, std.ChildProcess.Term { .Exited = 0 })) std.debug.print ("\x1b[31m{s}\x1b[0m", .{ stderr.items });
+  try std.testing.expectEqual (term, std.ChildProcess.Term { .Exited = 0 });
+}
+
+fn update (builder: *std.Build) !void
+{
+  const imgui_path = try builder.build_root.join (builder.allocator, &.{ "imgui", });
+  const backends_path = try std.fs.path.join (builder.allocator, &.{ imgui_path, "backends", });
+
+  std.fs.deleteTreeAbsolute (imgui_path) catch |err|
   {
-    const self = try builder.allocator.create (@This ());
-    self.* = .{
-      .step = std.Build.Step.init (.{
-        .id = .custom,
-        .name = "link",
-        .owner = builder,
-        .makeFn = make,
-      }),
-      .includes = try std.BoundedArray ([] const u8, 64).init (0),
-      .sources = try std.BoundedArray ([] const u8, 64).init (0),
-      .headers = try std.BoundedArray ([] const u8, 64).init (0),
-    };
-    return self;
+    switch (err)
+    {
+      error.FileNotFound => {},
+      else => return err,
+    }
+  };
+
+  try exec (builder, &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", imgui_path });
+  try exec (builder, &[_][] const u8 { "git", "-C", imgui_path, "checkout", "v" ++ pkg.version });
+
+  var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true });
+  defer imgui.close ();
+
+  var it = imgui.iterate ();
+  while (try it.next ()) |*entry|
+  {
+    if (!std.mem.eql (u8, entry.name, "backends") and
+      !std.mem.startsWith (u8, entry.name, "im"))
+        try std.fs.deleteTreeAbsolute (try std.fs.path.join (builder.allocator, &.{ imgui_path, entry.name, }));
   }
 
-  fn make (step: *std.Build.Step, _: *std.Progress.Node) !void
+  var backends = try std.fs.openDirAbsolute (backends_path, .{ .iterate = true });
+  defer backends.close ();
+
+  it = backends.iterate ();
+  while (try it.next ()) |*entry|
   {
-    const self = @fieldParentPtr (LinkStep, "step", step);
-    const builder = step.owner;
-
-    const imgui_path = try builder.build_root.join (builder.allocator, &.{ "imgui", });
-    const backends_path = try std.fs.path.join (builder.allocator, &.{ imgui_path, "backends", });
-
-    var root = try builder.build_root.handle.openDir (".", .{ .iterate = true });
-    defer root.close ();
-
-    var walk = try root.walk (builder.allocator);
-
-    while (try walk.next ()) |*entry|
-    {
-      if (std.mem.startsWith (u8, entry.path, "imgui") and entry.kind == .directory)
-        try self.headers.append (entry.path);
-    }
-
-    var it = root.iterate ();
-    while (try it.next ()) |*entry|
-    {
-      if (std.mem.startsWith (u8, entry.name, "cimgui") and entry.kind == .file)
-      {
-        if (std.mem.endsWith (u8, entry.name, ".cpp"))
-          try self.sources.append (try std.fs.path.join (builder.allocator, &.{ entry.name, }))
-        else if (std.mem.endsWith (u8, entry.name, ".h"))
-          try self.headers.append (entry.name);
-      }
-    }
-
-    var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true });
-    defer imgui.close ();
-
-    it = imgui.iterate ();
-    while (try it.next ()) |*entry|
-    {
-      if (std.mem.startsWith (u8, entry.name, "imgui") and
-        std.mem.endsWith (u8, entry.name, ".cpp") and entry.kind == .file)
-          try self.sources.append (try std.fs.path.join (builder.allocator, &.{ imgui_path , entry.name, }));
-    }
-
-    try self.sources.appendSlice (&.{
-      try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_glfw.cpp", }),
-      try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_vulkan.cpp", }),
-    });
+    if (!std.mem.startsWith (u8, entry.name, "imgui"))
+      try std.fs.deleteTreeAbsolute (try std.fs.path.join (builder.allocator, &.{ backends_path, entry.name, }));
   }
-};
+
+  try exec (builder, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--output", "cimgui", "imgui/imgui.h" });
+  try exec (builder, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_glfw", "imgui/backends/imgui_impl_glfw.h", });
+  try exec (builder, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_vulkan", "imgui/backends/imgui_impl_vulkan.h", });
+}
 
 pub fn build (builder: *std.Build) !void
 {
   const target = builder.standardTargetOptions (.{});
   const optimize = builder.standardOptimizeOption (.{});
 
-  const exe = builder.addExecutable (.{
-    .name = "updater",
-    .root_source_file = .{ .path = try builder.build_root.join (builder.allocator, &.{ "src", "main.zig", }), },
-    .target = target,
-    .optimize = optimize,
-  });
-  builder.installArtifact (exe);
-  const run_cmd = builder.addRunArtifact (exe);
-  const run_step = builder.step ("run", "Update the lib");
-  run_step.dependOn (&run_cmd.step);
+  if (builder.option (bool, "update", "Update binding") orelse false) try update (builder);
 
   const lib = builder.addStaticLibrary (.{
     .name = "cimgui",
@@ -95,19 +81,72 @@ pub fn build (builder: *std.Build) !void
     .target = target,
     .optimize = optimize,
   });
-  var link = try LinkStep.init (builder);
+
+  var includes = try std.BoundedArray ([] const u8, 64).init (0);
+  var sources = try std.BoundedArray ([] const u8, 64).init (0);
+  var headers = try std.BoundedArray ([] const u8, 64).init (0);
 
   lib.linkLibCpp ();
 
-  for (link.includes.slice ()) |include| lib.addIncludePath (.{ .path = include, });
+  const imgui_path = try builder.build_root.join (builder.allocator, &.{ "imgui", });
+  const backends_path = try std.fs.path.join (builder.allocator, &.{ imgui_path, "backends", });
 
+  var root = try builder.build_root.handle.openDir (".", .{ .iterate = true });
+  defer root.close ();
+
+  var walk = try root.walk (builder.allocator);
+
+  while (try walk.next ()) |*entry|
+  {
+    if (std.mem.startsWith (u8, entry.path, "imgui") and entry.kind == .directory)
+      try includes.append (builder.dupe (entry.path));
+  }
+
+  var it = root.iterate ();
+  while (try it.next ()) |*entry|
+  {
+    if (std.mem.startsWith (u8, entry.name, "cimgui") and entry.kind == .file)
+    {
+      if (std.mem.endsWith (u8, entry.name, ".cpp"))
+        try sources.append (try std.fs.path.join (builder.allocator, &.{ entry.name, }))
+      else if (std.mem.endsWith (u8, entry.name, ".h"))
+        try headers.append (builder.dupe (entry.name));
+    }
+  }
+
+  var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true });
+  defer imgui.close ();
+
+  it = imgui.iterate ();
+  while (try it.next ()) |*entry|
+  {
+    if (std.mem.startsWith (u8, entry.name, "imgui") and
+      std.mem.endsWith (u8, entry.name, ".cpp") and entry.kind == .file)
+        try sources.append (try std.fs.path.join (builder.allocator, &.{ imgui_path , entry.name, }));
+  }
+
+  try sources.appendSlice (&.{
+    try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_glfw.cpp", }),
+    try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_vulkan.cpp", }),
+  });
+
+  for (includes.slice ()) |include|
+  {
+    std.debug.print ("include: {s}\n", .{include});
+    lib.addIncludePath (.{ .path = include, });
+  }
+
+  for (sources.slice ()) |s| std.debug.print ("source: {s}\n", .{s});
   lib.addCSourceFiles (.{
-    .files = link.sources.slice (),
+    .files = sources.slice (),
   });
 
   lib.installHeadersDirectory ("imgui", "imgui");
-  for (link.headers.slice ()) |header| lib.installHeader (header, header);
+  for (headers.slice ()) |header|
+  {
+    std.debug.print ("header: {s}\n", .{header});
+    lib.installHeader (header, header);
+  }
 
   builder.installArtifact (lib);
-  lib.step.dependOn (&link.step);
 }
