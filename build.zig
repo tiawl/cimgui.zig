@@ -108,7 +108,7 @@ pub fn build (builder: *std.Build) !void
     if (std.mem.startsWith (u8, entry.name, "cimgui") and entry.kind == .file)
     {
       if (std.mem.endsWith (u8, entry.name, ".cpp"))
-        try sources.append (try std.fs.path.join (builder.allocator, &.{ entry.name, }))
+        try sources.append (try builder.build_root.join (builder.allocator, &.{ entry.name, }))
       else if (std.mem.endsWith (u8, entry.name, ".h"))
         try headers.append (builder.dupe (entry.name));
     }
@@ -132,19 +132,20 @@ pub fn build (builder: *std.Build) !void
 
   for (includes.slice ()) |include|
   {
-    std.debug.print ("include: {s}\n", .{include});
+    std.debug.print ("[cimgui include] {s}\n", .{ try builder.build_root.join (builder.allocator, &.{ include, }), });
     lib.addIncludePath (.{ .path = include, });
   }
 
-  for (sources.slice ()) |s| std.debug.print ("source: {s}\n", .{s});
+  for (sources.slice ()) |source| std.debug.print ("[cimgui source] {s}\n", .{ source, });
   lib.addCSourceFiles (.{
     .files = sources.slice (),
   });
 
   lib.installHeadersDirectory ("imgui", "imgui");
+  std.debug.print ("[cimgui headers dir] {s}\n", .{ imgui_path, });
   for (headers.slice ()) |header|
   {
-    std.debug.print ("header: {s}\n", .{header});
+    std.debug.print ("[cimgui header] {s}\n", .{ try builder.build_root.join (builder.allocator, &.{ header, }), });
     lib.installHeader (header, header);
   }
 
