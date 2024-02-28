@@ -33,6 +33,7 @@ pub fn main () !void
 
   const cwd_path = try std.fs.cwd ().realpathAlloc (allocator, ".");
   const imgui_path = try std.fs.path.join (allocator, &.{ cwd_path, "imgui", });
+  const backends_path = try std.fs.path.join (allocator, &.{ imgui_path, "backends", });
 
   std.fs.deleteTreeAbsolute (imgui_path) catch |err|
   {
@@ -53,9 +54,18 @@ pub fn main () !void
   while (try it.next ()) |*entry|
   {
     if (!std.mem.eql (u8, entry.name, "backends") and
-      !std.mem.startsWith (u8, entry.name, "imgui") and
-      !std.mem.startsWith (u8, entry.name, "imconfig"))
+      !std.mem.startsWith (u8, entry.name, "im"))
         try std.fs.deleteTreeAbsolute (try std.fs.path.join (allocator, &.{ imgui_path, entry.name, }));
+  }
+
+  var backends = try std.fs.openDirAbsolute (backends_path, .{ .iterate = true });
+  defer backends.close ();
+
+  it = backends.iterate ();
+  while (try it.next ()) |*entry|
+  {
+    if (!std.mem.startsWith (u8, entry.name, "imgui"))
+      try std.fs.deleteTreeAbsolute (try std.fs.path.join (allocator, &.{ backends_path, entry.name, }));
   }
 
   try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--output", "cimgui", "imgui/imgui.h" });

@@ -3,9 +3,11 @@ const std = @import ("std");
 const LinkStep = struct
 {
   step: std.Build.Step,
-  static: *std.Build.Step.Compile,
+  includes: std.BoundedArray ([] const u8, 64),
+  sources: std.BoundedArray ([] const u8, 64),
+  headers: std.BoundedArray ([] const u8, 64),
 
-  fn init (builder: *std.Build, static: *std.Build.Step.Compile) !*@This ()
+  fn init (builder: *std.Build) !*@This ()
   {
     const self = try builder.allocator.create (@This ());
     self.* = .{
@@ -15,7 +17,9 @@ const LinkStep = struct
         .owner = builder,
         .makeFn = make,
       }),
-      .static = static,
+      .includes = try std.BoundedArray ([] const u8, 64).init (0),
+      .sources = try std.BoundedArray ([] const u8, 64).init (0),
+      .headers = try std.BoundedArray ([] const u8, 64).init (0),
     };
     return self;
   }
@@ -25,19 +29,19 @@ const LinkStep = struct
     const self = @fieldParentPtr (LinkStep, "step", step);
     const builder = step.owner;
 
-    self.static.linkLibCpp ();
-
-    self.static.addIncludePath (.{ .path = "imgui" });
-    self.static.addIncludePath (.{ .path = "imgui/backends" });
-
-    self.static.installHeadersDirectory ("imgui", "imgui");
-
-    var sources = try std.BoundedArray ([] const u8, 64).init (0);
-
     const imgui_path = try builder.build_root.join (builder.allocator, &.{ "imgui", });
+    const backends_path = try std.fs.path.join (builder.allocator, &.{ imgui_path, "backends", });
 
     var root = try builder.build_root.handle.openDir (".", .{ .iterate = true });
     defer root.close ();
+
+    var walk = try root.walk (builder.allocator);
+
+    while (try walk.next ()) |*entry|
+    {
+      if (std.mem.startsWith (u8, entry.path, "imgui") and entry.kind == .directory)
+        try self.headers.append (entry.path);
+    }
 
     var it = root.iterate ();
     while (try it.next ()) |*entry|
@@ -45,9 +49,9 @@ const LinkStep = struct
       if (std.mem.startsWith (u8, entry.name, "cimgui") and entry.kind == .file)
       {
         if (std.mem.endsWith (u8, entry.name, ".cpp"))
-          try sources.append (try std.fs.path.join (builder.allocator, &.{ entry.name, }))
+          try self.sources.append (try std.fs.path.join (builder.allocator, &.{ entry.name, }))
         else if (std.mem.endsWith (u8, entry.name, ".h"))
-          self.static.installHeader (entry.name, entry.name);
+          try self.headers.append (entry.name);
       }
     }
 
@@ -59,16 +63,12 @@ const LinkStep = struct
     {
       if (std.mem.startsWith (u8, entry.name, "imgui") and
         std.mem.endsWith (u8, entry.name, ".cpp") and entry.kind == .file)
-          try sources.append (try std.fs.path.join (builder.allocator, &.{ imgui_path , entry.name, }));
+          try self.sources.append (try std.fs.path.join (builder.allocator, &.{ imgui_path , entry.name, }));
     }
 
-    try sources.appendSlice (&.{
-      "imgui/backends/imgui_impl_glfw.cpp",
-      "imgui/backends/imgui_impl_vulkan.cpp",
-    });
-
-    self.static.addCSourceFiles (.{
-      .files = sources.slice (),
+    try self.sources.appendSlice (&.{
+      try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_glfw.cpp", }),
+      try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_vulkan.cpp", }),
     });
   }
 };
@@ -80,7 +80,7 @@ pub fn build (builder: *std.Build) !void
 
   const exe = builder.addExecutable (.{
     .name = "updater",
-    .root_source_file = .{ .path = "src/main.zig" },
+    .root_source_file = .{ .path = try builder.build_root.join (builder.allocator, &.{ "src", "main.zig", }), },
     .target = target,
     .optimize = optimize,
   });
@@ -89,11 +89,25 @@ pub fn build (builder: *std.Build) !void
   const run_step = builder.step ("run", "Update the lib");
   run_step.dependOn (&run_cmd.step);
 
-  const lib = try LinkStep.init (builder, builder.addStaticLibrary (.{
+  const lib = builder.addStaticLibrary (.{
     .name = "cimgui",
     .root_source_file = builder.addWriteFiles ().add ("empty.c", ""),
     .target = target,
     .optimize = optimize,
-  }));
-  builder.installArtifact (lib.static);
+  });
+  var link = try LinkStep.init (builder);
+
+  lib.linkLibCpp ();
+
+  for (link.includes.slice ()) |include| lib.addIncludePath (.{ .path = include, });
+
+  lib.addCSourceFiles (.{
+    .files = link.sources.slice (),
+  });
+
+  lib.installHeadersDirectory ("imgui", "imgui");
+  for (link.headers.slice ()) |header| lib.installHeader (header, header);
+
+  builder.installArtifact (lib);
+  lib.step.dependOn (&link.step);
 }
