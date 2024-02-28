@@ -53,9 +53,9 @@ pub fn main () !void
   while (try it.next ()) |*entry|
   {
     if (!std.mem.eql (u8, entry.name, "backends") and
-        !std.mem.startsWith (u8, entry.name, "imgui") and
-        !std.mem.startsWith (u8, entry.name, "imconfig"))
-      try std.fs.deleteTreeAbsolute (try std.fs.path.join (allocator, &.{ imgui_path, entry.name, }));
+      !std.mem.startsWith (u8, entry.name, "imgui") and
+      !std.mem.startsWith (u8, entry.name, "imconfig"))
+        try std.fs.deleteTreeAbsolute (try std.fs.path.join (allocator, &.{ imgui_path, entry.name, }));
   }
 
   try exec (allocator, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--output", "cimgui", "imgui/imgui.h" });
