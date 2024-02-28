@@ -1,5 +1,5 @@
 const std = @import ("std");
-const pkg = .{ .name = "cimgui.zig", .version = "1.90.4" };
+const pkg = .{ .name = "cimgui.zig", .version = "1.90.4", };
 
 fn exec (builder: *std.Build, argv: [] const [] const u8) !void
 {
@@ -20,9 +20,9 @@ fn exec (builder: *std.Build, argv: [] const [] const u8) !void
 
   const term = try child.wait ();
 
-  if (stdout.items.len > 0) std.debug.print ("{s}", .{ stdout.items });
-  if (stderr.items.len > 0 and !std.meta.eql (term, std.ChildProcess.Term { .Exited = 0 })) std.debug.print ("\x1b[31m{s}\x1b[0m", .{ stderr.items });
-  try std.testing.expectEqual (term, std.ChildProcess.Term { .Exited = 0 });
+  if (stdout.items.len > 0) std.debug.print ("{s}", .{ stdout.items, });
+  if (stderr.items.len > 0 and !std.meta.eql (term, std.ChildProcess.Term { .Exited = 0, })) std.debug.print ("\x1b[31m{s}\x1b[0m", .{ stderr.items, });
+  try std.testing.expectEqual (term, std.ChildProcess.Term { .Exited = 0, });
 }
 
 fn update (builder: *std.Build) !void
@@ -39,10 +39,10 @@ fn update (builder: *std.Build) !void
     }
   };
 
-  try exec (builder, &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", imgui_path });
-  try exec (builder, &[_][] const u8 { "git", "-C", imgui_path, "checkout", "v" ++ pkg.version });
+  try exec (builder, &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", imgui_path, });
+  try exec (builder, &[_][] const u8 { "git", "-C", imgui_path, "checkout", "v" ++ pkg.version, });
 
-  var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true });
+  var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true, });
   defer imgui.close ();
 
   var it = imgui.iterate ();
@@ -53,7 +53,7 @@ fn update (builder: *std.Build) !void
         try std.fs.deleteTreeAbsolute (try std.fs.path.join (builder.allocator, &.{ imgui_path, entry.name, }));
   }
 
-  var backends = try std.fs.openDirAbsolute (backends_path, .{ .iterate = true });
+  var backends = try std.fs.openDirAbsolute (backends_path, .{ .iterate = true, });
   defer backends.close ();
 
   it = backends.iterate ();
@@ -63,7 +63,7 @@ fn update (builder: *std.Build) !void
       try std.fs.deleteTreeAbsolute (try std.fs.path.join (builder.allocator, &.{ backends_path, entry.name, }));
   }
 
-  try exec (builder, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--output", "cimgui", "imgui/imgui.h" });
+  try exec (builder, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--output", "cimgui", "imgui/imgui.h", });
   try exec (builder, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_glfw", "imgui/backends/imgui_impl_glfw.h", });
   try exec (builder, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_vulkan", "imgui/backends/imgui_impl_vulkan.h", });
 }
@@ -91,7 +91,7 @@ pub fn build (builder: *std.Build) !void
   const imgui_path = try builder.build_root.join (builder.allocator, &.{ "imgui", });
   const backends_path = try std.fs.path.join (builder.allocator, &.{ imgui_path, "backends", });
 
-  var root = try builder.build_root.handle.openDir (".", .{ .iterate = true });
+  var root = try builder.build_root.handle.openDir (".", .{ .iterate = true, });
   defer root.close ();
 
   var walk = try root.walk (builder.allocator);
@@ -114,7 +114,7 @@ pub fn build (builder: *std.Build) !void
     }
   }
 
-  var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true });
+  var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true, });
   defer imgui.close ();
 
   it = imgui.iterate ();
