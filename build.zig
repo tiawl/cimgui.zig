@@ -115,7 +115,10 @@ pub fn build (builder: *std.Build) !void
     if (std.mem.startsWith (u8, entry.path, "imgui") and entry.kind == .directory)
       try includes.append (.{ .path = builder.dupe (entry.path), });
   }
+  try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", })));
   try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", })));
+  try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", "vulkan", })));
+  try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", "vk_video", })));
 
   var it = root.iterate ();
   while (try it.next ()) |*entry|
