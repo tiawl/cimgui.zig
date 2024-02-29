@@ -82,6 +82,12 @@ pub fn build (builder: *std.Build) !void
     .optimize = optimize,
   });
 
+  const vulkan_dep = builder.dependency ("vulkan", .{
+    .target = target,
+    .optimize = optimize,
+  });
+  lib.installLibraryHeaders (vulkan_dep.artifact ("vulkan"));
+
   var includes = try std.BoundedArray ([] const u8, 64).init (0);
   var sources = try std.BoundedArray ([] const u8, 64).init (0);
   var headers = try std.BoundedArray ([] const u8, 64).init (0);
