@@ -63,9 +63,17 @@ fn update (builder: *std.Build) !void
       try std.fs.deleteTreeAbsolute (try std.fs.path.join (builder.allocator, &.{ backends_path, entry.name, }));
   }
 
-  try exec (builder, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--output", "cimgui", "imgui/imgui.h", });
-  try exec (builder, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_glfw", "imgui/backends/imgui_impl_glfw.h", });
-  try exec (builder, &[_][] const u8 { "python3", "./dear_bindings/dear_bindings.py", "--backend", "--imconfig-path", "imgui/imconfig.h", "--output", "cimgui_impl_vulkan", "imgui/backends/imgui_impl_vulkan.h", });
+  const binding_py = try builder.build_root.join (builder.allocator, &.{ "dear_bindings", "dear_bindings.py", });
+  const imconfig_h = try std.fs.path.join (builder.allocator, &.{ imgui_path, "imconfig.h", });
+  const imgui_h = try std.fs.path.join (builder.allocator, &.{ imgui_path, "imgui.h", });
+  const glfw_backend_h = try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_glfw.h", });
+  const vulkan_backend_h = try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_vulkan.h", });
+  const imgui_out = try builder.build_root.join (builder.allocator, &.{ "cimgui", });
+  const glfw_out = try builder.build_root.join (builder.allocator, &.{ "cimgui_impl_glfw", });
+  const vulkan_out = try builder.build_root.join (builder.allocator, &.{ "cimgui_impl_vulkan", });
+  try exec (builder, &[_][] const u8 { "python3", binding_py, "--output", imgui_out, imgui_h, });
+  try exec (builder, &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", glfw_out, glfw_backend_h, });
+  try exec (builder, &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", vulkan_out, vulkan_backend_h, });
 }
 
 pub fn build (builder: *std.Build) !void
@@ -82,7 +90,13 @@ pub fn build (builder: *std.Build) !void
     .optimize = optimize,
   });
 
-  var includes = try std.BoundedArray ([] const u8, 64).init (0);
+  const vulkan_dep = builder.dependency ("vulkan", .{
+    .target = target,
+    .optimize = optimize,
+  });
+  lib.installLibraryHeaders (vulkan_dep.artifact ("vulkan"));
+
+  var includes = try std.BoundedArray (std.Build.LazyPath, 64).init (0);
   var sources = try std.BoundedArray ([] const u8, 64).init (0);
   var headers = try std.BoundedArray ([] const u8, 64).init (0);
 
@@ -99,8 +113,9 @@ pub fn build (builder: *std.Build) !void
   while (try walk.next ()) |*entry|
   {
     if (std.mem.startsWith (u8, entry.path, "imgui") and entry.kind == .directory)
-      try includes.append (builder.dupe (entry.path));
+      try includes.append (.{ .path = builder.dupe (entry.path), });
   }
+  try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", })));
 
   var it = root.iterate ();
   while (try it.next ()) |*entry|
@@ -132,8 +147,8 @@ pub fn build (builder: *std.Build) !void
 
   for (includes.slice ()) |include|
   {
-    std.debug.print ("[cimgui include] {s}\n", .{ try builder.build_root.join (builder.allocator, &.{ include, }), });
-    lib.addIncludePath (.{ .path = include, });
+    std.debug.print ("[cimgui include] {s}\n", .{ include.getPath (builder), });
+    lib.addIncludePath (include);
   }
 
   for (sources.slice ()) |source| std.debug.print ("[cimgui source] {s}\n", .{ source, });
