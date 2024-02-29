@@ -94,13 +94,15 @@ pub fn build (builder: *std.Build) !void
     .target = target,
     .optimize = optimize,
   });
-  lib.installLibraryHeaders (vulkan_dep.artifact ("vulkan"));
+  const vulkan = vulkan_dep.artifact ("vulkan");
+  lib.installLibraryHeaders (vulkan);
 
   var includes = try std.BoundedArray (std.Build.LazyPath, 64).init (0);
   var sources = try std.BoundedArray ([] const u8, 64).init (0);
   var headers = try std.BoundedArray ([] const u8, 64).init (0);
 
   lib.linkLibCpp ();
+  lib.linkLibrary (vulkan);
 
   const imgui_path = try builder.build_root.join (builder.allocator, &.{ "imgui", });
   const backends_path = try std.fs.path.join (builder.allocator, &.{ imgui_path, "backends", });
