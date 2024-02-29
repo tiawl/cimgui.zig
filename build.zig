@@ -90,19 +90,9 @@ pub fn build (builder: *std.Build) !void
     .optimize = optimize,
   });
 
-  const vulkan_dep = builder.dependency ("vulkan", .{
-    .target = target,
-    .optimize = optimize,
-  });
-  const vulkan = vulkan_dep.artifact ("vulkan");
-  lib.installLibraryHeaders (vulkan);
-
   var includes = try std.BoundedArray (std.Build.LazyPath, 64).init (0);
   var sources = try std.BoundedArray ([] const u8, 64).init (0);
   var headers = try std.BoundedArray ([] const u8, 64).init (0);
-
-  lib.linkLibCpp ();
-  lib.linkLibrary (vulkan);
 
   const imgui_path = try builder.build_root.join (builder.allocator, &.{ "imgui", });
   const backends_path = try std.fs.path.join (builder.allocator, &.{ imgui_path, "backends", });
@@ -117,10 +107,10 @@ pub fn build (builder: *std.Build) !void
     if (std.mem.startsWith (u8, entry.path, "imgui") and entry.kind == .directory)
       try includes.append (.{ .path = builder.dupe (entry.path), });
   }
-  try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", })));
-  try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", })));
-  try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", "vulkan", })));
-  try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", "vk_video", })));
+  //try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", })));
+  //try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", })));
+  //try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", "vulkan", })));
+  //try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", "vk_video", })));
 
   var it = root.iterate ();
   while (try it.next ()) |*entry|
@@ -156,11 +146,6 @@ pub fn build (builder: *std.Build) !void
     lib.addIncludePath (include);
   }
 
-  for (sources.slice ()) |source| std.debug.print ("[cimgui source] {s}\n", .{ source, });
-  lib.addCSourceFiles (.{
-    .files = sources.slice (),
-  });
-
   lib.installHeadersDirectory ("imgui", "imgui");
   std.debug.print ("[cimgui headers dir] {s}\n", .{ imgui_path, });
   for (headers.slice ()) |header|
@@ -168,6 +153,21 @@ pub fn build (builder: *std.Build) !void
     std.debug.print ("[cimgui header] {s}\n", .{ try builder.build_root.join (builder.allocator, &.{ header, }), });
     lib.installHeader (header, header);
   }
+
+  const vulkan_dep = builder.dependency ("vulkan", .{
+    .target = target,
+    .optimize = optimize,
+  });
+  const vulkan = vulkan_dep.artifact ("vulkan");
+
+  lib.linkLibCpp ();
+  lib.linkLibrary (vulkan);
+  lib.installLibraryHeaders (vulkan);
+
+  for (sources.slice ()) |source| std.debug.print ("[cimgui source] {s}\n", .{ source, });
+  lib.addCSourceFiles (.{
+    .files = sources.slice (),
+  });
 
   builder.installArtifact (lib);
 }
