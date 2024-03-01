@@ -154,19 +154,20 @@ pub fn build (builder: *std.Build) !void
     lib.installHeader (header, header);
   }
 
-  const vulkan_dep = builder.dependency ("vulkan", .{
-    .target = target,
-    .optimize = optimize,
-  });
-  const vulkan = vulkan_dep.artifact ("vulkan");
+  //const vulkan_dep = builder.dependency ("vulkan", .{
+  //  .target = target,
+  //  .optimize = optimize,
+  //});
+  //const vulkan = vulkan_dep.artifact ("vulkan");
 
   lib.linkLibCpp ();
-  lib.linkLibrary (vulkan);
-  lib.installLibraryHeaders (vulkan);
+  //lib.linkLibrary (vulkan);
+  //lib.installLibraryHeaders (vulkan);
 
   for (sources.slice ()) |source| std.debug.print ("[cimgui source] {s}\n", .{ source, });
   lib.addCSourceFiles (.{
     .files = sources.slice (),
+    .flags = &.{ "-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES", },
   });
 
   builder.installArtifact (lib);
