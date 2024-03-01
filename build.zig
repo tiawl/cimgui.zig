@@ -107,10 +107,6 @@ pub fn build (builder: *std.Build) !void
     if (std.mem.startsWith (u8, entry.path, "imgui") and entry.kind == .directory)
       try includes.append (.{ .path = builder.dupe (entry.path), });
   }
-  //try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", })));
-  //try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", })));
-  //try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", "vulkan", })));
-  //try includes.append (vulkan_dep.path (try std.fs.path.join (builder.allocator, &.{ "vulkan", "include", "vk_video", })));
 
   var it = root.iterate ();
   while (try it.next ()) |*entry|
@@ -154,15 +150,7 @@ pub fn build (builder: *std.Build) !void
     lib.installHeader (header, header);
   }
 
-  //const vulkan_dep = builder.dependency ("vulkan", .{
-  //  .target = target,
-  //  .optimize = optimize,
-  //});
-  //const vulkan = vulkan_dep.artifact ("vulkan");
-
   lib.linkLibCpp ();
-  //lib.linkLibrary (vulkan);
-  //lib.installLibraryHeaders (vulkan);
 
   for (sources.slice ()) |source| std.debug.print ("[cimgui source] {s}\n", .{ source, });
   lib.addCSourceFiles (.{
