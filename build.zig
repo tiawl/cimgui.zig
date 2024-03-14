@@ -1,29 +1,6 @@
 const std = @import ("std");
+const toolbox = @import ("toolbox/toolbox.zig");
 const pkg = .{ .name = "cimgui.zig", .version = "1.90.4", };
-
-fn exec (builder: *std.Build, argv: [] const [] const u8) !void
-{
-  var stdout = std.ArrayList (u8).init (builder.allocator);
-  var stderr = std.ArrayList (u8).init (builder.allocator);
-  errdefer { stdout.deinit (); stderr.deinit (); }
-
-  std.debug.print ("\x1b[35m[{s}]\x1b[0m\n", .{ try std.mem.join (builder.allocator, " ", argv), });
-
-  var child = std.ChildProcess.init (argv, builder.allocator);
-
-  child.stdin_behavior = .Ignore;
-  child.stdout_behavior = .Pipe;
-  child.stderr_behavior = .Pipe;
-
-  try child.spawn ();
-  try child.collectOutput (&stdout, &stderr, 1000);
-
-  const term = try child.wait ();
-
-  if (stdout.items.len > 0) std.debug.print ("{s}", .{ stdout.items, });
-  if (stderr.items.len > 0 and !std.meta.eql (term, std.ChildProcess.Term { .Exited = 0, })) std.debug.print ("\x1b[31m{s}\x1b[0m", .{ stderr.items, });
-  try std.testing.expectEqual (term, std.ChildProcess.Term { .Exited = 0, });
-}
 
 fn update (builder: *std.Build) !void
 {
@@ -39,8 +16,8 @@ fn update (builder: *std.Build) !void
     }
   };
 
-  try exec (builder, &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", imgui_path, });
-  try exec (builder, &[_][] const u8 { "git", "-C", imgui_path, "checkout", "v" ++ pkg.version, });
+  try toolbox.exec (builder, .{ .argv = &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", imgui_path, }, });
+  try toolbox.exec (builder, .{ .argv = &[_][] const u8 { "git", "-C", imgui_path, "checkout", "v" ++ pkg.version, }, });
 
   var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true, });
   defer imgui.close ();
@@ -71,9 +48,9 @@ fn update (builder: *std.Build) !void
   const imgui_out = try builder.build_root.join (builder.allocator, &.{ "cimgui", });
   const glfw_out = try builder.build_root.join (builder.allocator, &.{ "cimgui_impl_glfw", });
   const vulkan_out = try builder.build_root.join (builder.allocator, &.{ "cimgui_impl_vulkan", });
-  try exec (builder, &[_][] const u8 { "python3", binding_py, "--output", imgui_out, imgui_h, });
-  try exec (builder, &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", glfw_out, glfw_backend_h, });
-  try exec (builder, &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", vulkan_out, vulkan_backend_h, });
+  try toolbox.exec (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--output", imgui_out, imgui_h, }, });
+  try toolbox.exec (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", glfw_out, glfw_backend_h, }, });
+  try toolbox.exec (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", vulkan_out, vulkan_backend_h, }, });
 }
 
 pub fn build (builder: *std.Build) !void

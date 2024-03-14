@@ -1,3 +1,6 @@
 [submodule "dear_bindings"]
 	path = dear_bindings
 	url = https://github.com/dearimgui/dear_bindings
+[submodule "toolbox"]
+	path = toolbox
+	url = https://github.com/tiawl/toolbox
