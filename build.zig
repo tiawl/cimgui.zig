@@ -1,5 +1,5 @@
 const std = @import ("std");
-const toolbox = @import ("toolbox").toolbox;
+const toolbox = @import ("toolbox");
 const pkg = .{ .name = "cimgui.zig", .version = "1.90.4", };
 
 fn update (builder: *std.Build) !void
@@ -16,8 +16,8 @@ fn update (builder: *std.Build) !void
     }
   };
 
-  try toolbox.exec (builder, .{ .argv = &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", imgui_path, }, });
-  try toolbox.exec (builder, .{ .argv = &[_][] const u8 { "git", "-C", imgui_path, "checkout", "v" ++ pkg.version, }, });
+  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", imgui_path, }, });
+  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "git", "-C", imgui_path, "checkout", "v" ++ pkg.version, }, });
 
   var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true, });
   defer imgui.close ();
@@ -48,9 +48,9 @@ fn update (builder: *std.Build) !void
   const imgui_out = try builder.build_root.join (builder.allocator, &.{ "cimgui", });
   const glfw_out = try builder.build_root.join (builder.allocator, &.{ "cimgui_impl_glfw", });
   const vulkan_out = try builder.build_root.join (builder.allocator, &.{ "cimgui_impl_vulkan", });
-  try toolbox.exec (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--output", imgui_out, imgui_h, }, });
-  try toolbox.exec (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", glfw_out, glfw_backend_h, }, });
-  try toolbox.exec (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", vulkan_out, vulkan_backend_h, }, });
+  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--output", imgui_out, imgui_h, }, });
+  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", glfw_out, glfw_backend_h, }, });
+  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", vulkan_out, vulkan_backend_h, }, });
 }
 
 pub fn build (builder: *std.Build) !void
