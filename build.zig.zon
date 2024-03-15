@@ -5,7 +5,6 @@
   .paths = .{
     "build.zig",
     "build.zig.zon",
-    "toolbox",
     "cimgui.cpp",
     "cimgui.h",
     "cimgui_impl_glfw.cpp",
@@ -13,5 +12,11 @@
     "cimgui_impl_vulkan.cpp",
     "cimgui_impl_vulkan.h",
     "imgui",
+  },
+  .dependencies = .{
+    .toolbox = .{
+      .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.0.0.tar.gz",
+      .hash = "12207eff2cbca8b954f6e6f6f247d62f005afac4167fa981cf2a39612fce52950148",
+    },
   },
 }

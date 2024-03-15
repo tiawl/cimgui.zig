@@ -1,5 +1,5 @@
 const std = @import ("std");
-const toolbox = @import ("toolbox/toolbox.zig");
+const toolbox = @import ("toolbox").toolbox;
 const pkg = .{ .name = "cimgui.zig", .version = "1.90.4", };
 
 fn update (builder: *std.Build) !void
