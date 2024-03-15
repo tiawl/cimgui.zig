@@ -5,6 +5,7 @@
   .paths = .{
     "build.zig",
     "build.zig.zon",
+    "toolbox",
     "cimgui.cpp",
     "cimgui.h",
     "cimgui_impl_glfw.cpp",
