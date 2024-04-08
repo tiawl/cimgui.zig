@@ -1,7 +1,7 @@
 .{
   .name = "cimgui.zig",
   .version = "1.90.4",
-  .minimum_zig_version = "0.11.0",
+  .minimum_zig_version = "0.12.0",
   .paths = .{
     "build.zig",
     "build.zig.zon",
@@ -15,8 +15,8 @@
   },
   .dependencies = .{
     .toolbox = .{
-      .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.0.0.tar.gz",
-      .hash = "122050fedabdaad3766c0bf79f499a0a07784b71a80bb9df6053431fdf752acf4995",
+      .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.1.0.tar.gz",
+      .hash = "12202526ed667cac2cf58d496067e638f3bfbbaa89d0ff9b84a14aea58d7c895347e",
     },
   },
 }
