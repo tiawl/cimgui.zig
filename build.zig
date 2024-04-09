@@ -90,9 +90,9 @@ pub fn build (builder: *std.Build) !void
   {
     if (std.mem.startsWith (u8, entry.name, "cimgui") and entry.kind == .file)
     {
-      if (std.mem.endsWith (u8, entry.name, ".cpp"))
+      if (toolbox.is_source_file (entry.name))
         try sources.append (try builder.build_root.join (builder.allocator, &.{ entry.name, }))
-      else if (std.mem.endsWith (u8, entry.name, ".h"))
+      else if (toolbox.is_header_file (entry.name))
         try headers.append (builder.dupe (entry.name));
     }
   }
@@ -104,7 +104,7 @@ pub fn build (builder: *std.Build) !void
   while (try it.next ()) |*entry|
   {
     if (std.mem.startsWith (u8, entry.name, "imgui") and
-      std.mem.endsWith (u8, entry.name, ".cpp") and entry.kind == .file)
+      toolbox.is_source_file (entry.name) and entry.kind == .file)
         try sources.append (try std.fs.path.join (builder.allocator, &.{ imgui_path , entry.name, }));
   }
 
