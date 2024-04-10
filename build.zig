@@ -90,9 +90,7 @@ pub fn build (builder: *std.Build) !void
   {
     if (std.mem.startsWith (u8, entry.name, "cimgui") and entry.kind == .file)
     {
-      if (toolbox.is_source_file (entry.name))
-        try sources.append (try builder.build_root.join (builder.allocator, &.{ entry.name, }))
-      else if (toolbox.is_header_file (entry.name))
+      if (toolbox.is_c_header_file (entry.name))
         try headers.append (builder.dupe (entry.name));
     }
   }
@@ -100,36 +98,53 @@ pub fn build (builder: *std.Build) !void
   var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true, });
   defer imgui.close ();
 
-  it = imgui.iterate ();
-  while (try it.next ()) |*entry|
-  {
-    if (std.mem.startsWith (u8, entry.name, "imgui") and
-      toolbox.is_source_file (entry.name) and entry.kind == .file)
-        try sources.append (try std.fs.path.join (builder.allocator, &.{ imgui_path , entry.name, }));
-  }
-
-  try sources.appendSlice (&.{
-    try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_glfw.cpp", }),
-    try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_vulkan.cpp", }),
-  });
-
   for (includes.slice ()) |include|
   {
     std.debug.print ("[cimgui include] {s}\n", .{ include.getPath (builder), });
     lib.addIncludePath (include);
   }
 
-  lib.installHeadersDirectory ("imgui", "imgui");
+  lib.installHeadersDirectory (.{ .path = imgui_path, }, "imgui", .{});
   std.debug.print ("[cimgui headers dir] {s}\n", .{ imgui_path, });
   for (headers.slice ()) |header|
   {
-    std.debug.print ("[cimgui header] {s}\n", .{ try builder.build_root.join (builder.allocator, &.{ header, }), });
-    lib.installHeader (header, header);
+    const header_path = try builder.build_root.join (builder.allocator, &.{ header, });
+    std.debug.print ("[cimgui header] {s}\n", .{ header_path, });
+    lib.installHeader (.{ .path = header_path, }, header);
   }
 
   lib.linkLibCpp ();
 
-  for (sources.slice ()) |source| std.debug.print ("[cimgui source] {s}\n", .{ source, });
+  it = root.iterate ();
+  while (try it.next ()) |*entry|
+  {
+    if (std.mem.startsWith (u8, entry.name, "cimgui") and entry.kind == .file)
+    {
+      if (toolbox.is_cpp_source_file (entry.name))
+      {
+        std.debug.print ("[cimgui source] {s}\n", .{ try builder.build_root.join (builder.allocator, &.{ entry.name, }), });
+        try sources.append (builder.dupe (entry.name));
+      }
+    }
+  }
+
+  it = imgui.iterate ();
+  while (try it.next ()) |*entry|
+  {
+    if (std.mem.startsWith (u8, entry.name, "imgui") and
+      toolbox.is_cpp_source_file (entry.name) and entry.kind == .file)
+    {
+      std.debug.print ("[cimgui source] {s}\n", .{ try std.fs.path.join (builder.allocator, &.{ imgui_path, entry.name, }), });
+      try sources.append (try std.fs.path.join (builder.allocator, &.{ "imgui", builder.dupe (entry.name), }));
+    }
+  }
+
+  for ([_][] const u8 { "imgui_impl_glfw.cpp", "imgui_impl_vulkan.cpp", }) |source|
+  {
+    std.debug.print ("[cimgui source] {s}\n", .{ try std.fs.path.join (builder.allocator, &.{ backends_path, source, }), });
+    try sources.append (try std.fs.path.join (builder.allocator, &.{ "imgui", "backends", builder.dupe (source), }));
+  }
+
   lib.addCSourceFiles (.{
     .files = sources.slice (),
     .flags = &.{ "-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES", },
