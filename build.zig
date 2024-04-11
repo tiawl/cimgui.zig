@@ -104,7 +104,7 @@ pub fn build (builder: *std.Build) !void
     lib.addIncludePath (include);
   }
 
-  lib.installHeadersDirectory (.{ .path = imgui_path, }, "imgui", .{});
+  lib.installHeadersDirectory (.{ .path = imgui_path, }, "imgui", .{ .include_extensions = &.{}, });
   std.debug.print ("[cimgui headers dir] {s}\n", .{ imgui_path, });
   for (headers.slice ()) |header|
   {
