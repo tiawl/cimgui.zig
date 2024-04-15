@@ -158,5 +158,8 @@ pub fn build (builder: *std.Build) !void
     .flags = &.{ "-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES", },
   });
 
+  lib.root_module.addCMacro ("GLFW_INCLUDE_NONE", "1");
+  lib.root_module.addCMacro ("GLFW_INCLUDE_VULKAN", "1");
+
   builder.installArtifact (lib);
 }
