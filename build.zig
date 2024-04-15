@@ -2,12 +2,15 @@ const std = @import ("std");
 const toolbox = @import ("toolbox");
 const pkg = .{ .name = "cimgui.zig", .version = "1.90.4", };
 
-fn update (builder: *std.Build) !void
+const Paths = struct
 {
-  const imgui_path = try builder.build_root.join (builder.allocator, &.{ "imgui", });
-  const backends_path = try std.fs.path.join (builder.allocator, &.{ imgui_path, "backends", });
+  imgui: [] const u8 = undefined,
+  backends: [] const u8 = undefined,
+};
 
-  std.fs.deleteTreeAbsolute (imgui_path) catch |err|
+fn update (builder: *std.Build, path: *const Paths) !void
+{
+  std.fs.deleteTreeAbsolute (path.imgui) catch |err|
   {
     switch (err)
     {
@@ -16,41 +19,72 @@ fn update (builder: *std.Build) !void
     }
   };
 
-  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "git", "clone", "https://github.com/ocornut/imgui.git", imgui_path, }, });
-  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "git", "-C", imgui_path, "checkout", "v" ++ pkg.version, }, });
+  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "git", "clone",
+    "--branch", "v" ++ pkg.version, "--depth", "1",
+    "https://github.com/ocornut/imgui.git", path.imgui, }, });
 
-  var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true, });
-  defer imgui.close ();
+  var imgui_dir = try std.fs.openDirAbsolute (path.imgui,
+    .{ .iterate = true, });
+  defer imgui_dir.close ();
 
-  var it = imgui.iterate ();
+  var it = imgui_dir.iterate ();
   while (try it.next ()) |*entry|
   {
     if (!std.mem.eql (u8, entry.name, "backends") and
       !std.mem.startsWith (u8, entry.name, "im"))
-        try std.fs.deleteTreeAbsolute (try std.fs.path.join (builder.allocator, &.{ imgui_path, entry.name, }));
+        try std.fs.deleteTreeAbsolute (try std.fs.path.join (builder.allocator,
+          &.{ path.imgui, entry.name, }));
   }
 
-  var backends = try std.fs.openDirAbsolute (backends_path, .{ .iterate = true, });
-  defer backends.close ();
+  var backends_dir = try std.fs.openDirAbsolute (path.backends,
+    .{ .iterate = true, });
+  defer backends_dir.close ();
 
-  it = backends.iterate ();
+  const binding_py = try builder.build_root.join (builder.allocator,
+    &.{ "dear_bindings", "dear_bindings.py", });
+  const imconfig_h = try std.fs.path.join (builder.allocator,
+    &.{ path.imgui, "imconfig.h", });
+  const imgui_h = try std.fs.path.join (builder.allocator,
+    &.{ path.imgui, "imgui.h", });
+  const glfw_backend_h = try std.fs.path.join (builder.allocator,
+    &.{ path.backends, "imgui_impl_glfw.h", });
+  const vulkan_backend_h = try std.fs.path.join (builder.allocator, &.{
+    path.backends, "imgui_impl_vulkan.h", });
+  const imgui_out = try std.fs.path.join (builder.allocator,
+    &.{ path.imgui, "cimgui", });
+  const glfw_out = try std.fs.path.join (builder.allocator,
+    &.{ path.backends, "cimgui_impl_glfw", });
+  const vulkan_out = try std.fs.path.join (builder.allocator,
+    &.{ path.backends, "cimgui_impl_vulkan", });
+  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py,
+    "--output", imgui_out, imgui_h, }, });
+  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py,
+    "--backend", "--imconfig-path", imconfig_h,
+    "--output", glfw_out, glfw_backend_h, }, });
+  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py,
+    "--backend", "--imconfig-path", imconfig_h,
+    "--output", vulkan_out, vulkan_backend_h, }, });
+
+  it = backends_dir.iterate ();
   while (try it.next ()) |*entry|
   {
-    if (!std.mem.startsWith (u8, entry.name, "imgui"))
-      try std.fs.deleteTreeAbsolute (try std.fs.path.join (builder.allocator, &.{ backends_path, entry.name, }));
+    switch (entry.kind)
+    {
+      .file => {
+        if ((!std.mem.startsWith (u8, entry.name, "imgui_impl_") and
+          !std.mem.startsWith (u8, entry.name, "cimgui_impl_")) or
+            (std.mem.indexOf (u8, entry.name, "vulkan") == null and
+            std.mem.indexOf (u8, entry.name, "glfw") == null) or
+              (!toolbox.is_cpp_source_file (entry.name) and
+              !toolbox.is_c_header_file (entry.name)))
+                try std.fs.deleteFileAbsolute (try std.fs.path.join (
+                  builder.allocator, &.{ path.backends, entry.name, }));
+      },
+      .directory => try std.fs.deleteTreeAbsolute (try std.fs.path.join (
+        builder.allocator, &.{ path.backends, entry.name, })),
+      else => {},
+    }
   }
-
-  const binding_py = try builder.build_root.join (builder.allocator, &.{ "dear_bindings", "dear_bindings.py", });
-  const imconfig_h = try std.fs.path.join (builder.allocator, &.{ imgui_path, "imconfig.h", });
-  const imgui_h = try std.fs.path.join (builder.allocator, &.{ imgui_path, "imgui.h", });
-  const glfw_backend_h = try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_glfw.h", });
-  const vulkan_backend_h = try std.fs.path.join (builder.allocator, &.{ backends_path, "imgui_impl_vulkan.h", });
-  const imgui_out = try builder.build_root.join (builder.allocator, &.{ "cimgui", });
-  const glfw_out = try builder.build_root.join (builder.allocator, &.{ "cimgui_impl_glfw", });
-  const vulkan_out = try builder.build_root.join (builder.allocator, &.{ "cimgui_impl_vulkan", });
-  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--output", imgui_out, imgui_h, }, });
-  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", glfw_out, glfw_backend_h, }, });
-  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py, "--backend", "--imconfig-path", imconfig_h, "--output", vulkan_out, vulkan_backend_h, }, });
 }
 
 pub fn build (builder: *std.Build) !void
@@ -58,7 +92,14 @@ pub fn build (builder: *std.Build) !void
   const target = builder.standardTargetOptions (.{});
   const optimize = builder.standardOptimizeOption (.{});
 
-  if (builder.option (bool, "update", "Update binding") orelse false) try update (builder);
+  var path: Paths = .{};
+  path.imgui = try builder.build_root.join (builder.allocator,
+    &.{ "imgui", });
+  path.backends = try std.fs.path.join (builder.allocator,
+    &.{ path.imgui, "backends", });
+
+  if (builder.option (bool, "update", "Update binding") orelse false)
+    try update (builder, &path);
 
   const lib = builder.addStaticLibrary (.{
     .name = "cimgui",
@@ -71,21 +112,20 @@ pub fn build (builder: *std.Build) !void
   var sources = try std.BoundedArray ([] const u8, 64).init (0);
   var headers = try std.BoundedArray ([] const u8, 64).init (0);
 
-  const imgui_path = try builder.build_root.join (builder.allocator, &.{ "imgui", });
-  const backends_path = try std.fs.path.join (builder.allocator, &.{ imgui_path, "backends", });
+  var root_dir = try builder.build_root.handle.openDir (".",
+    .{ .iterate = true, });
+  defer root_dir.close ();
 
-  var root = try builder.build_root.handle.openDir (".", .{ .iterate = true, });
-  defer root.close ();
-
-  var walk = try root.walk (builder.allocator);
+  var walk = try root_dir.walk (builder.allocator);
 
   while (try walk.next ()) |*entry|
   {
-    if (std.mem.startsWith (u8, entry.path, "imgui") and entry.kind == .directory)
-      try includes.append (.{ .path = builder.dupe (entry.path), });
+    if (std.mem.startsWith (u8, entry.path, "imgui") and
+      entry.kind == .directory)
+        try includes.append (.{ .path = builder.dupe (entry.path), });
   }
 
-  var it = root.iterate ();
+  var it = root_dir.iterate ();
   while (try it.next ()) |*entry|
   {
     if (std.mem.startsWith (u8, entry.name, "cimgui") and entry.kind == .file)
@@ -95,8 +135,12 @@ pub fn build (builder: *std.Build) !void
     }
   }
 
-  var imgui = try std.fs.openDirAbsolute (imgui_path, .{ .iterate = true, });
-  defer imgui.close ();
+  var imgui_dir = try std.fs.openDirAbsolute (path.imgui,
+    .{ .iterate = true, });
+  defer imgui_dir.close ();
+  var backends_dir = try std.fs.openDirAbsolute (path.backends,
+    .{ .iterate = true, });
+  defer backends_dir.close ();
 
   for (includes.slice ()) |include|
   {
@@ -112,45 +156,45 @@ pub fn build (builder: *std.Build) !void
   lib.linkLibrary (glfw_dep.artifact ("glfw"));
   lib.installLibraryHeaders (glfw_dep.artifact ("glfw"));
 
-  lib.installHeadersDirectory (.{ .path = imgui_path, }, "imgui", .{ .include_extensions = &.{ ".h", }, });
-  std.debug.print ("[cimgui headers dir] {s}\n", .{ imgui_path, });
+  lib.installHeadersDirectory (.{ .path = path.imgui, }, "imgui",
+    .{ .include_extensions = &.{ ".h", }, });
+  std.debug.print ("[cimgui headers dir] {s}\n", .{ path.imgui, });
   for (headers.slice ()) |header|
   {
-    const header_path = try builder.build_root.join (builder.allocator, &.{ header, });
+    const header_path = try builder.build_root.join (builder.allocator,
+      &.{ header, });
     std.debug.print ("[cimgui header] {s}\n", .{ header_path, });
     lib.installHeader (.{ .path = header_path, }, header);
   }
 
   lib.linkLibCpp ();
 
-  it = root.iterate ();
+  it = imgui_dir.iterate ();
   while (try it.next ()) |*entry|
   {
-    if (std.mem.startsWith (u8, entry.name, "cimgui") and entry.kind == .file)
+    if ((std.mem.startsWith (u8, entry.name, "imgui") or
+      std.mem.startsWith (u8, entry.name, "cimgui")) and
+        toolbox.is_cpp_source_file (entry.name) and entry.kind == .file)
     {
-      if (toolbox.is_cpp_source_file (entry.name))
-      {
-        std.debug.print ("[cimgui source] {s}\n", .{ try builder.build_root.join (builder.allocator, &.{ entry.name, }), });
-        try sources.append (builder.dupe (entry.name));
-      }
+      const source_path = try std.fs.path.join (builder.allocator,
+        &.{ path.imgui, entry.name, });
+      std.debug.print ("[cimgui source] {s}\n", .{ source_path, });
+      try sources.append (try std.fs.path.relative (builder.allocator,
+        builder.build_root.path.?, source_path));
     }
   }
 
-  it = imgui.iterate ();
+  it = backends_dir.iterate ();
   while (try it.next ()) |*entry|
   {
-    if (std.mem.startsWith (u8, entry.name, "imgui") and
-      toolbox.is_cpp_source_file (entry.name) and entry.kind == .file)
+    if (toolbox.is_cpp_source_file (entry.name))
     {
-      std.debug.print ("[cimgui source] {s}\n", .{ try std.fs.path.join (builder.allocator, &.{ imgui_path, entry.name, }), });
-      try sources.append (try std.fs.path.join (builder.allocator, &.{ "imgui", builder.dupe (entry.name), }));
+      const source_path = try std.fs.path.join (builder.allocator,
+        &.{ path.backends, entry.name, });
+      std.debug.print ("[cimgui source] {s}\n", .{ source_path, });
+      try sources.append (try std.fs.path.relative (builder.allocator,
+        builder.build_root.path.?, source_path));
     }
-  }
-
-  for ([_][] const u8 { "imgui_impl_glfw.cpp", "imgui_impl_vulkan.cpp", }) |source|
-  {
-    std.debug.print ("[cimgui source] {s}\n", .{ try std.fs.path.join (builder.allocator, &.{ backends_path, source, }), });
-    try sources.append (try std.fs.path.join (builder.allocator, &.{ "imgui", "backends", builder.dupe (source), }));
   }
 
   lib.addCSourceFiles (.{
