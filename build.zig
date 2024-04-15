@@ -104,6 +104,13 @@ pub fn build (builder: *std.Build) !void
     lib.addIncludePath (include);
   }
 
+  const glfw_dep = builder.dependency ("glfw", .{
+    .target = target,
+    .optimize = optimize,
+  });
+
+  lib.installLibraryHeaders (glfw_dep.artifact ("glfw"));
+
   lib.installHeadersDirectory (.{ .path = imgui_path, }, "imgui", .{ .include_extensions = &.{ ".h", }, });
   std.debug.print ("[cimgui headers dir] {s}\n", .{ imgui_path, });
   for (headers.slice ()) |header|

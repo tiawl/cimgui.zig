@@ -14,6 +14,10 @@
     "imgui",
   },
   .dependencies = .{
+    .glfw = .{
+      .url = "https://github.com/tiawl/glfw.zig/archive/refs/tags/3.4.tar.gz",
+      .hash = "1220cae93f3e4476db397a438fbfb3aadce9da67feb6bb0e6dd87c75d861fea9257d",
+    },
     .toolbox = .{
       .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.3.0.tar.gz",
       .hash = "12203ea79b0d01cfe43b5085d304c8fb836b3cfa491592858361abb8dc861e1ee823",
