@@ -109,6 +109,7 @@ pub fn build (builder: *std.Build) !void
     .optimize = optimize,
   });
 
+  lib.linkLibrary (glfw_dep.artifact ("glfw"));
   lib.installLibraryHeaders (glfw_dep.artifact ("glfw"));
 
   lib.installHeadersDirectory (.{ .path = imgui_path, }, "imgui", .{ .include_extensions = &.{ ".h", }, });
