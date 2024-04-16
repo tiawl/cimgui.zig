@@ -136,7 +136,7 @@ pub fn build (builder: *std.Build) !void
   lib.linkLibrary (glfw_dep.artifact ("glfw"));
   lib.installLibraryHeaders (glfw_dep.artifact ("glfw"));
 
-  toolbox.addHeader (lib, path.cimgui, "cimgui", &.{ ".h", });
+  toolbox.addHeader (lib, path.cimgui, ".", &.{ ".h", });
 
   lib.linkLibCpp ();
 
