@@ -2,7 +2,7 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-// dear imgui, v1.90.4
+// dear imgui, v1.90.5
 // (headers)
 
 // Help:
@@ -11,15 +11,19 @@
 // - Read top of imgui.cpp for more details, links and comments.
 
 // Resources:
-// - FAQ                   https://dearimgui.com/faq
-// - Getting Started       https://dearimgui.com/getting-started
-// - Homepage              https://github.com/ocornut/imgui
-// - Releases & changelog  https://github.com/ocornut/imgui/releases
-// - Gallery               https://github.com/ocornut/imgui/issues/6897 (please post your screenshots/video there!)
-// - Wiki                  https://github.com/ocornut/imgui/wiki (lots of good stuff there)
-// - Glossary              https://github.com/ocornut/imgui/wiki/Glossary
-// - Issues & support      https://github.com/ocornut/imgui/issues
-// - Tests & Automation    https://github.com/ocornut/imgui_test_engine
+// - FAQ ........................ https://dearimgui.com/faq (in repository as docs/FAQ.md)
+// - Homepage ................... https://github.com/ocornut/imgui
+// - Releases & changelog ....... https://github.com/ocornut/imgui/releases
+// - Gallery .................... https://github.com/ocornut/imgui/issues/6897 (please post your screenshots/video there!)
+// - Wiki ....................... https://github.com/ocornut/imgui/wiki (lots of good stuff there)
+//   - Getting Started            https://github.com/ocornut/imgui/wiki/Getting-Started (how to integrate in an existing app by adding ~25 lines of code)
+//   - Third-party Extensions     https://github.com/ocornut/imgui/wiki/Useful-Extensions (ImPlot & many more)
+//   - Bindings/Backends          https://github.com/ocornut/imgui/wiki/Bindings (language bindings, backends for various tech/engines)
+//   - Glossary                   https://github.com/ocornut/imgui/wiki/Glossary
+//   - Debug Tools                https://github.com/ocornut/imgui/wiki/Debug-Tools
+//   - Software using Dear ImGui  https://github.com/ocornut/imgui/wiki/Software-using-dear-imgui
+// - Issues & support ........... https://github.com/ocornut/imgui/issues
+// - Test Engine & Automation ... https://github.com/ocornut/imgui_test_engine (test suite, test engine to automate your apps)
 
 // For first-time users having issues compiling/linking/running/loading fonts:
 // please post in https://github.com/ocornut/imgui/discussions if you cannot find a solution in resources above.
@@ -27,8 +31,8 @@
 
 // Library Version
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if IMGUI_VERSION_NUM >= 12345')
-#define IMGUI_VERSION       "1.90.4"
-#define IMGUI_VERSION_NUM   19040
+#define IMGUI_VERSION       "1.90.5"
+#define IMGUI_VERSION_NUM   19050
 #define IMGUI_HAS_TABLE
 
 /*
@@ -199,8 +203,9 @@ typedef struct ImGuiViewport_t ImGuiViewport;                            // A Pl
 // Enumerations
 // - We don't use strongly typed enums much because they add constraints (can't extend in private code, can't store typed in bit fields, extra casting on iteration)
 // - Tip: Use your programming IDE navigation facilities on the names in the _central column_ below to find the actual flags/enum lists!
-//   In Visual Studio IDE: CTRL+comma ("Edit.GoToAll") can follow symbols in comments, whereas CTRL+F12 ("Edit.GoToImplementation") cannot.
-//   With Visual Assist installed: ALT+G ("VAssistX.GoToImplementation") can also follow symbols in comments.
+//   - In Visual Studio: CTRL+comma ("Edit.GoToAll") can follow symbols inside comments, whereas CTRL+F12 ("Edit.GoToImplementation") cannot.
+//   - In Visual Studio w/ Visual Assist installed: ALT+G ("VAssistX.GoToImplementation") can also follow symbols inside comments.
+//   - In VS Code, CLion, etc.: CTRL+click can follow symbols inside comments.
 typedef int ImGuiKey;            // -> enum ImGuiKey              // Enum: A key identifier (ImGuiKey_XXX or ImGuiMod_XXX value)
 typedef int ImGuiMouseSource;    // -> enum ImGuiMouseSource      // Enum; A mouse input source identifier (Mouse, TouchScreen, Pen)
 typedef int ImGuiCol;            // -> enum ImGuiCol_             // Enum: A color identifier for styling
@@ -215,8 +220,9 @@ typedef int ImGuiTableBgTarget;  // -> enum ImGuiTableBgTarget_   // Enum: A col
 
 // Flags (declared as int to allow using as flags without overhead, and to not pollute the top of this file)
 // - Tip: Use your programming IDE navigation facilities on the names in the _central column_ below to find the actual flags/enum lists!
-//   In Visual Studio IDE: CTRL+comma ("Edit.GoToAll") can follow symbols in comments, whereas CTRL+F12 ("Edit.GoToImplementation") cannot.
-//   With Visual Assist installed: ALT+G ("VAssistX.GoToImplementation") can also follow symbols in comments.
+//   - In Visual Studio: CTRL+comma ("Edit.GoToAll") can follow symbols inside comments, whereas CTRL+F12 ("Edit.GoToImplementation") cannot.
+//   - In Visual Studio w/ Visual Assist installed: ALT+G ("VAssistX.GoToImplementation") can also follow symbols inside comments.
+//   - In VS Code, CLion, etc.: CTRL+click can follow symbols inside comments.
 typedef int ImDrawFlags;            // -> enum ImDrawFlags_          // Flags: for ImDrawList functions
 typedef int ImDrawListFlags;        // -> enum ImDrawListFlags_      // Flags: for ImDrawList instance
 typedef int ImFontAtlasFlags;       // -> enum ImFontAtlasFlags_     // Flags: for ImFontAtlas build
@@ -1711,8 +1717,9 @@ typedef enum
 // - The enum only refers to fields of ImGuiStyle which makes sense to be pushed/popped inside UI code.
 //   During initialization or between frames, feel free to just poke into ImGuiStyle directly.
 // - Tip: Use your programming IDE navigation facilities on the names in the _second column_ below to find the actual members and their description.
-//   In Visual Studio IDE: CTRL+comma ("Edit.GoToAll") can follow symbols in comments, whereas CTRL+F12 ("Edit.GoToImplementation") cannot.
-//   With Visual Assist installed: ALT+G ("VAssistX.GoToImplementation") can also follow symbols in comments.
+//   - In Visual Studio: CTRL+comma ("Edit.GoToAll") can follow symbols inside comments, whereas CTRL+F12 ("Edit.GoToImplementation") cannot.
+//   - In Visual Studio w/ Visual Assist installed: ALT+G ("VAssistX.GoToImplementation") can also follow symbols inside comments.
+//   - In VS Code, CLion, etc.: CTRL+click can follow symbols inside comments.
 // - When changing this enum, you need to update the associated internal table GStyleVarInfo[] accordingly. This is where we link enum values to members offset/type.
 typedef enum
 {
@@ -1740,7 +1747,9 @@ typedef enum
     ImGuiStyleVar_GrabMinSize,              // float     GrabMinSize
     ImGuiStyleVar_GrabRounding,             // float     GrabRounding
     ImGuiStyleVar_TabRounding,              // float     TabRounding
+    ImGuiStyleVar_TabBorderSize,            // float     TabBorderSize
     ImGuiStyleVar_TabBarBorderSize,         // float     TabBarBorderSize
+    ImGuiStyleVar_TableAngledHeadersAngle,  // float  TableAngledHeadersAngle
     ImGuiStyleVar_ButtonTextAlign,          // ImVec2    ButtonTextAlign
     ImGuiStyleVar_SelectableTextAlign,      // ImVec2    SelectableTextAlign
     ImGuiStyleVar_SeparatorTextBorderSize,  // float  SeparatorTextBorderSize
@@ -2261,7 +2270,7 @@ typedef struct ImGuiStyle_t
     float             FrameBorderSize;             // Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
     ImVec2            ItemSpacing;                 // Horizontal and vertical spacing between widgets/lines.
     ImVec2            ItemInnerSpacing;            // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label).
-    ImVec2            CellPadding;                 // Padding within a table cell. CellPadding.y may be altered between different rows.
+    ImVec2            CellPadding;                 // Padding within a table cell. Cellpadding.x is locked for entire table. CellPadding.y may be altered between different rows.
     ImVec2            TouchExtraPadding;           // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
     float             IndentSpacing;               // Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
     float             ColumnsMinSpacing;           // Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
@@ -2306,6 +2315,9 @@ CIMGUI_API void ImGuiStyle_ScaleAllSizes(ImGuiStyle* self, float scale_factor);
 //-----------------------------------------------------------------------------
 // Communicate most settings and inputs/outputs to Dear ImGui using this structure.
 // Access via ImGui::GetIO(). Read 'Programmer guide' section in .cpp file for general usage.
+// It is generally expected that:
+// - initialization: backends and user code writes to ImGuiIO.
+// - main loop: backends writes to ImGuiIO, user code and imgui code reads from ImGuiIO.
 //-----------------------------------------------------------------------------
 
 // [Internal] Storage used by IsKeyDown(), IsKeyPressed() etc functions.
@@ -2527,6 +2539,8 @@ typedef struct ImGuiInputTextCallbackData_t
     void*               UserData;        // What user passed to InputText()      // Read-only
 
     // Arguments for the different callback events
+    // - During Resize callback, Buf will be same as your input buffer.
+    // - However, during Completion/History/Always callback, Buf always points to our own internal data (it is not the same as your buffer)! Changes to it will be reflected into your own buffer shortly after the callback.
     // - To modify the text buffer in a callback, prefer using the InsertChars() / DeleteChars() function. InsertChars() will take care of calling the resize callback if necessary.
     // - If you know your edits are not going to resize the underlying buffer allocation, you may modify the contents of 'Buf[]' directly. You need to update 'BufTextLen' accordingly (0 <= BufTextLen < BufSize) and set 'BufDirty'' to true so InputText can update its internal state.
     ImWchar             EventChar;       // Character input                      // Read-write   // [CharFilter] Replace character with another one, or set to zero to drop. return 1 is equivalent to setting EventChar=0;
@@ -2907,10 +2921,13 @@ typedef struct ImDrawList_t
     float                 _FringeScale;     // [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content
 
     // Obsolete names
+    //inline  void  AddEllipse(const ImVec2& center, float radius_x, float radius_y, ImU32 col, float rot = 0.0f, int num_segments = 0, float thickness = 1.0f) { AddEllipse(center, ImVec2(radius_x, radius_y), col, rot, num_segments, thickness); } // OBSOLETED in 1.90.5 (Mar 2024)
+    //inline  void  AddEllipseFilled(const ImVec2& center, float radius_x, float radius_y, ImU32 col, float rot = 0.0f, int num_segments = 0) { AddEllipseFilled(center, ImVec2(radius_x, radius_y), col, rot, num_segments); }                        // OBSOLETED in 1.90.5 (Mar 2024)
+    //inline  void  PathEllipticalArcTo(const ImVec2& center, float radius_x, float radius_y, float rot, float a_min, float a_max, int num_segments = 0) { PathEllipticalArcTo(center, ImVec2(radius_x, radius_y), rot, a_min, a_max, num_segments); } // OBSOLETED in 1.90.5 (Mar 2024)
     //inline  void  AddBezierCurve(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, ImU32 col, float thickness, int num_segments = 0) { AddBezierCubic(p1, p2, p3, p4, col, thickness, num_segments); } // OBSOLETED in 1.80 (Jan 2021)
     //inline  void  PathBezierCurveTo(const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, int num_segments = 0) { PathBezierCubicCurveTo(p2, p3, p4, num_segments); } // OBSOLETED in 1.80 (Jan 2021)
 } ImDrawList;
-CIMGUI_API void        ImDrawList_PushClipRect(ImDrawList* self, ImVec2 clip_rect_min, ImVec2 clip_rect_max, bool intersect_with_current_clip_rect /* = false */);  // Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
+CIMGUI_API void        ImDrawList_PushClipRect(ImDrawList* self, ImVec2 clip_rect_min, ImVec2 clip_rect_max, bool intersect_with_current_clip_rect /* = false */); // Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
 CIMGUI_API void        ImDrawList_PushClipRectFullScreen(ImDrawList* self);
 CIMGUI_API void        ImDrawList_PopClipRect(ImDrawList* self);
 CIMGUI_API void        ImDrawList_PushTextureID(ImDrawList* self, ImTextureID texture_id);
@@ -2924,44 +2941,48 @@ CIMGUI_API ImVec2      ImDrawList_GetClipRectMax(const ImDrawList* self);
 //   In older versions (until Dear ImGui 1.77) the AddCircle functions defaulted to num_segments == 12.
 //   In future versions we will use textures to provide cheaper and higher-quality circles.
 //   Use AddNgon() and AddNgonFilled() functions if you need to guarantee a specific number of sides.
-CIMGUI_API void        ImDrawList_AddLine(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImU32 col);                                                                       // Implied thickness = 1.0f
+CIMGUI_API void        ImDrawList_AddLine(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImU32 col);                                                                     // Implied thickness = 1.0f
 CIMGUI_API void        ImDrawList_AddLineEx(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImU32 col, float thickness /* = 1.0f */);
-CIMGUI_API void        ImDrawList_AddRect(ImDrawList* self, ImVec2 p_min, ImVec2 p_max, ImU32 col);                                                                 // Implied rounding = 0.0f, flags = 0, thickness = 1.0f
+CIMGUI_API void        ImDrawList_AddRect(ImDrawList* self, ImVec2 p_min, ImVec2 p_max, ImU32 col);                                                               // Implied rounding = 0.0f, flags = 0, thickness = 1.0f
 CIMGUI_API void        ImDrawList_AddRectEx(ImDrawList* self, ImVec2 p_min, ImVec2 p_max, ImU32 col, float rounding /* = 0.0f */, ImDrawFlags flags /* = 0 */, float thickness /* = 1.0f */); // a: upper-left, b: lower-right (== upper-left + size)
-CIMGUI_API void        ImDrawList_AddRectFilled(ImDrawList* self, ImVec2 p_min, ImVec2 p_max, ImU32 col);                                                           // Implied rounding = 0.0f, flags = 0
+CIMGUI_API void        ImDrawList_AddRectFilled(ImDrawList* self, ImVec2 p_min, ImVec2 p_max, ImU32 col);                                                         // Implied rounding = 0.0f, flags = 0
 CIMGUI_API void        ImDrawList_AddRectFilledEx(ImDrawList* self, ImVec2 p_min, ImVec2 p_max, ImU32 col, float rounding /* = 0.0f */, ImDrawFlags flags /* = 0 */); // a: upper-left, b: lower-right (== upper-left + size)
 CIMGUI_API void        ImDrawList_AddRectFilledMultiColor(ImDrawList* self, ImVec2 p_min, ImVec2 p_max, ImU32 col_upr_left, ImU32 col_upr_right, ImU32 col_bot_right, ImU32 col_bot_left);
-CIMGUI_API void        ImDrawList_AddQuad(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImU32 col);                                                 // Implied thickness = 1.0f
+CIMGUI_API void        ImDrawList_AddQuad(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImU32 col);                                               // Implied thickness = 1.0f
 CIMGUI_API void        ImDrawList_AddQuadEx(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImU32 col, float thickness /* = 1.0f */);
 CIMGUI_API void        ImDrawList_AddQuadFilled(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImU32 col);
-CIMGUI_API void        ImDrawList_AddTriangle(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImU32 col);                                                        // Implied thickness = 1.0f
+CIMGUI_API void        ImDrawList_AddTriangle(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImU32 col);                                                      // Implied thickness = 1.0f
 CIMGUI_API void        ImDrawList_AddTriangleEx(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImU32 col, float thickness /* = 1.0f */);
 CIMGUI_API void        ImDrawList_AddTriangleFilled(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImU32 col);
-CIMGUI_API void        ImDrawList_AddCircle(ImDrawList* self, ImVec2 center, float radius, ImU32 col);                                                              // Implied num_segments = 0, thickness = 1.0f
+CIMGUI_API void        ImDrawList_AddCircle(ImDrawList* self, ImVec2 center, float radius, ImU32 col);                                                            // Implied num_segments = 0, thickness = 1.0f
 CIMGUI_API void        ImDrawList_AddCircleEx(ImDrawList* self, ImVec2 center, float radius, ImU32 col, int num_segments /* = 0 */, float thickness /* = 1.0f */);
 CIMGUI_API void        ImDrawList_AddCircleFilled(ImDrawList* self, ImVec2 center, float radius, ImU32 col, int num_segments /* = 0 */);
-CIMGUI_API void        ImDrawList_AddNgon(ImDrawList* self, ImVec2 center, float radius, ImU32 col, int num_segments);                                              // Implied thickness = 1.0f
+CIMGUI_API void        ImDrawList_AddNgon(ImDrawList* self, ImVec2 center, float radius, ImU32 col, int num_segments);                                            // Implied thickness = 1.0f
 CIMGUI_API void        ImDrawList_AddNgonEx(ImDrawList* self, ImVec2 center, float radius, ImU32 col, int num_segments, float thickness /* = 1.0f */);
 CIMGUI_API void        ImDrawList_AddNgonFilled(ImDrawList* self, ImVec2 center, float radius, ImU32 col, int num_segments);
-CIMGUI_API void        ImDrawList_AddEllipse(ImDrawList* self, ImVec2 center, float radius_x, float radius_y, ImU32 col);                                           // Implied rot = 0.0f, num_segments = 0, thickness = 1.0f
-CIMGUI_API void        ImDrawList_AddEllipseEx(ImDrawList* self, ImVec2 center, float radius_x, float radius_y, ImU32 col, float rot /* = 0.0f */, int num_segments /* = 0 */, float thickness /* = 1.0f */);
-CIMGUI_API void        ImDrawList_AddEllipseFilled(ImDrawList* self, ImVec2 center, float radius_x, float radius_y, ImU32 col);                                     // Implied rot = 0.0f, num_segments = 0
-CIMGUI_API void        ImDrawList_AddEllipseFilledEx(ImDrawList* self, ImVec2 center, float radius_x, float radius_y, ImU32 col, float rot /* = 0.0f */, int num_segments /* = 0 */);
-CIMGUI_API void        ImDrawList_AddText(ImDrawList* self, ImVec2 pos, ImU32 col, const char* text_begin);                                                         // Implied text_end = NULL
+CIMGUI_API void        ImDrawList_AddEllipse(ImDrawList* self, ImVec2 center, ImVec2 radius, ImU32 col);                                                          // Implied rot = 0.0f, num_segments = 0, thickness = 1.0f
+CIMGUI_API void        ImDrawList_AddEllipseEx(ImDrawList* self, ImVec2 center, ImVec2 radius, ImU32 col, float rot /* = 0.0f */, int num_segments /* = 0 */, float thickness /* = 1.0f */);
+CIMGUI_API void        ImDrawList_AddEllipseFilled(ImDrawList* self, ImVec2 center, ImVec2 radius, ImU32 col);                                                    // Implied rot = 0.0f, num_segments = 0
+CIMGUI_API void        ImDrawList_AddEllipseFilledEx(ImDrawList* self, ImVec2 center, ImVec2 radius, ImU32 col, float rot /* = 0.0f */, int num_segments /* = 0 */);
+CIMGUI_API void        ImDrawList_AddText(ImDrawList* self, ImVec2 pos, ImU32 col, const char* text_begin);                                                       // Implied text_end = NULL
 CIMGUI_API void        ImDrawList_AddTextEx(ImDrawList* self, ImVec2 pos, ImU32 col, const char* text_begin, const char* text_end /* = NULL */);
-CIMGUI_API void        ImDrawList_AddTextImFontPtr(ImDrawList* self, const ImFont* font, float font_size, ImVec2 pos, ImU32 col, const char* text_begin);           // Implied text_end = NULL, wrap_width = 0.0f, cpu_fine_clip_rect = NULL
+CIMGUI_API void        ImDrawList_AddTextImFontPtr(ImDrawList* self, const ImFont* font, float font_size, ImVec2 pos, ImU32 col, const char* text_begin);         // Implied text_end = NULL, wrap_width = 0.0f, cpu_fine_clip_rect = NULL
 CIMGUI_API void        ImDrawList_AddTextImFontPtrEx(ImDrawList* self, const ImFont* font, float font_size, ImVec2 pos, ImU32 col, const char* text_begin, const char* text_end /* = NULL */, float wrap_width /* = 0.0f */, const ImVec4* cpu_fine_clip_rect /* = NULL */);
+CIMGUI_API void        ImDrawList_AddBezierCubic(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImU32 col, float thickness, int num_segments /* = 0 */); // Cubic Bezier (4 control points)
+CIMGUI_API void        ImDrawList_AddBezierQuadratic(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImU32 col, float thickness, int num_segments /* = 0 */);  // Quadratic Bezier (3 control points)
+// General polygon
+// - Only simple polygons are supported by filling functions (no self-intersections, no holes).
+// - Concave polygon fill is more expensive than convex one: it has O(N^2) complexity. Provided as a convenience fo user but not used by main library.
 CIMGUI_API void        ImDrawList_AddPolyline(ImDrawList* self, const ImVec2* points, int num_points, ImU32 col, ImDrawFlags flags, float thickness);
 CIMGUI_API void        ImDrawList_AddConvexPolyFilled(ImDrawList* self, const ImVec2* points, int num_points, ImU32 col);
-CIMGUI_API void        ImDrawList_AddBezierCubic(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImU32 col, float thickness, int num_segments /* = 0 */); // Cubic Bezier (4 control points)
-CIMGUI_API void        ImDrawList_AddBezierQuadratic(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImU32 col, float thickness, int num_segments /* = 0 */);    // Quadratic Bezier (3 control points)
+CIMGUI_API void        ImDrawList_AddConcavePolyFilled(ImDrawList* self, const ImVec2* points, int num_points, ImU32 col);
 // Image primitives
 // - Read FAQ to understand what ImTextureID is.
 // - "p_min" and "p_max" represent the upper-left and lower-right corners of the rectangle.
 // - "uv_min" and "uv_max" represent the normalized texture coordinates to use for those corners. Using (0,0)->(1,1) texture coordinates will generally display the entire texture.
-CIMGUI_API void        ImDrawList_AddImage(ImDrawList* self, ImTextureID user_texture_id, ImVec2 p_min, ImVec2 p_max);                                              // Implied uv_min = ImVec2(0, 0), uv_max = ImVec2(1, 1), col = IM_COL32_WHITE
+CIMGUI_API void        ImDrawList_AddImage(ImDrawList* self, ImTextureID user_texture_id, ImVec2 p_min, ImVec2 p_max);                                            // Implied uv_min = ImVec2(0, 0), uv_max = ImVec2(1, 1), col = IM_COL32_WHITE
 CIMGUI_API void        ImDrawList_AddImageEx(ImDrawList* self, ImTextureID user_texture_id, ImVec2 p_min, ImVec2 p_max, ImVec2 uv_min /* = ImVec2(0, 0) */, ImVec2 uv_max /* = ImVec2(1, 1) */, ImU32 col /* = IM_COL32_WHITE */);
-CIMGUI_API void        ImDrawList_AddImageQuad(ImDrawList* self, ImTextureID user_texture_id, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4);                          // Implied uv1 = ImVec2(0, 0), uv2 = ImVec2(1, 0), uv3 = ImVec2(1, 1), uv4 = ImVec2(0, 1), col = IM_COL32_WHITE
+CIMGUI_API void        ImDrawList_AddImageQuad(ImDrawList* self, ImTextureID user_texture_id, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4);                        // Implied uv1 = ImVec2(0, 0), uv2 = ImVec2(1, 0), uv3 = ImVec2(1, 1), uv4 = ImVec2(0, 1), col = IM_COL32_WHITE
 CIMGUI_API void        ImDrawList_AddImageQuadEx(ImDrawList* self, ImTextureID user_texture_id, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImVec2 uv1 /* = ImVec2(0, 0) */, ImVec2 uv2 /* = ImVec2(1, 0) */, ImVec2 uv3 /* = ImVec2(1, 1) */, ImVec2 uv4 /* = ImVec2(0, 1) */, ImU32 col /* = IM_COL32_WHITE */);
 CIMGUI_API void        ImDrawList_AddImageRounded(ImDrawList* self, ImTextureID user_texture_id, ImVec2 p_min, ImVec2 p_max, ImVec2 uv_min, ImVec2 uv_max, ImU32 col, float rounding, ImDrawFlags flags /* = 0 */);
 // Stateful path API, add points then finish with PathFillConvex() or PathStroke()
@@ -2971,18 +2992,19 @@ CIMGUI_API void        ImDrawList_PathClear(ImDrawList* self);
 CIMGUI_API void        ImDrawList_PathLineTo(ImDrawList* self, ImVec2 pos);
 CIMGUI_API void        ImDrawList_PathLineToMergeDuplicate(ImDrawList* self, ImVec2 pos);
 CIMGUI_API void        ImDrawList_PathFillConvex(ImDrawList* self, ImU32 col);
+CIMGUI_API void        ImDrawList_PathFillConcave(ImDrawList* self, ImU32 col);
 CIMGUI_API void        ImDrawList_PathStroke(ImDrawList* self, ImU32 col, ImDrawFlags flags /* = 0 */, float thickness /* = 1.0f */);
 CIMGUI_API void        ImDrawList_PathArcTo(ImDrawList* self, ImVec2 center, float radius, float a_min, float a_max, int num_segments /* = 0 */);
-CIMGUI_API void        ImDrawList_PathArcToFast(ImDrawList* self, ImVec2 center, float radius, int a_min_of_12, int a_max_of_12);                                   // Use precomputed angles for a 12 steps circle
-CIMGUI_API void        ImDrawList_PathEllipticalArcTo(ImDrawList* self, ImVec2 center, float radius_x, float radius_y, float rot, float a_min, float a_max);        // Implied num_segments = 0
-CIMGUI_API void        ImDrawList_PathEllipticalArcToEx(ImDrawList* self, ImVec2 center, float radius_x, float radius_y, float rot, float a_min, float a_max, int num_segments /* = 0 */); // Ellipse
-CIMGUI_API void        ImDrawList_PathBezierCubicCurveTo(ImDrawList* self, ImVec2 p2, ImVec2 p3, ImVec2 p4, int num_segments /* = 0 */);                            // Cubic Bezier (4 control points)
-CIMGUI_API void        ImDrawList_PathBezierQuadraticCurveTo(ImDrawList* self, ImVec2 p2, ImVec2 p3, int num_segments /* = 0 */);                                   // Quadratic Bezier (3 control points)
+CIMGUI_API void        ImDrawList_PathArcToFast(ImDrawList* self, ImVec2 center, float radius, int a_min_of_12, int a_max_of_12);                                 // Use precomputed angles for a 12 steps circle
+CIMGUI_API void        ImDrawList_PathEllipticalArcTo(ImDrawList* self, ImVec2 center, ImVec2 radius, float rot, float a_min, float a_max);                       // Implied num_segments = 0
+CIMGUI_API void        ImDrawList_PathEllipticalArcToEx(ImDrawList* self, ImVec2 center, ImVec2 radius, float rot, float a_min, float a_max, int num_segments /* = 0 */); // Ellipse
+CIMGUI_API void        ImDrawList_PathBezierCubicCurveTo(ImDrawList* self, ImVec2 p2, ImVec2 p3, ImVec2 p4, int num_segments /* = 0 */);                          // Cubic Bezier (4 control points)
+CIMGUI_API void        ImDrawList_PathBezierQuadraticCurveTo(ImDrawList* self, ImVec2 p2, ImVec2 p3, int num_segments /* = 0 */);                                 // Quadratic Bezier (3 control points)
 CIMGUI_API void        ImDrawList_PathRect(ImDrawList* self, ImVec2 rect_min, ImVec2 rect_max, float rounding /* = 0.0f */, ImDrawFlags flags /* = 0 */);
 // Advanced
-CIMGUI_API void        ImDrawList_AddCallback(ImDrawList* self, ImDrawCallback callback, void* callback_data);                                                      // Your rendering function must check for 'UserCallback' in ImDrawCmd and call the function instead of rendering triangles.
-CIMGUI_API void        ImDrawList_AddDrawCmd(ImDrawList* self);                                                                                                     // This is useful if you need to forcefully create a new draw call (to allow for dependent rendering / blending). Otherwise primitives are merged into the same draw-call as much as possible
-CIMGUI_API ImDrawList* ImDrawList_CloneOutput(const ImDrawList* self);                                                                                              // Create a clone of the CmdBuffer/IdxBuffer/VtxBuffer.
+CIMGUI_API void        ImDrawList_AddCallback(ImDrawList* self, ImDrawCallback callback, void* callback_data);                                                    // Your rendering function must check for 'UserCallback' in ImDrawCmd and call the function instead of rendering triangles.
+CIMGUI_API void        ImDrawList_AddDrawCmd(ImDrawList* self);                                                                                                   // This is useful if you need to forcefully create a new draw call (to allow for dependent rendering / blending). Otherwise primitives are merged into the same draw-call as much as possible
+CIMGUI_API ImDrawList* ImDrawList_CloneOutput(const ImDrawList* self);                                                                                            // Create a clone of the CmdBuffer/IdxBuffer/VtxBuffer.
 // Advanced: Channels
 // - Use to split render into layers. By switching channels to can render out-of-order (e.g. submit FG primitives before BG primitives)
 // - Use to minimize draw calls (e.g. if going back-and-forth between multiple clipping rectangles, prefer to append into separate channels then merge at the end)
@@ -2997,12 +3019,12 @@ CIMGUI_API void        ImDrawList_ChannelsSetCurrent(ImDrawList* self, int n);
 // - All primitives needs to be reserved via PrimReserve() beforehand.
 CIMGUI_API void        ImDrawList_PrimReserve(ImDrawList* self, int idx_count, int vtx_count);
 CIMGUI_API void        ImDrawList_PrimUnreserve(ImDrawList* self, int idx_count, int vtx_count);
-CIMGUI_API void        ImDrawList_PrimRect(ImDrawList* self, ImVec2 a, ImVec2 b, ImU32 col);                                                                        // Axis aligned rectangle (composed of two triangles)
+CIMGUI_API void        ImDrawList_PrimRect(ImDrawList* self, ImVec2 a, ImVec2 b, ImU32 col);                                                                      // Axis aligned rectangle (composed of two triangles)
 CIMGUI_API void        ImDrawList_PrimRectUV(ImDrawList* self, ImVec2 a, ImVec2 b, ImVec2 uv_a, ImVec2 uv_b, ImU32 col);
 CIMGUI_API void        ImDrawList_PrimQuadUV(ImDrawList* self, ImVec2 a, ImVec2 b, ImVec2 c, ImVec2 d, ImVec2 uv_a, ImVec2 uv_b, ImVec2 uv_c, ImVec2 uv_d, ImU32 col);
 CIMGUI_API void        ImDrawList_PrimWriteVtx(ImDrawList* self, ImVec2 pos, ImVec2 uv, ImU32 col);
 CIMGUI_API void        ImDrawList_PrimWriteIdx(ImDrawList* self, ImDrawIdx idx);
-CIMGUI_API void        ImDrawList_PrimVtx(ImDrawList* self, ImVec2 pos, ImVec2 uv, ImU32 col);                                                                      // Write vertex with unique index
+CIMGUI_API void        ImDrawList_PrimVtx(ImDrawList* self, ImVec2 pos, ImVec2 uv, ImU32 col);                                                                    // Write vertex with unique index
 // [Internal helpers]
 CIMGUI_API void        ImDrawList__ResetForNewFrame(ImDrawList* self);
 CIMGUI_API void        ImDrawList__ClearFreeMemory(ImDrawList* self);
@@ -3328,34 +3350,31 @@ typedef struct ImGuiPlatformImeData_t
 // Please keep your copy of dear imgui up to date! Occasionally set '#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS' in imconfig.h to stay ahead.
 //-----------------------------------------------------------------------------
 
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
-CIMGUI_API ImGuiKey ImGui_GetKeyIndex(ImGuiKey key);  // map ImGuiKey_* values into legacy native key index. == io.KeyMap[key]
-#else
-CIMGUI_API ImGuiKey ImGui_GetKeyIndex(ImGuiKey key);
-#endif // #ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
-
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 // OBSOLETED in 1.90.0 (from September 2023)
-CIMGUI_API bool ImGui_BeginChildFrame(ImGuiID id, ImVec2 size);                                             // Implied window_flags = 0
-CIMGUI_API bool ImGui_BeginChildFrameEx(ImGuiID id, ImVec2 size, ImGuiWindowFlags window_flags /* = 0 */);
-CIMGUI_API void ImGui_EndChildFrame(void);
+CIMGUI_API bool     ImGui_BeginChildFrame(ImGuiID id, ImVec2 size);                                             // Implied window_flags = 0
+CIMGUI_API bool     ImGui_BeginChildFrameEx(ImGuiID id, ImVec2 size, ImGuiWindowFlags window_flags /* = 0 */);
+CIMGUI_API void     ImGui_EndChildFrame(void);
 //static inline bool BeginChild(const char* str_id, const ImVec2& size_arg, bool border, ImGuiWindowFlags window_flags){ return BeginChild(str_id, size_arg, border ? ImGuiChildFlags_Border : ImGuiChildFlags_None, window_flags); } // Unnecessary as true == ImGuiChildFlags_Border
 //static inline bool BeginChild(ImGuiID id, const ImVec2& size_arg, bool border, ImGuiWindowFlags window_flags)        { return BeginChild(id, size_arg, border ? ImGuiChildFlags_Border : ImGuiChildFlags_None, window_flags);     } // Unnecessary as true == ImGuiChildFlags_Border
-CIMGUI_API void ImGui_ShowStackToolWindow(bool* p_open /* = NULL */);
-CIMGUI_API bool ImGui_ListBoxObsolete(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count); // Implied height_in_items = -1
-CIMGUI_API bool ImGui_ListBoxObsoleteEx(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count, int height_in_items /* = -1 */);
-CIMGUI_API bool ImGui_ComboObsolete(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count); // Implied popup_max_height_in_items = -1
-CIMGUI_API bool ImGui_ComboObsoleteEx(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count, int popup_max_height_in_items /* = -1 */);
+CIMGUI_API void     ImGui_ShowStackToolWindow(bool* p_open /* = NULL */);
+CIMGUI_API bool     ImGui_ListBoxObsolete(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count); // Implied height_in_items = -1
+CIMGUI_API bool     ImGui_ListBoxObsoleteEx(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count, int height_in_items /* = -1 */);
+CIMGUI_API bool     ImGui_ComboObsolete(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count); // Implied popup_max_height_in_items = -1
+CIMGUI_API bool     ImGui_ComboObsoleteEx(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count, int popup_max_height_in_items /* = -1 */);
 // OBSOLETED in 1.89.7 (from June 2023)
-CIMGUI_API void ImGui_SetItemAllowOverlap(void);                                                            // Use SetNextItemAllowOverlap() before item.
+CIMGUI_API void     ImGui_SetItemAllowOverlap(void);                                                            // Use SetNextItemAllowOverlap() before item.
 // OBSOLETED in 1.89.4 (from March 2023)
-CIMGUI_API void ImGui_PushAllowKeyboardFocus(bool tab_stop);
-CIMGUI_API void ImGui_PopAllowKeyboardFocus(void);
+CIMGUI_API void     ImGui_PushAllowKeyboardFocus(bool tab_stop);
+CIMGUI_API void     ImGui_PopAllowKeyboardFocus(void);
 // OBSOLETED in 1.89 (from August 2022)
-CIMGUI_API bool ImGui_ImageButtonImTextureID(ImTextureID user_texture_id, ImVec2 size, ImVec2 uv0 /* = ImVec2(0, 0) */, ImVec2 uv1 /* = ImVec2(1, 1) */, int frame_padding /* = -1 */, ImVec4 bg_col /* = ImVec4(0, 0, 0, 0) */, ImVec4 tint_col /* = ImVec4(1, 1, 1, 1) */); // Use new ImageButton() signature (explicit item id, regular FramePadding)
+CIMGUI_API bool     ImGui_ImageButtonImTextureID(ImTextureID user_texture_id, ImVec2 size, ImVec2 uv0 /* = ImVec2(0, 0) */, ImVec2 uv1 /* = ImVec2(1, 1) */, int frame_padding /* = -1 */, ImVec4 bg_col /* = ImVec4(0, 0, 0, 0) */, ImVec4 tint_col /* = ImVec4(1, 1, 1, 1) */); // Use new ImageButton() signature (explicit item id, regular FramePadding)
 // OBSOLETED in 1.88 (from May 2022)
-CIMGUI_API void ImGui_CaptureKeyboardFromApp(bool want_capture_keyboard /* = true */);                      // Renamed as name was misleading + removed default value.
-CIMGUI_API void ImGui_CaptureMouseFromApp(bool want_capture_mouse /* = true */);                            // Renamed as name was misleading + removed default value.
+CIMGUI_API void     ImGui_CaptureKeyboardFromApp(bool want_capture_keyboard /* = true */);                      // Renamed as name was misleading + removed default value.
+CIMGUI_API void     ImGui_CaptureMouseFromApp(bool want_capture_mouse /* = true */);                            // Renamed as name was misleading + removed default value.
+// OBSOLETED in 1.87 (from February 2022)
+CIMGUI_API ImGuiKey ImGui_GetKeyIndex(ImGuiKey key);                                                            // Map ImGuiKey_* values into legacy native key index. == io.KeyMap[key]. When using a 1.87+ backend using io.AddKeyEvent(), calling GetKeyIndex() with ANY ImGuiKey_XXXX values will return the same value!
+//static inline ImGuiKey GetKeyIndex(ImGuiKey key)                                      { IM_ASSERT(key >= ImGuiKey_NamedKey_BEGIN && key < ImGuiKey_NamedKey_END); return key; }
 
 // Some of the older obsolete names along with their replacement (commented out so they are not reported in IDE)
 //-- OBSOLETED in 1.86 (from November 2021)
