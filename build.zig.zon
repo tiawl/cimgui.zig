@@ -1,20 +1,20 @@
 .{
-  .name = "cimgui.zig",
-  .version = "1.90.4",
-  .minimum_zig_version = "0.12.0",
-  .paths = .{
-    "build.zig",
-    "build.zig.zon",
-    "cimgui",
-  },
-  .dependencies = .{
-    .toolbox = .{
-      .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.8.0.tar.gz",
-      .hash = "12200af0f781a5043d325b5a1cd5cb036851fc0b28e3c6e9fba5e4ba7eb68c07406a",
+    .name = "glfw.zig",
+    .version = "1.0.0",
+    .minimum_zig_version = "0.12.0",
+    .paths = .{
+        "cimgui",
+        "build.zig.zon",
+        "build.zig",
     },
-    .glfw = .{
-      .url = "https://github.com/tiawl/glfw.zig/archive/refs/tags/3.4.tar.gz",
-      .hash = "12207da00caa15c46dc7ef4ca3a5c982ccfe00759c70a17d4c179fd4b91f736d4650",
+    .dependencies = .{
+        .glfw = .{
+            .url = "https://github.com/tiawl/glfw.zig/archive/refs/tags/3.4.tar.gz",
+            .hash = "12207da00caa15c46dc7ef4ca3a5c982ccfe00759c70a17d4c179fd4b91f736d4650",
+        },
+        .toolbox = .{
+            .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.8.0.tar.gz",
+            .hash = "12200af0f781a5043d325b5a1cd5cb036851fc0b28e3c6e9fba5e4ba7eb68c07406a",
+        },
     },
-  },
 }
