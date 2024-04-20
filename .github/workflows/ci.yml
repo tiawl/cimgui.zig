@@ -1,0 +1,20 @@
+name: ci
+
+on:
+  pull_request:
+    branches:
+      - trunk
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        repo: [spaceporn]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: tiawl/spaceporn-dep-action-ci@v1
+      with:
+        user: "${{ matrix.repo }}"
+        test_build: 'true'
+        test_update: 'false'
+        test_fetch: 'false'

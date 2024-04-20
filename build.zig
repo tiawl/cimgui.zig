@@ -1,6 +1,5 @@
 const std = @import ("std");
 const toolbox = @import ("toolbox");
-const pkg = .{ .name = "cimgui.zig", .version = "1.90.4", };
 
 const Paths = struct
 {
@@ -8,7 +7,8 @@ const Paths = struct
   backends: [] const u8 = undefined,
 };
 
-fn update (builder: *std.Build, path: *const Paths) !void
+fn update (builder: *std.Build, path: *const Paths,
+  dependencies: *const toolbox.Dependencies) !void
 {
   std.fs.deleteTreeAbsolute (path.cimgui) catch |err|
   {
@@ -19,8 +19,7 @@ fn update (builder: *std.Build, path: *const Paths) !void
     }
   };
 
-  try toolbox.clone (builder, "https://github.com/ocornut/imgui.git",
-    "v" ++ pkg.version, path.cimgui);
+  try dependencies.clone (builder, "imgui", path.cimgui);
 
   var cimgui_dir = try std.fs.openDirAbsolute (path.cimgui,
     .{ .iterate = true, });
@@ -97,8 +96,30 @@ pub fn build (builder: *std.Build) !void
   path.backends = try std.fs.path.join (builder.allocator,
     &.{ path.cimgui, "backends", });
 
+  const fetch_option = builder.option (bool, "fetch",
+    "Update .versions folder and build.zig.zon then stop execution")
+      orelse false;
+
+  var dependencies = try toolbox.Dependencies.init (builder,
+  .{
+     .toolbox = .{
+       .name = "tiawl/toolbox",
+       .api = toolbox.Repository.API.github,
+     },
+     .glfw = .{
+       .name = "tiawl/glfw.zig",
+       .api = toolbox.Repository.API.github,
+     },
+   }, .{
+     .imgui = .{
+       .name = "ocornut/imgui",
+       .api = toolbox.Repository.API.github,
+     },
+   });
+
+  if (fetch_option) try dependencies.fetch (builder, "glfw.zig");
   if (builder.option (bool, "update", "Update binding") orelse false)
-    try update (builder, &path);
+    try update (builder, &path, &dependencies);
 
   const lib = builder.addStaticLibrary (.{
     .name = "cimgui",
