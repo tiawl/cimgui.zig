@@ -13,8 +13,8 @@
             .hash = "12207da00caa15c46dc7ef4ca3a5c982ccfe00759c70a17d4c179fd4b91f736d4650",
         },
         .toolbox = .{
-            .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.8.0.tar.gz",
-            .hash = "12200af0f781a5043d325b5a1cd5cb036851fc0b28e3c6e9fba5e4ba7eb68c07406a",
+            .url = "https://github.com/tiawl/toolbox/archive/171eeafdfbd30be64c33c96ac60e54d8c5800f8d.tar.gz",
+            .hash = "122079b3521afcfde887d4e076be92421995b5a8bee1611bdbf1019826f37682f82b",
         },
     },
 }

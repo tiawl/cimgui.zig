@@ -83,6 +83,8 @@ fn update (builder: *std.Build, path: *const Paths,
       else => {},
     }
   }
+
+  try toolbox.clean (builder, &.{ "cimgui", }, &.{});
 }
 
 pub fn build (builder: *std.Build) !void
