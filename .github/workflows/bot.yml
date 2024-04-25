@@ -15,3 +15,5 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: tiawl/spaceporn-dep-action-bot@v1
+      with:
+        token: "${{ github.token }}"
