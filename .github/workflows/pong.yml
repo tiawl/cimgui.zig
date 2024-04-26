@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: tiawl/spaceporn-dep-action-cd-pong@v1
-      if: contains(fromJSON('["toolbox","glfw.zig"]'), github.event.client_payload.dependency)
+      if: contains(fromJSON('["toolbox","glfw.zig","spaceporn-dep-action-bot","spaceporn-dep-action-ci","spaceporn-dep-action-cd-ping", "spaceporn-dep-action-cd-pong"]'), github.event.client_payload.dependency)
       with:
         dependency: "${{ github.event.client_payload.dependency }}"
         tag: "${{ github.event.client_payload.tag }}"
