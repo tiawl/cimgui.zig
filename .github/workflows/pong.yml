@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        token: "${{ secrets.PAT }}"
     - uses: tiawl/spaceporn-dep-action-cd-pong@v1
       if: contains(fromJSON('["toolbox","glfw.zig","spaceporn-dep-action-bot","spaceporn-dep-action-ci","spaceporn-dep-action-cd-ping", "spaceporn-dep-action-cd-pong"]'), github.event.client_payload.dependency)
       with:
