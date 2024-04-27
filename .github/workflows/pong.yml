@@ -19,4 +19,4 @@ jobs:
         dependency: "${{ github.event.client_payload.dependency }}"
         tag: "${{ github.event.client_payload.tag }}"
         hash: "${{ github.event.client_payload.hash }}"
-        token: "${{ github.token }}"
+        token: "${{ secrets.PAT }}"
