@@ -10,7 +10,7 @@
     .dependencies = .{
         .glfw = .{
             .url = "https://github.com/tiawl/glfw.zig/archive/refs/tags/3.4.tar.gz",
-            .hash = "12207da00caa15c46dc7ef4ca3a5c982ccfe00759c70a17d4c179fd4b91f736d4650",
+            .hash = "12201caea32d001081510bbc7802583dea20df5f1842cb803ddff38a0985d9355af7",
         },
         .toolbox = .{
             .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.9.2.tar.gz",
