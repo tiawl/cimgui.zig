@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: tiawl/spaceporn-dep-action-ci@v1
+    - uses: tiawl/spaceporn-dep-action-ci@v1.0.0
       with:
         repository: "${{ github.repository }}"
         sha: "${{ github.sha }}"
