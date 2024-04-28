@@ -15,7 +15,6 @@ jobs:
           - spaceporn
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
     - uses: tiawl/spaceporn-dep-action-cd-ping@v1
       with:
         repository_name: "${{ github.event.repository.name }}"
