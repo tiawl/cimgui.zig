@@ -98,11 +98,7 @@ pub fn build (builder: *std.Build) !void
   path.backends = try std.fs.path.join (builder.allocator,
     &.{ path.cimgui, "backends", });
 
-  const fetch_option = builder.option (bool, "fetch",
-    "Update .versions folder and build.zig.zon then stop execution")
-      orelse false;
-
-  var dependencies = try toolbox.Dependencies.init (builder,
+  const dependencies = try toolbox.Dependencies.init (builder, "cimgui.zig",
   .{
      .toolbox = .{
        .name = "tiawl/toolbox",
@@ -119,7 +115,6 @@ pub fn build (builder: *std.Build) !void
      },
    });
 
-  if (fetch_option) try dependencies.fetch (builder, "glfw.zig");
   if (builder.option (bool, "update", "Update binding") orelse false)
     try update (builder, &path, &dependencies);
 
