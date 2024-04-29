@@ -13,7 +13,7 @@
             .hash = "12207da00caa15c46dc7ef4ca3a5c982ccfe00759c70a17d4c179fd4b91f736d4650",
         },
         .toolbox = .{
-            .url = "https://github.com/tiawl/toolbox/archive/d6de033cc9f04971a87a2d5202be0e107a7b1f0b.tar.gz",
+            .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.9.3.tar.gz",
             .hash = "1220fee4bf023b99bf773d4682549b2d6436262dd84378737ed64e5e084b8d698d7f",
         },
     },
