@@ -3,14 +3,33 @@ const toolbox = @import ("toolbox");
 
 const Paths = struct
 {
-  cimgui: [] const u8 = undefined,
-  backends: [] const u8 = undefined,
+  // prefixed attributes
+  __cimgui: [] const u8 = undefined,
+  __backends: [] const u8 = undefined,
+
+  // mandatory getters
+  pub fn getCimgui (self: @This ()) [] const u8 { return self.__cimgui; }
+  pub fn getBackends (self: @This ()) [] const u8 { return self.__backends; }
+
+  // mandatory init
+  pub fn init (builder: *std.Build) !@This ()
+  {
+    var self = @This () {
+      .__cimgui = try builder.build_root.join (builder.allocator,
+        &.{ "cimgui", }),
+    };
+
+    self.__backends = try std.fs.path.join (builder.allocator,
+      &.{ self.getCimgui (), "backends", });
+
+    return self;
+  }
 };
 
 fn update (builder: *std.Build, path: *const Paths,
   dependencies: *const toolbox.Dependencies) !void
 {
-  std.fs.deleteTreeAbsolute (path.cimgui) catch |err|
+  std.fs.deleteTreeAbsolute (path.getCimgui ()) catch |err|
   {
     switch (err)
     {
@@ -19,9 +38,9 @@ fn update (builder: *std.Build, path: *const Paths,
     }
   };
 
-  try dependencies.clone (builder, "imgui", path.cimgui);
+  try dependencies.clone (builder, "imgui", path.getCimgui ());
 
-  var cimgui_dir = try std.fs.openDirAbsolute (path.cimgui,
+  var cimgui_dir = try std.fs.openDirAbsolute (path.getCimgui (),
     .{ .iterate = true, });
   defer cimgui_dir.close ();
 
@@ -31,29 +50,29 @@ fn update (builder: *std.Build, path: *const Paths,
     if (!std.mem.eql (u8, entry.name, "backends") and
       !std.mem.startsWith (u8, entry.name, "im"))
         try std.fs.deleteTreeAbsolute (try std.fs.path.join (builder.allocator,
-          &.{ path.cimgui, entry.name, }));
+          &.{ path.getCimgui (), entry.name, }));
   }
 
-  var backends_dir = try std.fs.openDirAbsolute (path.backends,
+  var backends_dir = try std.fs.openDirAbsolute (path.getBackends (),
     .{ .iterate = true, });
   defer backends_dir.close ();
 
   const binding_py = try builder.build_root.join (builder.allocator,
     &.{ "dear_bindings", "dear_bindings.py", });
   const imconfig_h = try std.fs.path.join (builder.allocator,
-    &.{ path.cimgui, "imconfig.h", });
+    &.{ path.getCimgui (), "imconfig.h", });
   const imgui_h = try std.fs.path.join (builder.allocator,
-    &.{ path.cimgui, "imgui.h", });
+    &.{ path.getCimgui (), "imgui.h", });
   const glfw_backend_h = try std.fs.path.join (builder.allocator,
-    &.{ path.backends, "imgui_impl_glfw.h", });
+    &.{ path.getBackends (), "imgui_impl_glfw.h", });
   const vulkan_backend_h = try std.fs.path.join (builder.allocator, &.{
-    path.backends, "imgui_impl_vulkan.h", });
+    path.getBackends (), "imgui_impl_vulkan.h", });
   const imgui_out = try std.fs.path.join (builder.allocator,
-    &.{ path.cimgui, "cimgui", });
+    &.{ path.getCimgui (), "cimgui", });
   const glfw_out = try std.fs.path.join (builder.allocator,
-    &.{ path.backends, "cimgui_impl_glfw", });
+    &.{ path.getBackends (), "cimgui_impl_glfw", });
   const vulkan_out = try std.fs.path.join (builder.allocator,
-    &.{ path.backends, "cimgui_impl_vulkan", });
+    &.{ path.getBackends (), "cimgui_impl_vulkan", });
   try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py,
     "--output", imgui_out, imgui_h, }, });
   try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py,
@@ -76,10 +95,10 @@ fn update (builder: *std.Build, path: *const Paths,
               (!toolbox.isCppSource (entry.name) and
               !toolbox.isCHeader (entry.name)))
                 try std.fs.deleteFileAbsolute (try std.fs.path.join (
-                  builder.allocator, &.{ path.backends, entry.name, }));
+                  builder.allocator, &.{ path.getBackends (), entry.name, }));
       },
       .directory => try std.fs.deleteTreeAbsolute (try std.fs.path.join (
-        builder.allocator, &.{ path.backends, entry.name, })),
+        builder.allocator, &.{ path.getBackends (), entry.name, })),
       else => {},
     }
   }
@@ -92,11 +111,7 @@ pub fn build (builder: *std.Build) !void
   const target = builder.standardTargetOptions (.{});
   const optimize = builder.standardOptimizeOption (.{});
 
-  var path: Paths = .{};
-  path.cimgui = try builder.build_root.join (builder.allocator,
-    &.{ "cimgui", });
-  path.backends = try std.fs.path.join (builder.allocator,
-    &.{ path.cimgui, "backends", });
+  const path = try Paths.init (builder);
 
   const dependencies = try toolbox.Dependencies.init (builder, "cimgui.zig",
   .{
@@ -139,10 +154,10 @@ pub fn build (builder: *std.Build) !void
       entry.kind == .directory) toolbox.addInclude (lib, entry.path);
   }
 
-  var cimgui_dir = try std.fs.openDirAbsolute (path.cimgui,
+  var cimgui_dir = try std.fs.openDirAbsolute (path.getCimgui (),
     .{ .iterate = true, });
   defer cimgui_dir.close ();
-  var backends_dir = try std.fs.openDirAbsolute (path.backends,
+  var backends_dir = try std.fs.openDirAbsolute (path.getBackends (),
     .{ .iterate = true, });
   defer backends_dir.close ();
 
@@ -154,7 +169,7 @@ pub fn build (builder: *std.Build) !void
   lib.linkLibrary (glfw_dep.artifact ("glfw"));
   lib.installLibraryHeaders (glfw_dep.artifact ("glfw"));
 
-  toolbox.addHeader (lib, path.cimgui, ".", &.{ ".h", });
+  toolbox.addHeader (lib, path.getCimgui (), ".", &.{ ".h", });
 
   lib.linkLibCpp ();
 
@@ -164,14 +179,14 @@ pub fn build (builder: *std.Build) !void
     if ((std.mem.startsWith (u8, entry.name, "imgui") or
       std.mem.startsWith (u8, entry.name, "cimgui")) and
         toolbox.isCppSource (entry.name) and entry.kind == .file)
-          try toolbox.addSource (lib, path.cimgui, entry.name, &flags);
+          try toolbox.addSource (lib, path.getCimgui (), entry.name, &flags);
   }
 
   it = backends_dir.iterate ();
   while (try it.next ()) |*entry|
   {
     if (toolbox.isCppSource (entry.name))
-      try toolbox.addSource (lib, path.backends, entry.name, &flags);
+      try toolbox.addSource (lib, path.getBackends (), entry.name, &flags);
   }
 
   lib.root_module.addCMacro ("GLFW_INCLUDE_NONE", "1");
