@@ -117,16 +117,16 @@ pub fn build (builder: *std.Build) !void
   .{
      .toolbox = .{
        .name = "tiawl/toolbox",
-       .api = toolbox.Repository.API.github,
+       .host = toolbox.Repository.Host.github,
      },
      .glfw = .{
        .name = "tiawl/glfw.zig",
-       .api = toolbox.Repository.API.github,
+       .host = toolbox.Repository.Host.github,
      },
    }, .{
      .imgui = .{
        .name = "ocornut/imgui",
-       .api = toolbox.Repository.API.github,
+       .host = toolbox.Repository.Host.github,
      },
    });
 
