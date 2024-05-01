@@ -43,3 +43,7 @@ These additional options have been implemented for maintainability tasks:
   -Dfetch   Update .versions folder and build.zig.zon then stop execution
   -Dupdate  Update binding
 ```
+
+## License
+
+The unprotected parts of this repository are under MIT License. For everything else, see with their respective owners.
