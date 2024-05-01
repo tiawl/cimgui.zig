@@ -10,7 +10,7 @@ The intention under this fork is to package [ocornut/imgui](https://github.com/o
 * [dearimgui/dear_bindings](https://github.com/dearimgui/dear_bindings) generates the C binding,
 * A cron runs every day to check [ocornut/imgui](https://github.com/ocornut/imgui) and [dearimgui/dear_bindings](https://github.com/dearimgui/dear_bindings). Then it updates this repository if a new release is available on one of them.
 
-You can find the repositories' versions used here:
+Here the repositories' version used by this fork:
 * [ocornut/imgui](https://github.com/tiawl/cimgui.zig/blob/trunk/.versions/imgui)
 
 ## Backends
