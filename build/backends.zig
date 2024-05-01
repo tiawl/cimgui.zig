@@ -26,6 +26,8 @@ pub fn rendererOption (builder: *std.Build, lib: *std.Build.Step.Compile,
       .Vulkan => {
         try flags.append ("-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES");
         try toolbox.addSource (lib, path.getBackends (),
+          "imgui_impl_vulkan.cpp", flags.slice ());
+        try toolbox.addSource (lib, path.getBackends (),
           "cimgui_impl_vulkan.cpp", flags.slice ());
       },
     }
@@ -59,6 +61,8 @@ pub fn platformOption (builder: *std.Build, lib: *std.Build.Step.Compile,
         lib.linkLibrary (glfw_dep.artifact ("glfw"));
         lib.installLibraryHeaders (glfw_dep.artifact ("glfw"));
 
+        try toolbox.addSource (lib, path.getBackends (),
+          "imgui_impl_glfw.cpp", flags.slice ());
         try toolbox.addSource (lib, path.getBackends (),
           "cimgui_impl_glfw.cpp", flags.slice ());
 
