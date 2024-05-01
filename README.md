@@ -15,11 +15,11 @@ You can find the repositories' versions used here:
 
 ## Backends
 
-Currently only @glfw and Vulkan backends are supported. There will be no other backends **if you are not are ready to help me maintaining backends you want to use**. Alone I can maintain backends I am interested to work with. But not the backends nobody uses. If you want to see a new backend available on this repository and you are ready for this, open an issue, I will be happy to talk with you and how we could manage this together.
+Currently only @glfw and Vulkan backends are supported. There will be no other backends **if you are not are ready to maintain backends you want to use**. The team is not interested to maintain backends nobody uses. If you want to see a new backend available on this repository and you are ready for this, open an issue, we will be happy to talk with you and how we could manage this together.
 
 ## How to use it
 
-The maintainers are going to udate this section later
+The maintainers will update this section later
 
 ## CICD reminder
 
