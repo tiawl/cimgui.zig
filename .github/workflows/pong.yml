@@ -5,10 +5,10 @@ on:
     types:
       - ping-toolbox
       - ping-glfw.zig
-      - ping-spaceporn-dep-action-bot
-      - ping-spaceporn-dep-action-ci
-      - ping-spaceporn-dep-action-cd-ping
-      - pingspaceporn-dep-action-cd-pong
+      - ping-spaceporn-action-bot
+      - ping-spaceporn-action-ci
+      - ping-spaceporn-action-cd-ping
+      - ping-spaceporn-action-cd-pong
 
 jobs:
   pong:
@@ -17,7 +17,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: tiawl/spaceporn-dep-action-cd-pong@v1
+    - uses: tiawl/spaceporn-action-cd-pong@v1.0.0
       with:
         repository: "${{ github.repository }}"
         dependency: "${{ github.event.client_payload.dependency }}"
