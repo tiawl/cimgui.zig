@@ -48,42 +48,37 @@ fn update (builder: *std.Build, path: *const Paths,
     &.{ path.getCimgui (), "imconfig.h", });
   const imgui_h = try std.fs.path.join (builder.allocator,
     &.{ path.getCimgui (), "imgui.h", });
-  const glfw_backend_h = try std.fs.path.join (builder.allocator,
-    &.{ path.getBackends (), "imgui_impl_glfw.h", });
-  const vulkan_backend_h = try std.fs.path.join (builder.allocator, &.{
-    path.getBackends (), "imgui_impl_vulkan.h", });
   const imgui_out = try std.fs.path.join (builder.allocator,
     &.{ path.getCimgui (), "cimgui", });
-  const glfw_out = try std.fs.path.join (builder.allocator,
-    &.{ path.getBackends (), "cimgui_impl_glfw", });
-  const vulkan_out = try std.fs.path.join (builder.allocator,
-    &.{ path.getBackends (), "cimgui_impl_vulkan", });
   try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py,
     "--output", imgui_out, imgui_h, }, });
-  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py,
-    "--backend", "--imconfig-path", imconfig_h,
-    "--output", glfw_out, glfw_backend_h, }, });
-  try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py,
-    "--backend", "--imconfig-path", imconfig_h,
-    "--output", vulkan_out, vulkan_backend_h, }, });
 
+  var backend_h: [] const u8 = undefined;
+  var backend_cpp: [] const u8 = undefined;
+  var out: [] const u8 = undefined;
   it = backends_dir.iterate ();
   while (try it.next ()) |*entry|
   {
     switch (entry.kind)
     {
       .file => {
-        if ((!std.mem.startsWith (u8, entry.name, "imgui_impl_") and
-          !std.mem.startsWith (u8, entry.name, "cimgui_impl_")) or
-            (std.mem.indexOf (u8, entry.name, "vulkan") == null and
-            std.mem.indexOf (u8, entry.name, "glfw") == null) or
-              (!toolbox.isCppSource (entry.name) and
-              !toolbox.isCHeader (entry.name)))
-                try std.fs.deleteFileAbsolute (try std.fs.path.join (
-                  builder.allocator, &.{ path.getBackends (), entry.name, }));
+        const stem = std.fs.path.stem (entry.name);
+        backend_cpp = try std.fs.path.join (builder.allocator,
+          &.{ path.getBackends (), try std.fmt.allocPrint (builder.allocator,
+              "{s}.cpp", .{ stem, }), });
+        if (toolbox.isCHeader (entry.name) and toolbox.exists (backend_cpp)
+          and std.mem.startsWith (u8, entry.name, "imgui"))
+        {
+          backend_h = try std.fs.path.join (builder.allocator,
+            &.{ path.getBackends (), entry.name, });
+          out = try std.fs.path.join (builder.allocator,
+            &.{ path.getBackends (), try std.fmt.allocPrint (
+                builder.allocator, "c{s}", .{ stem, }), });
+          try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3",
+            binding_py, "--backend", "--imconfig-path", imconfig_h,
+            "--output", out, backend_h, }, });
+        }
       },
-      .directory => try std.fs.deleteTreeAbsolute (try std.fs.path.join (
-        builder.allocator, &.{ path.getBackends (), entry.name, })),
       else => {},
     }
   }
