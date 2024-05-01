@@ -40,8 +40,14 @@ This repository is automatically updated when a new release is available from th
 
 These additional options have been implemented for maintainability tasks:
 ```
-  -Dfetch   Update .versions folder and build.zig.zon then stop execution
-  -Dupdate  Update binding
+  -Dfetch     Update .versions folder and build.zig.zon then stop execution
+  -Dupdate    Update binding
+  -Drenderer  Specify the renderer backend
+                Supported Values:
+                  Vulkan
+  -Dplatform  Specify the platform backend
+                Supported Values:
+                  GLFW
 ```
 
 ## License
