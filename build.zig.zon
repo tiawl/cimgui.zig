@@ -6,6 +6,7 @@
         "cimgui",
         "build.zig.zon",
         "build.zig",
+        "build",
     },
     .dependencies = .{
         .glfw = .{
