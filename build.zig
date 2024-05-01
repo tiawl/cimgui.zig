@@ -94,6 +94,7 @@ pub fn build (builder: *std.Build) !void
   const path = try Paths.init (builder);
 
   const dependencies = try toolbox.Dependencies.init (builder, "cimgui.zig",
+  &.{ "build", "cimgui", },
   .{
      .toolbox = .{
        .name = "tiawl/toolbox",
