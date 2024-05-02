@@ -20,7 +20,6 @@ jobs:
       with:
         version: ${{ env.zig_version }}
     - name: Test building examples
-      shell: ${{ env.shell }}
       run:
         zig build --build-file ./examples/build.zig
   build:
