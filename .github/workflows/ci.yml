@@ -22,7 +22,7 @@ jobs:
     - name: Test building examples
       shell: bash
       run:
-        zig build --build-file "${PWD:-"$(pwd)"}/examples/build.zig"
+        zig build --build-file "${GITHUB_WORKSPACE}/examples/build.zig"
   build:
     strategy:
       matrix:
