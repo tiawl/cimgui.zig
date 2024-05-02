@@ -3,10 +3,10 @@
     .version = "1.0.0",
     .minimum_zig_version = "0.12.0",
     .paths = .{
-        "cimgui",
-        "build.zig.zon",
         "build.zig",
+        "build.zig.zon",
         "build",
+        "cimgui",
     },
     .dependencies = .{
         .glfw = .{
