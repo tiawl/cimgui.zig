@@ -21,7 +21,7 @@ jobs:
         version: ${{ env.zig_version }}
     - name: Test building examples
       run:
-        zig build --build-file ./examples/build.zig
+        zig build --build-file "${PWD:-"$(pwd)"}/examples/build.zig"
   build:
     strategy:
       matrix:
