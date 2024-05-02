@@ -20,7 +20,7 @@ jobs:
           - '-Dturbo'
     runs-on: "${{ matrix.os }}"
     steps:
-    - uses: tiawl/spaceporn-action-ci@v1.0.0
+    - uses: tiawl/spaceporn-action-ci@v1.0.1
       with:
         repository: "${{ github.repository }}"
         additional_zig_opts: "${{ matrix.zig_opts }}"
