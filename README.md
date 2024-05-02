@@ -20,7 +20,7 @@ The goal of this repository is not to provide a [Zig][2] binding for [ocornut/im
 
 Currently only [GLFW][4] and [Vulkan][5] backends are supported. There will be no other backends **if you are not ready to maintain backends you want to use**. The team is not interested to maintain backends nobody uses. If you want to see a new backend available on this repository and you are ready for this, open an issue: we will be happy to talk with you and how we could manage this together.
 
-## Dependencies' versions
+## Dependencies
 
 The [Zig][2] part of this package is relying on the latest [Zig][2] release (0.12.0) and will only be updated for the next one (so for the 0.13.0).
 
