@@ -6,6 +6,23 @@ on:
       - trunk
 
 jobs:
+  examples:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    runs-on: "${{ matrix.os }}"
+    steps:
+    - uses: tiawl/spaceporn-action-env@v1.0.0
+    - uses: actions/checkout@v4
+    - uses: goto-bus-stop/setup-zig@v2.2.0
+      with:
+        version: ${{ env.zig_version }}
+    - name: Test building examples
+      shell: bash
+      run:
+        zig build --build-file "${GITHUB_WORKSPACE}/examples/build.zig"
   build:
     strategy:
       matrix:

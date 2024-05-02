@@ -1,0 +1,10 @@
+.{
+    .name = "examples",
+    .version = "1.0.0",
+    .dependencies = .{
+        .cimgui = .{
+            .path = "..",
+        },
+    },
+    .paths = .{ "", },
+}

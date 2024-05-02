@@ -3,3 +3,4 @@ Session.vim
 *.json
 zig-cache/
 zig-out/
+imgui.ini
