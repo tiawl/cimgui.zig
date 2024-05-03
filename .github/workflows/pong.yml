@@ -3,12 +3,12 @@ name: cd pong
 on:
   repository_dispatch:
     types:
-      - ping-toolbox
-      - ping-glfw.zig
-      - ping-spaceporn-action-bot
-      - ping-spaceporn-action-ci
-      - ping-spaceporn-action-cd-ping
-      - ping-spaceporn-action-cd-pong
+      - ping-from-toolbox
+      - ping-from-glfw.zig
+      - ping-from-spaceporn-action-bot
+      - ping-from-spaceporn-action-ci
+      - ping-from-spaceporn-action-cd-ping
+      - ping-from-spaceporn-action-cd-pong
 
 jobs:
   pong:
@@ -17,10 +17,10 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: tiawl/spaceporn-action-cd-pong@v1.0.0
+    - uses: tiawl/spaceporn-action-cd-pong@v1.0.1
       with:
-        repository: "${{ github.repository }}"
-        dependency: "${{ github.event.client_payload.dependency }}"
+        to: "${{ github.repository }}"
+        from: "${{ github.event.client_payload.from }}"
         tag: "${{ github.event.client_payload.tag }}"
         hash: "${{ github.event.client_payload.hash }}"
         token: "${{ secrets.PAT }}"
