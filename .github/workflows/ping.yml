@@ -15,9 +15,9 @@ jobs:
           - spaceporn
     runs-on: ubuntu-latest
     steps:
-    - uses: tiawl/spaceporn-action-cd-ping@v1.0.0
+    - uses: tiawl/spaceporn-action-cd-ping@v1.0.1
       with:
-        repository_name: "${{ github.event.repository.name }}"
-        user: "${{ matrix.repo }}"
+        from: "${{ github.event.repository.name }}"
+        to: "${{ matrix.repo }}"
         tag: "${{ github.ref_name }}"
         token: "${{ secrets.PAT }}"
