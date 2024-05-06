@@ -14,14 +14,17 @@ const platformOption = backends.platformOption;
 fn update (builder: *std.Build, path: *const Paths,
   dependencies: *const toolbox.Dependencies) !void
 {
-  std.fs.deleteTreeAbsolute (path.getCimgui ()) catch |err|
+  for ([_][] const u8 { path.getCimgui (), path.getTmp (), }) |clone_path|
   {
-    switch (err)
+    std.fs.deleteTreeAbsolute (clone_path) catch |err|
     {
-      error.FileNotFound => {},
-      else => return err,
-    }
-  };
+      switch (err)
+      {
+        error.FileNotFound => {},
+        else => return err,
+      }
+    };
+  }
 
   try dependencies.clone (builder, "imgui", path.getCimgui ());
 
@@ -42,8 +45,10 @@ fn update (builder: *std.Build, path: *const Paths,
     .{ .iterate = true, });
   defer backends_dir.close ();
 
-  const binding_py = try builder.build_root.join (builder.allocator,
-    &.{ "dear_bindings", "dear_bindings.py", });
+  try dependencies.clone (builder, "cimgui", path.getTmp ());
+
+  const binding_py = try std.fs.path.join (builder.allocator,
+    &.{ path.getTmp (), "dear_bindings.py", });
   const imconfig_h = try std.fs.path.join (builder.allocator,
     &.{ path.getCimgui (), "imconfig.h", });
   const imgui_h = try std.fs.path.join (builder.allocator,
@@ -83,6 +88,7 @@ fn update (builder: *std.Build, path: *const Paths,
     }
   }
 
+  try std.fs.deleteTreeAbsolute (path.getTmp ());
   try toolbox.clean (builder, &.{ "cimgui", }, &.{});
 }
 
@@ -99,15 +105,23 @@ pub fn build (builder: *std.Build) !void
      .toolbox = .{
        .name = "tiawl/toolbox",
        .host = toolbox.Repository.Host.github,
+       .ref = toolbox.Repository.Reference.tag,
      },
      .glfw = .{
        .name = "tiawl/glfw.zig",
        .host = toolbox.Repository.Host.github,
+       .ref = toolbox.Repository.Reference.tag,
      },
    }, .{
      .imgui = .{
        .name = "ocornut/imgui",
        .host = toolbox.Repository.Host.github,
+       .ref = toolbox.Repository.Reference.tag,
+     },
+     .cimgui = .{
+       .name = "dearimgui/dear_bindings",
+       .host = toolbox.Repository.Host.github,
+       .ref = toolbox.Repository.Reference.commit,
      },
    });
 
