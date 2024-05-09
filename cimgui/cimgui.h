@@ -2,7 +2,7 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-// dear imgui, v1.90.5
+// dear imgui, v1.90.6 WIP
 // (headers)
 
 // Help:
@@ -14,7 +14,7 @@
 // - FAQ ........................ https://dearimgui.com/faq (in repository as docs/FAQ.md)
 // - Homepage ................... https://github.com/ocornut/imgui
 // - Releases & changelog ....... https://github.com/ocornut/imgui/releases
-// - Gallery .................... https://github.com/ocornut/imgui/issues/6897 (please post your screenshots/video there!)
+// - Gallery .................... https://github.com/ocornut/imgui/issues/7503 (please post your screenshots/video there!)
 // - Wiki ....................... https://github.com/ocornut/imgui/wiki (lots of good stuff there)
 //   - Getting Started            https://github.com/ocornut/imgui/wiki/Getting-Started (how to integrate in an existing app by adding ~25 lines of code)
 //   - Third-party Extensions     https://github.com/ocornut/imgui/wiki/Useful-Extensions (ImPlot & many more)
@@ -31,8 +31,8 @@
 
 // Library Version
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if IMGUI_VERSION_NUM >= 12345')
-#define IMGUI_VERSION       "1.90.5"
-#define IMGUI_VERSION_NUM   19050
+#define IMGUI_VERSION       "1.90.6"
+#define IMGUI_VERSION_NUM   19060
 #define IMGUI_HAS_TABLE
 
 /*
@@ -133,6 +133,7 @@ extern "C"
 #pragma clang diagnostic ignored "-Wfloat-equal"                     // warning: comparing floating point with == or != is unsafe
 #pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #pragma clang diagnostic ignored "-Wreserved-identifier"             // warning: identifier '_Xxx' is reserved because it starts with '_' followed by a capital letter
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"             // warning: 'xxx' is an unsafe pointer used for buffer access
 #else
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
@@ -155,9 +156,9 @@ typedef struct ImVector_ImDrawCmd_t ImVector_ImDrawCmd;
 typedef struct ImVector_ImDrawIdx_t ImVector_ImDrawIdx;
 typedef struct ImVector_ImDrawChannel_t ImVector_ImDrawChannel;
 typedef struct ImVector_ImDrawVert_t ImVector_ImDrawVert;
+typedef struct ImVector_ImVec2_t ImVector_ImVec2;
 typedef struct ImVector_ImVec4_t ImVector_ImVec4;
 typedef struct ImVector_ImTextureID_t ImVector_ImTextureID;
-typedef struct ImVector_ImVec2_t ImVector_ImVec2;
 typedef struct ImVector_ImDrawListPtr_t ImVector_ImDrawListPtr;
 typedef struct ImVector_ImU32_t ImVector_ImU32;
 typedef struct ImVector_ImFontPtr_t ImVector_ImFontPtr;
@@ -1180,11 +1181,12 @@ typedef enum
     ImGuiTreeNodeFlags_Leaf                 = 1<<8,                             // No collapsing, no arrow (use as a convenience for leaf nodes).
     ImGuiTreeNodeFlags_Bullet               = 1<<9,                             // Display a bullet instead of arrow. IMPORTANT: node can still be marked open/close if you don't set the _Leaf flag!
     ImGuiTreeNodeFlags_FramePadding         = 1<<10,                            // Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding().
-    ImGuiTreeNodeFlags_SpanAvailWidth       = 1<<11,                            // Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line. In the future we may refactor the hit system to be front-to-back, allowing natural overlaps and then this can become the default.
-    ImGuiTreeNodeFlags_SpanFullWidth        = 1<<12,                            // Extend hit box to the left-most and right-most edges (bypass the indented area).
-    ImGuiTreeNodeFlags_SpanAllColumns       = 1<<13,                            // Frame will span all columns of its container table (text will still fit in current column)
-    ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 1<<14,                            // (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
-    //ImGuiTreeNodeFlags_NoScrollOnOpen     = 1 << 15,  // FIXME: TODO: Disable automatic scroll on TreePop() if node got just open and contents is not visible
+    ImGuiTreeNodeFlags_SpanAvailWidth       = 1<<11,                            // Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line without using AllowOverlap mode.
+    ImGuiTreeNodeFlags_SpanFullWidth        = 1<<12,                            // Extend hit box to the left-most and right-most edges (cover the indent area).
+    ImGuiTreeNodeFlags_SpanTextWidth        = 1<<13,                            // Narrow hit box + narrow hovering highlight, will only cover the label text.
+    ImGuiTreeNodeFlags_SpanAllColumns       = 1<<14,                            // Frame will span all columns of its container table (text will still fit in current column)
+    ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 1<<15,                            // (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
+    //ImGuiTreeNodeFlags_NoScrollOnOpen     = 1 << 16,  // FIXME: TODO: Disable automatic scroll on TreePop() if node got just open and contents is not visible
     ImGuiTreeNodeFlags_CollapsingHeader     = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_NoAutoOpenOnLog,
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
@@ -1723,38 +1725,39 @@ typedef enum
 // - When changing this enum, you need to update the associated internal table GStyleVarInfo[] accordingly. This is where we link enum values to members offset/type.
 typedef enum
 {
-    // Enum name --------------------- // Member in ImGuiStyle structure (see ImGuiStyle for descriptions)
-    ImGuiStyleVar_Alpha,                    // float     Alpha
-    ImGuiStyleVar_DisabledAlpha,            // float     DisabledAlpha
-    ImGuiStyleVar_WindowPadding,            // ImVec2    WindowPadding
-    ImGuiStyleVar_WindowRounding,           // float     WindowRounding
-    ImGuiStyleVar_WindowBorderSize,         // float     WindowBorderSize
-    ImGuiStyleVar_WindowMinSize,            // ImVec2    WindowMinSize
-    ImGuiStyleVar_WindowTitleAlign,         // ImVec2    WindowTitleAlign
-    ImGuiStyleVar_ChildRounding,            // float     ChildRounding
-    ImGuiStyleVar_ChildBorderSize,          // float     ChildBorderSize
-    ImGuiStyleVar_PopupRounding,            // float     PopupRounding
-    ImGuiStyleVar_PopupBorderSize,          // float     PopupBorderSize
-    ImGuiStyleVar_FramePadding,             // ImVec2    FramePadding
-    ImGuiStyleVar_FrameRounding,            // float     FrameRounding
-    ImGuiStyleVar_FrameBorderSize,          // float     FrameBorderSize
-    ImGuiStyleVar_ItemSpacing,              // ImVec2    ItemSpacing
-    ImGuiStyleVar_ItemInnerSpacing,         // ImVec2    ItemInnerSpacing
-    ImGuiStyleVar_IndentSpacing,            // float     IndentSpacing
-    ImGuiStyleVar_CellPadding,              // ImVec2    CellPadding
-    ImGuiStyleVar_ScrollbarSize,            // float     ScrollbarSize
-    ImGuiStyleVar_ScrollbarRounding,        // float     ScrollbarRounding
-    ImGuiStyleVar_GrabMinSize,              // float     GrabMinSize
-    ImGuiStyleVar_GrabRounding,             // float     GrabRounding
-    ImGuiStyleVar_TabRounding,              // float     TabRounding
-    ImGuiStyleVar_TabBorderSize,            // float     TabBorderSize
-    ImGuiStyleVar_TabBarBorderSize,         // float     TabBarBorderSize
-    ImGuiStyleVar_TableAngledHeadersAngle,  // float  TableAngledHeadersAngle
-    ImGuiStyleVar_ButtonTextAlign,          // ImVec2    ButtonTextAlign
-    ImGuiStyleVar_SelectableTextAlign,      // ImVec2    SelectableTextAlign
-    ImGuiStyleVar_SeparatorTextBorderSize,  // float  SeparatorTextBorderSize
-    ImGuiStyleVar_SeparatorTextAlign,       // ImVec2    SeparatorTextAlign
-    ImGuiStyleVar_SeparatorTextPadding,     // ImVec2    SeparatorTextPadding
+    // Enum name -------------------------- // Member in ImGuiStyle structure (see ImGuiStyle for descriptions)
+    ImGuiStyleVar_Alpha,                        // float     Alpha
+    ImGuiStyleVar_DisabledAlpha,                // float     DisabledAlpha
+    ImGuiStyleVar_WindowPadding,                // ImVec2    WindowPadding
+    ImGuiStyleVar_WindowRounding,               // float     WindowRounding
+    ImGuiStyleVar_WindowBorderSize,             // float     WindowBorderSize
+    ImGuiStyleVar_WindowMinSize,                // ImVec2    WindowMinSize
+    ImGuiStyleVar_WindowTitleAlign,             // ImVec2    WindowTitleAlign
+    ImGuiStyleVar_ChildRounding,                // float     ChildRounding
+    ImGuiStyleVar_ChildBorderSize,              // float     ChildBorderSize
+    ImGuiStyleVar_PopupRounding,                // float     PopupRounding
+    ImGuiStyleVar_PopupBorderSize,              // float     PopupBorderSize
+    ImGuiStyleVar_FramePadding,                 // ImVec2    FramePadding
+    ImGuiStyleVar_FrameRounding,                // float     FrameRounding
+    ImGuiStyleVar_FrameBorderSize,              // float     FrameBorderSize
+    ImGuiStyleVar_ItemSpacing,                  // ImVec2    ItemSpacing
+    ImGuiStyleVar_ItemInnerSpacing,             // ImVec2    ItemInnerSpacing
+    ImGuiStyleVar_IndentSpacing,                // float     IndentSpacing
+    ImGuiStyleVar_CellPadding,                  // ImVec2    CellPadding
+    ImGuiStyleVar_ScrollbarSize,                // float     ScrollbarSize
+    ImGuiStyleVar_ScrollbarRounding,            // float     ScrollbarRounding
+    ImGuiStyleVar_GrabMinSize,                  // float     GrabMinSize
+    ImGuiStyleVar_GrabRounding,                 // float     GrabRounding
+    ImGuiStyleVar_TabRounding,                  // float     TabRounding
+    ImGuiStyleVar_TabBorderSize,                // float     TabBorderSize
+    ImGuiStyleVar_TabBarBorderSize,             // float     TabBarBorderSize
+    ImGuiStyleVar_TableAngledHeadersAngle,      // float  TableAngledHeadersAngle
+    ImGuiStyleVar_TableAngledHeadersTextAlign,  // ImVec2 TableAngledHeadersTextAlign
+    ImGuiStyleVar_ButtonTextAlign,              // ImVec2    ButtonTextAlign
+    ImGuiStyleVar_SelectableTextAlign,          // ImVec2    SelectableTextAlign
+    ImGuiStyleVar_SeparatorTextBorderSize,      // float  SeparatorTextBorderSize
+    ImGuiStyleVar_SeparatorTextAlign,           // ImVec2    SeparatorTextAlign
+    ImGuiStyleVar_SeparatorTextPadding,         // ImVec2    SeparatorTextPadding
     ImGuiStyleVar_COUNT,
 } ImGuiStyleVar_;
 
@@ -2150,6 +2153,15 @@ typedef struct ImVector_ImDrawVert_t
     ImDrawVert* Data;
 } ImVector_ImDrawVert;
 
+// Instantiation of ImVector<ImVec2>
+
+typedef struct ImVector_ImVec2_t
+{
+    int     Size;
+    int     Capacity;
+    ImVec2* Data;
+} ImVector_ImVec2;
+
 // Instantiation of ImVector<ImVec4>
 
 typedef struct ImVector_ImVec4_t
@@ -2167,15 +2179,6 @@ typedef struct ImVector_ImTextureID_t
     int          Capacity;
     ImTextureID* Data;
 } ImVector_ImTextureID;
-
-// Instantiation of ImVector<ImVec2>
-
-typedef struct ImVector_ImVec2_t
-{
-    int     Size;
-    int     Capacity;
-    ImVec2* Data;
-} ImVector_ImVec2;
 
 // Instantiation of ImVector<ImDrawList*>
 
@@ -2251,60 +2254,61 @@ IM_MSVC_RUNTIME_CHECKS_RESTORE
 
 typedef struct ImGuiStyle_t
 {
-    float             Alpha;                       // Global alpha applies to everything in Dear ImGui.
-    float             DisabledAlpha;               // Additional alpha multiplier applied by BeginDisabled(). Multiply over current value of Alpha.
-    ImVec2            WindowPadding;               // Padding within a window.
-    float             WindowRounding;              // Radius of window corners rounding. Set to 0.0f to have rectangular windows. Large values tend to lead to variety of artifacts and are not recommended.
-    float             WindowBorderSize;            // Thickness of border around windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
-    ImVec2            WindowMinSize;               // Minimum window size. This is a global setting. If you want to constrain individual windows, use SetNextWindowSizeConstraints().
-    ImVec2            WindowTitleAlign;            // Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered.
-    ImGuiDir          WindowMenuButtonPosition;    // Side of the collapsing/docking button in the title bar (None/Left/Right). Defaults to ImGuiDir_Left.
-    float             ChildRounding;               // Radius of child window corners rounding. Set to 0.0f to have rectangular windows.
-    float             ChildBorderSize;             // Thickness of border around child windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
-    float             PopupRounding;               // Radius of popup window corners rounding. (Note that tooltip windows use WindowRounding)
-    float             PopupBorderSize;             // Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
-    ImVec2            FramePadding;                // Padding within a framed rectangle (used by most widgets).
-    float             FrameRounding;               // Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
-    float             FrameBorderSize;             // Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
-    ImVec2            ItemSpacing;                 // Horizontal and vertical spacing between widgets/lines.
-    ImVec2            ItemInnerSpacing;            // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label).
-    ImVec2            CellPadding;                 // Padding within a table cell. Cellpadding.x is locked for entire table. CellPadding.y may be altered between different rows.
-    ImVec2            TouchExtraPadding;           // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
-    float             IndentSpacing;               // Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
-    float             ColumnsMinSpacing;           // Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
-    float             ScrollbarSize;               // Width of the vertical scrollbar, Height of the horizontal scrollbar.
-    float             ScrollbarRounding;           // Radius of grab corners for scrollbar.
-    float             GrabMinSize;                 // Minimum width/height of a grab box for slider/scrollbar.
-    float             GrabRounding;                // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
-    float             LogSliderDeadzone;           // The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero.
-    float             TabRounding;                 // Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
-    float             TabBorderSize;               // Thickness of border around tabs.
-    float             TabMinWidthForCloseButton;   // Minimum width for close button to appear on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected.
-    float             TabBarBorderSize;            // Thickness of tab-bar separator, which takes on the tab active color to denote focus.
-    float             TableAngledHeadersAngle;     // Angle of angled headers (supported values range from -50.0f degrees to +50.0f degrees).
-    ImGuiDir          ColorButtonPosition;         // Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
-    ImVec2            ButtonTextAlign;             // Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered).
-    ImVec2            SelectableTextAlign;         // Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
-    float             SeparatorTextBorderSize;     // Thickkness of border in SeparatorText()
-    ImVec2            SeparatorTextAlign;          // Alignment of text within the separator. Defaults to (0.0f, 0.5f) (left aligned, center).
-    ImVec2            SeparatorTextPadding;        // Horizontal offset of text from each edge of the separator + spacing on other axis. Generally small values. .y is recommended to be == FramePadding.y.
-    ImVec2            DisplayWindowPadding;        // Window position are clamped to be visible within the display area or monitors by at least this amount. Only applies to regular windows.
-    ImVec2            DisplaySafeAreaPadding;      // If you cannot see the edges of your screen (e.g. on a TV) increase the safe area padding. Apply to popups/tooltips as well regular windows. NB: Prefer configuring your TV sets correctly!
-    float             MouseCursorScale;            // Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). May be removed later.
-    bool              AntiAliasedLines;            // Enable anti-aliased lines/borders. Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
-    bool              AntiAliasedLinesUseTex;      // Enable anti-aliased lines/borders using textures where possible. Require backend to render with bilinear filtering (NOT point/nearest filtering). Latched at the beginning of the frame (copied to ImDrawList).
-    bool              AntiAliasedFill;             // Enable anti-aliased edges around filled shapes (rounded rectangles, circles, etc.). Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
-    float             CurveTessellationTol;        // Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
-    float             CircleTessellationMaxError;  // Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles with no explicit segment count specified. Decrease for higher quality but more geometry.
+    float             Alpha;                        // Global alpha applies to everything in Dear ImGui.
+    float             DisabledAlpha;                // Additional alpha multiplier applied by BeginDisabled(). Multiply over current value of Alpha.
+    ImVec2            WindowPadding;                // Padding within a window.
+    float             WindowRounding;               // Radius of window corners rounding. Set to 0.0f to have rectangular windows. Large values tend to lead to variety of artifacts and are not recommended.
+    float             WindowBorderSize;             // Thickness of border around windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    ImVec2            WindowMinSize;                // Minimum window size. This is a global setting. If you want to constrain individual windows, use SetNextWindowSizeConstraints().
+    ImVec2            WindowTitleAlign;             // Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered.
+    ImGuiDir          WindowMenuButtonPosition;     // Side of the collapsing/docking button in the title bar (None/Left/Right). Defaults to ImGuiDir_Left.
+    float             ChildRounding;                // Radius of child window corners rounding. Set to 0.0f to have rectangular windows.
+    float             ChildBorderSize;              // Thickness of border around child windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    float             PopupRounding;                // Radius of popup window corners rounding. (Note that tooltip windows use WindowRounding)
+    float             PopupBorderSize;              // Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    ImVec2            FramePadding;                 // Padding within a framed rectangle (used by most widgets).
+    float             FrameRounding;                // Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
+    float             FrameBorderSize;              // Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    ImVec2            ItemSpacing;                  // Horizontal and vertical spacing between widgets/lines.
+    ImVec2            ItemInnerSpacing;             // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label).
+    ImVec2            CellPadding;                  // Padding within a table cell. Cellpadding.x is locked for entire table. CellPadding.y may be altered between different rows.
+    ImVec2            TouchExtraPadding;            // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
+    float             IndentSpacing;                // Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
+    float             ColumnsMinSpacing;            // Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
+    float             ScrollbarSize;                // Width of the vertical scrollbar, Height of the horizontal scrollbar.
+    float             ScrollbarRounding;            // Radius of grab corners for scrollbar.
+    float             GrabMinSize;                  // Minimum width/height of a grab box for slider/scrollbar.
+    float             GrabRounding;                 // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+    float             LogSliderDeadzone;            // The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero.
+    float             TabRounding;                  // Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
+    float             TabBorderSize;                // Thickness of border around tabs.
+    float             TabMinWidthForCloseButton;    // Minimum width for close button to appear on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected.
+    float             TabBarBorderSize;             // Thickness of tab-bar separator, which takes on the tab active color to denote focus.
+    float             TableAngledHeadersAngle;      // Angle of angled headers (supported values range from -50.0f degrees to +50.0f degrees).
+    ImVec2            TableAngledHeadersTextAlign;  // Alignment of angled headers within the cell
+    ImGuiDir          ColorButtonPosition;          // Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
+    ImVec2            ButtonTextAlign;              // Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered).
+    ImVec2            SelectableTextAlign;          // Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
+    float             SeparatorTextBorderSize;      // Thickkness of border in SeparatorText()
+    ImVec2            SeparatorTextAlign;           // Alignment of text within the separator. Defaults to (0.0f, 0.5f) (left aligned, center).
+    ImVec2            SeparatorTextPadding;         // Horizontal offset of text from each edge of the separator + spacing on other axis. Generally small values. .y is recommended to be == FramePadding.y.
+    ImVec2            DisplayWindowPadding;         // Window position are clamped to be visible within the display area or monitors by at least this amount. Only applies to regular windows.
+    ImVec2            DisplaySafeAreaPadding;       // If you cannot see the edges of your screen (e.g. on a TV) increase the safe area padding. Apply to popups/tooltips as well regular windows. NB: Prefer configuring your TV sets correctly!
+    float             MouseCursorScale;             // Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). May be removed later.
+    bool              AntiAliasedLines;             // Enable anti-aliased lines/borders. Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
+    bool              AntiAliasedLinesUseTex;       // Enable anti-aliased lines/borders using textures where possible. Require backend to render with bilinear filtering (NOT point/nearest filtering). Latched at the beginning of the frame (copied to ImDrawList).
+    bool              AntiAliasedFill;              // Enable anti-aliased edges around filled shapes (rounded rectangles, circles, etc.). Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
+    float             CurveTessellationTol;         // Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
+    float             CircleTessellationMaxError;   // Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles with no explicit segment count specified. Decrease for higher quality but more geometry.
     ImVec4            Colors[ImGuiCol_COUNT];
 
     // Behaviors
     // (It is possible to modify those fields mid-frame if specific behavior need it, unlike e.g. configuration fields in ImGuiIO)
-    float             HoverStationaryDelay;        // Delay for IsItemHovered(ImGuiHoveredFlags_Stationary). Time required to consider mouse stationary.
-    float             HoverDelayShort;             // Delay for IsItemHovered(ImGuiHoveredFlags_DelayShort). Usually used along with HoverStationaryDelay.
-    float             HoverDelayNormal;            // Delay for IsItemHovered(ImGuiHoveredFlags_DelayNormal). "
-    ImGuiHoveredFlags HoverFlagsForTooltipMouse;   // Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using mouse.
-    ImGuiHoveredFlags HoverFlagsForTooltipNav;     // Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using keyboard/gamepad.
+    float             HoverStationaryDelay;         // Delay for IsItemHovered(ImGuiHoveredFlags_Stationary). Time required to consider mouse stationary.
+    float             HoverDelayShort;              // Delay for IsItemHovered(ImGuiHoveredFlags_DelayShort). Usually used along with HoverStationaryDelay.
+    float             HoverDelayNormal;             // Delay for IsItemHovered(ImGuiHoveredFlags_DelayNormal). "
+    ImGuiHoveredFlags HoverFlagsForTooltipMouse;    // Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using mouse.
+    ImGuiHoveredFlags HoverFlagsForTooltipNav;      // Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using keyboard/gamepad.
 } ImGuiStyle;
 CIMGUI_API void ImGuiStyle_ScaleAllSizes(ImGuiStyle* self, float scale_factor);
 
@@ -2442,15 +2446,6 @@ typedef struct ImGuiIO_t
     int               MetricsActiveWindows;               // Number of active windows
     ImVec2            MouseDelta;                         // Mouse delta. Note that this is zero if either current or previous position are invalid (-FLT_MAX,-FLT_MAX), so a disappearing/reappearing mouse won't have a huge delta.
 
-    // Legacy: before 1.87, we required backend to fill io.KeyMap[] (imgui->native map) during initialization and io.KeysDown[] (native indices) every frame.
-    // This is still temporarily supported as a legacy feature. However the new preferred scheme is for backend to call io.AddKeyEvent().
-    //   Old (<1.87):  ImGui::IsKeyPressed(ImGui::GetIO().KeyMap[ImGuiKey_Space]) --> New (1.87+) ImGui::IsKeyPressed(ImGuiKey_Space)
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
-    int               KeyMap[ImGuiKey_COUNT];             // [LEGACY] Input: map of indices into the KeysDown[512] entries array which represent your "native" keyboard state. The first 512 are now unused and should be kept zero. Legacy backend will write into KeyMap[] using ImGuiKey_ indices which are always >512.
-    bool              KeysDown[ImGuiKey_COUNT];           // [LEGACY] Input: Keyboard keys that are pressed (ideally left in the "native" order your engine has access to keyboard keys, so you can use your own defines/enums for keys). This used to be [512] sized. It is now ImGuiKey_COUNT to allow legacy io.KeysDown[GetKeyIndex(...)] to work without an overflow.
-    float             NavInputs[ImGuiNavInput_COUNT];     // [LEGACY] Since 1.88, NavInputs[] was removed. Backends from 1.60 to 1.86 won't build. Feed gamepad inputs via io.AddKeyEvent() and ImGuiKey_GamepadXXX enums.
-    //void*     ImeWindowHandle;                    // [Obsoleted in 1.87] Set ImGuiViewport::PlatformHandleRaw instead. Set this to your HWND to get automatic IME cursor positioning.
-#endif // #ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
     //------------------------------------------------------------------
     // [Internal] Dear ImGui will maintain those fields. Forward compatibility not guaranteed!
     //------------------------------------------------------------------
@@ -2495,6 +2490,16 @@ typedef struct ImGuiIO_t
     bool              BackendUsingLegacyNavInputArray;    // 0: using AddKeyAnalogEvent(), 1: writing to legacy io.NavInputs[] directly
     ImWchar16         InputQueueSurrogate;                // For AddInputCharacterUTF16()
     ImVector_ImWchar  InputQueueCharacters;               // Queue of _characters_ input (obtained by platform backend). Fill using AddInputCharacter() helper.
+
+    // Legacy: before 1.87, we required backend to fill io.KeyMap[] (imgui->native map) during initialization and io.KeysDown[] (native indices) every frame.
+    // This is still temporarily supported as a legacy feature. However the new preferred scheme is for backend to call io.AddKeyEvent().
+    //   Old (<1.87):  ImGui::IsKeyPressed(ImGui::GetIO().KeyMap[ImGuiKey_Space]) --> New (1.87+) ImGui::IsKeyPressed(ImGuiKey_Space)
+#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+    int               KeyMap[ImGuiKey_COUNT];             // [LEGACY] Input: map of indices into the KeysDown[512] entries array which represent your "native" keyboard state. The first 512 are now unused and should be kept zero. Legacy backend will write into KeyMap[] using ImGuiKey_ indices which are always >512.
+    bool              KeysDown[ImGuiKey_COUNT];           // [LEGACY] Input: Keyboard keys that are pressed (ideally left in the "native" order your engine has access to keyboard keys, so you can use your own defines/enums for keys). This used to be [512] sized. It is now ImGuiKey_COUNT to allow legacy io.KeysDown[GetKeyIndex(...)] to work without an overflow.
+    float             NavInputs[ImGuiNavInput_COUNT];     // [LEGACY] Since 1.88, NavInputs[] was removed. Backends from 1.60 to 1.86 won't build. Feed gamepad inputs via io.AddKeyEvent() and ImGuiKey_GamepadXXX enums.
+    //void*     ImeWindowHandle;                    // [Obsoleted in 1.87] Set ImGuiViewport::PlatformHandleRaw instead. Set this to your HWND to get automatic IME cursor positioning.
+#endif // #ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
 } ImGuiIO;
 // Input Functions
 CIMGUI_API void ImGuiIO_AddKeyEvent(ImGuiIO* self, ImGuiKey key, bool down);                                          // Queue a new key down/up event. Key should be "translated" (as in, generally ImGuiKey_A matches the key end-user would use to emit an 'A' character)
@@ -2908,15 +2913,15 @@ typedef struct ImDrawList_t
     // [Internal, used while building lists]
     unsigned int          _VtxCurrentIdx;   // [Internal] generally == VtxBuffer.Size unless we are past 64K vertices, in which case this gets reset to 0.
     ImDrawListSharedData* _Data;            // Pointer to shared draw data (you can use ImGui::GetDrawListSharedData() to get the one from current ImGui context)
-    const char*           _OwnerName;       // Pointer to owner window's name for debugging
     ImDrawVert*           _VtxWritePtr;     // [Internal] point within VtxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)
     ImDrawIdx*            _IdxWritePtr;     // [Internal] point within IdxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)
-    ImVector_ImVec4       _ClipRectStack;   // [Internal]
-    ImVector_ImTextureID  _TextureIdStack;  // [Internal]
     ImVector_ImVec2       _Path;            // [Internal] current path building
     ImDrawCmdHeader       _CmdHeader;       // [Internal] template of active commands. Fields should match those of CmdBuffer.back().
     ImDrawListSplitter    _Splitter;        // [Internal] for channels api (note: prefer using your own persistent instance of ImDrawListSplitter!)
+    ImVector_ImVec4       _ClipRectStack;   // [Internal]
+    ImVector_ImTextureID  _TextureIdStack;  // [Internal]
     float                 _FringeScale;     // [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content
+    const char*           _OwnerName;       // Pointer to owner window's name for debugging
 
     // Obsolete names
     //inline  void  AddEllipse(const ImVec2& center, float radius_x, float radius_y, ImU32 col, float rot = 0.0f, int num_segments = 0, float thickness = 1.0f) { AddEllipse(center, ImVec2(radius_x, radius_y), col, rot, num_segments, thickness); } // OBSOLETED in 1.90.5 (Mar 2024)
