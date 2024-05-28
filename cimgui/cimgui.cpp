@@ -2266,6 +2266,16 @@ CIMGUI_API void        cimgui::ImGui_SetNextFrameWantCaptureKeyboard(bool want_c
     ::ImGui::SetNextFrameWantCaptureKeyboard(want_capture_keyboard);
 }
 
+CIMGUI_API bool cimgui::ImGui_Shortcut(ImGuiKeyChord key_chord, ImGuiInputFlags flags)
+{
+    return ::ImGui::Shortcut(key_chord, flags);
+}
+
+CIMGUI_API void cimgui::ImGui_SetNextItemShortcut(ImGuiKeyChord key_chord, ImGuiInputFlags flags)
+{
+    ::ImGui::SetNextItemShortcut(key_chord, flags);
+}
+
 CIMGUI_API bool             cimgui::ImGui_IsMouseDown(ImGuiMouseButton button)
 {
     return ::ImGui::IsMouseDown(button);
@@ -3578,16 +3588,6 @@ CIMGUI_API void     cimgui::ImGui_PopAllowKeyboardFocus(void)
 CIMGUI_API bool     cimgui::ImGui_ImageButtonImTextureID(ImTextureID user_texture_id, cimgui::ImVec2 size, cimgui::ImVec2 uv0, cimgui::ImVec2 uv1, int frame_padding, cimgui::ImVec4 bg_col, cimgui::ImVec4 tint_col)
 {
     return ::ImGui::ImageButton(user_texture_id, ConvertToCPP_ImVec2(size), ConvertToCPP_ImVec2(uv0), ConvertToCPP_ImVec2(uv1), frame_padding, ConvertToCPP_ImVec4(bg_col), ConvertToCPP_ImVec4(tint_col));
-}
-
-CIMGUI_API void     cimgui::ImGui_CaptureKeyboardFromApp(bool want_capture_keyboard)
-{
-    ::ImGui::CaptureKeyboardFromApp(want_capture_keyboard);
-}
-
-CIMGUI_API void     cimgui::ImGui_CaptureMouseFromApp(bool want_capture_mouse)
-{
-    ::ImGui::CaptureMouseFromApp(want_capture_mouse);
 }
 
 CIMGUI_API cimgui::ImGuiKey cimgui::ImGui_GetKeyIndex(cimgui::ImGuiKey key)

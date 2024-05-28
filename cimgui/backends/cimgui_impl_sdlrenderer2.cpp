@@ -34,9 +34,9 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer2_NewFrame(void)
     ::ImGui_ImplSDLRenderer2_NewFrame();
 }
 
-CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer2_RenderDrawData(cimgui::ImDrawData* draw_data)
+CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer2_RenderDrawData(cimgui::ImDrawData* draw_data, cimgui::SDL_Renderer* renderer)
 {
-    ::ImGui_ImplSDLRenderer2_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data));
+    ::ImGui_ImplSDLRenderer2_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data), reinterpret_cast<::SDL_Renderer*>(renderer));
 }
 
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplSDLRenderer2_CreateFontsTexture(void)
