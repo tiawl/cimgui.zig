@@ -25,7 +25,7 @@ Currently only [GLFW][4] and [Vulkan][5] backends are supported. There will be n
 The [Zig][2] part of this package is relying on the latest [Zig][2] release (0.12.0) and will only be updated for the next one (so for the 0.13.0).
 
 Here the repositories' version used by this fork:
-* [ocornut/imgui](https://github.com/tiawl/cimgui.zig/blob/trunk/.versions/imgui)
+* [ocornut/imgui](https://github.com/tiawl/cimgui.zig/blob/trunk/.references/imgui)
 
 Currently there are no tags/release for [dearimgui/dear_bindings][3] so **cimgui.zig** is relying on the last commit.
 
@@ -50,7 +50,7 @@ This repository is automatically updated when a new release is available from th
 
 These additional options have been implemented for maintainability tasks:
 ```
-  -Dfetch     Update .versions folder and build.zig.zon then stop execution
+  -Dfetch     Update .references folder and build.zig.zon then stop execution
   -Dupdate    Update binding
   -Drenderer  Specify the renderer backend
                 Supported Values:
