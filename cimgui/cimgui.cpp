@@ -895,9 +895,9 @@ CIMGUI_API bool cimgui::ImGui_InvisibleButton(const char* str_id, cimgui::ImVec2
     return ::ImGui::InvisibleButton(str_id, ConvertToCPP_ImVec2(size), flags);
 }
 
-CIMGUI_API bool cimgui::ImGui_ArrowButton(const char* str_id, ImGuiDir dir)
+CIMGUI_API bool cimgui::ImGui_ArrowButton(const char* str_id, cimgui::ImGuiDir dir)
 {
-    return ::ImGui::ArrowButton(str_id, dir);
+    return ::ImGui::ArrowButton(str_id, static_cast<::ImGuiDir>(dir));
 }
 
 CIMGUI_API bool cimgui::ImGui_Checkbox(const char* label, bool* v)
