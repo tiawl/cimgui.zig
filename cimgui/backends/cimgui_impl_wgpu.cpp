@@ -16,3 +16,37 @@ namespace cimgui
 // By-value struct conversions
 
 // Function stubs
+
+#ifndef IMGUI_DISABLE
+
+CIMGUI_IMPL_API bool cimgui::cImGui_ImplWGPU_Init(cimgui::ImGui_ImplWGPU_InitInfo* init_info)
+{
+    return ::ImGui_ImplWGPU_Init(reinterpret_cast<::ImGui_ImplWGPU_InitInfo*>(init_info));
+}
+
+CIMGUI_IMPL_API void cimgui::cImGui_ImplWGPU_Shutdown(void)
+{
+    ::ImGui_ImplWGPU_Shutdown();
+}
+
+CIMGUI_IMPL_API void cimgui::cImGui_ImplWGPU_NewFrame(void)
+{
+    ::ImGui_ImplWGPU_NewFrame();
+}
+
+CIMGUI_IMPL_API void cimgui::cImGui_ImplWGPU_RenderDrawData(ImDrawData* draw_data, WGPURenderPassEncoder pass_encoder)
+{
+    ::ImGui_ImplWGPU_RenderDrawData(draw_data, pass_encoder);
+}
+
+CIMGUI_IMPL_API void cimgui::cImGui_ImplWGPU_InvalidateDeviceObjects(void)
+{
+    ::ImGui_ImplWGPU_InvalidateDeviceObjects();
+}
+
+CIMGUI_IMPL_API bool cimgui::cImGui_ImplWGPU_CreateDeviceObjects(void)
+{
+    return ::ImGui_ImplWGPU_CreateDeviceObjects();
+}
+
+#endif // #ifndef IMGUI_DISABLE
