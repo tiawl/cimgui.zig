@@ -2,7 +2,6 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-typedef struct ImDrawData_t ImDrawData;
 // dear imgui: Renderer for WebGPU
 // This needs to be used along with a Platform Binding (e.g. GLFW)
 // (Please note that WebGPU is currently experimental, will not run on non-beta browsers, and may break.)
@@ -27,14 +26,26 @@ extern "C"
 #endif
 #include "cimgui.h"
 #ifndef IMGUI_DISABLE
-#include <webgpu/webgpu.h>                // Initialization data, for ImGui_ImplWGPU_Init()
+#include <webgpu/webgpu.h>                                                               // Initialization data, for ImGui_ImplWGPU_Init()
+typedef struct ImGui_ImplWGPU_InitInfo_ImDrawData_t ImGui_ImplWGPU_InitInfo_ImDrawData;
 typedef struct ImGui_ImplWGPU_InitInfo_t
 {
-    WGPUDevice Device;
-    int
-    NumFramesInFlight
+    WGPUDevice           Device;
+    int                  NumFramesInFlight /* = 3 */;
+    WGPUTextureFormat    RenderTargetFormat /* = WGPUTextureFormat_Undefined */;
+    WGPUTextureFormat    DepthStencilFormat /* = WGPUTextureFormat_Undefined */;
+    WGPUMultisampleState PipelineMultisampleState /* = {} */;
 } ImGui_ImplWGPU_InitInfo;
-#endif // #ifndef IMGUI_DISABLE
+
+CIMGUI_IMPL_API bool cImGui_ImplWGPU_Init(ImGui_ImplWGPU_InitInfo* init_info);
+CIMGUI_IMPL_API void cImGui_ImplWGPU_Shutdown(void);
+CIMGUI_IMPL_API void cImGui_ImplWGPU_NewFrame(void);
+CIMGUI_IMPL_API void cImGui_ImplWGPU_RenderDrawData(ImDrawData* draw_data, WGPURenderPassEncoder pass_encoder);
+
+// Use if you want to reset your rendering device without losing Dear ImGui state.
+CIMGUI_IMPL_API void cImGui_ImplWGPU_InvalidateDeviceObjects(void);
+CIMGUI_IMPL_API bool cImGui_ImplWGPU_CreateDeviceObjects(void);
+#endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
 #endif

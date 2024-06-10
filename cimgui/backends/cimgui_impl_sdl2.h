@@ -54,10 +54,9 @@ typedef enum
     ImGui_ImplSDL2_GamepadMode_AutoAll,
     ImGui_ImplSDL2_GamepadMode_Manual,
 } ImGui_ImplSDL2_GamepadMode;
-IMGUI_IMPL_API
-void
-ImGui_ImplSDL2_SetGamepadMode
-#endif // #ifndef IMGUI_DISABLE
+CIMGUI_IMPL_API void cImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode mode); // Implied manual_gamepads_array = NULL, manual_gamepads_count = -1
+CIMGUI_IMPL_API void cImGui_ImplSDL2_SetGamepadModeEx(ImGui_ImplSDL2_GamepadMode mode, struct _SDL_GameController** manual_gamepads_array /* = NULL */, int manual_gamepads_count /* = -1 */);
+#endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
 #endif
