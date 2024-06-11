@@ -41,7 +41,7 @@ jobs:
       with:
         repository: "${{ github.repository }}"
         additional_zig_opts: "${{ matrix.zig_opts }}"
-        sha: "${{ github.sha }}"
+        sha: "${{ github.event.pull_request.head.sha }}"
         user: "${{ matrix.repo }}"
         token: "${{ github.token }}"
         test_build: 'true'

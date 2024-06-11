@@ -22,7 +22,7 @@ Currently only [GLFW][4] and [Vulkan][5] backends are supported. There will be n
 
 ## Dependencies
 
-The [Zig][2] part of this package is relying on the latest [Zig][2] release (0.12.0) and will only be updated for the next one (so for the 0.13.0).
+The [Zig][2] part of this package is relying on the latest [Zig][2] release (0.13.0) and will only be updated for the next one (so for the 0.14.0).
 
 Here the repositories' version used by this fork:
 * [ocornut/imgui](https://github.com/tiawl/cimgui.zig/blob/trunk/.references/imgui)
