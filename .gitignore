@@ -1,6 +1,6 @@
 .*.sw[a-z]
 Session.vim
 *.json
-zig-cache/
+.zig-cache/
 zig-out/
 imgui.ini

@@ -14,7 +14,7 @@ jobs:
           - windows-latest
     runs-on: "${{ matrix.os }}"
     steps:
-    - uses: tiawl/spaceporn-action-env@v1.0.1
+    - uses: tiawl/spaceporn-action-env@v1.0.2
     - uses: actions/checkout@v4
     - uses: goto-bus-stop/setup-zig@v2.2.0
       with:
@@ -37,7 +37,7 @@ jobs:
           - '-Dturbo'
     runs-on: "${{ matrix.os }}"
     steps:
-    - uses: tiawl/spaceporn-action-ci@v1.0.2
+    - uses: tiawl/spaceporn-action-ci@43df9f0e7253ba1ada2ff1882a5ac636be43d4eb
       with:
         repository: "${{ github.repository }}"
         additional_zig_opts: "${{ matrix.zig_opts }}"
