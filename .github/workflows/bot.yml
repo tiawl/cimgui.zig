@@ -13,7 +13,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: tiawl/spaceporn-action-bot@v1.0.2
+    - uses: tiawl/spaceporn-action-bot@v1.0.3
       with:
         repository: "${{ github.repository }}"
         token: "${{ github.token }}"
