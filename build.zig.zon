@@ -10,8 +10,8 @@
     },
     .dependencies = .{
         .glfw = .{
-            .url = "https://github.com/tiawl/glfw.zig/archive/265dec89da87b1aec183c22095bce45262ff1aeb.tar.gz",
-            .hash = "122007156fc0504be59ce71f8005319f8584c120910bf9b2b31789003bf31fad8d81",
+            .url = "https://github.com/tiawl/glfw.zig/archive/refs/tags/3.4.tar.gz",
+            .hash = "12207da00caa15c46dc7ef4ca3a5c982ccfe00759c70a17d4c179fd4b91f736d4650",
         },
         .toolbox = .{
             .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.11.0.tar.gz",
