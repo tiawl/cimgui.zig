@@ -62,7 +62,7 @@ extern "C"
 #endif // #if defined(VK_USE_PLATFORM_WIN32_KHR)&&!defined(NOMINMAX)
 // Vulkan includes
 #ifdef IMGUI_IMPL_VULKAN_USE_VOLK
-#include <Volk/volk.h>
+#include <volk.h>
 #else
 #include <vulkan/vulkan.h>
 #endif // #ifdef IMGUI_IMPL_VULKAN_USE_VOLK
