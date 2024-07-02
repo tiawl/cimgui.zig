@@ -1758,14 +1758,14 @@ CIMGUI_API bool cimgui::ImGui_IsPopupOpen(const char* str_id, ImGuiPopupFlags fl
     return ::ImGui::IsPopupOpen(str_id, flags);
 }
 
-CIMGUI_API bool cimgui::ImGui_BeginTable(const char* str_id, int column, ImGuiTableFlags flags)
+CIMGUI_API bool cimgui::ImGui_BeginTable(const char* str_id, int columns, ImGuiTableFlags flags)
 {
-    return ::ImGui::BeginTable(str_id, column, flags);
+    return ::ImGui::BeginTable(str_id, columns, flags);
 }
 
-CIMGUI_API bool cimgui::ImGui_BeginTableEx(const char* str_id, int column, ImGuiTableFlags flags, cimgui::ImVec2 outer_size, float inner_width)
+CIMGUI_API bool cimgui::ImGui_BeginTableEx(const char* str_id, int columns, ImGuiTableFlags flags, cimgui::ImVec2 outer_size, float inner_width)
 {
-    return ::ImGui::BeginTable(str_id, column, flags, ConvertToCPP_ImVec2(outer_size), inner_width);
+    return ::ImGui::BeginTable(str_id, columns, flags, ConvertToCPP_ImVec2(outer_size), inner_width);
 }
 
 CIMGUI_API void cimgui::ImGui_EndTable(void)
@@ -1856,6 +1856,11 @@ CIMGUI_API ImGuiTableColumnFlags cimgui::ImGui_TableGetColumnFlags(int column_n)
 CIMGUI_API void                  cimgui::ImGui_TableSetColumnEnabled(int column_n, bool v)
 {
     ::ImGui::TableSetColumnEnabled(column_n, v);
+}
+
+CIMGUI_API int                   cimgui::ImGui_TableGetHoveredColumn(void)
+{
+    return ::ImGui::TableGetHoveredColumn();
 }
 
 CIMGUI_API void                  cimgui::ImGui_TableSetBgColor(ImGuiTableBgTarget target, ImU32 color, int column_n)
@@ -2519,6 +2524,11 @@ CIMGUI_API void cimgui::ImGuiIO_ClearEventsQueue(cimgui::ImGuiIO* self)
 CIMGUI_API void cimgui::ImGuiIO_ClearInputKeys(cimgui::ImGuiIO* self)
 {
     reinterpret_cast<::ImGuiIO*>(self)->ClearInputKeys();
+}
+
+CIMGUI_API void cimgui::ImGuiIO_ClearInputMouse(cimgui::ImGuiIO* self)
+{
+    reinterpret_cast<::ImGuiIO*>(self)->ClearInputMouse();
 }
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
