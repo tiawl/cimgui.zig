@@ -46,9 +46,9 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplGlfw_NewFrame(void)
 
 #ifdef __EMSCRIPTEN__
 
-CIMGUI_IMPL_API void cimgui::cImGui_ImplGlfw_InstallEmscriptenCanvasResizeCallback(const char* canvas_selector)
+CIMGUI_IMPL_API void cimgui::cImGui_ImplGlfw_InstallEmscriptenCallbacks(cimgui::GLFWwindow* window, const char* canvas_selector)
 {
-    ::ImGui_ImplGlfw_InstallEmscriptenCanvasResizeCallback(canvas_selector);
+    ::ImGui_ImplGlfw_InstallEmscriptenCallbacks(reinterpret_cast<::GLFWwindow*>(window), canvas_selector);
 }
 
 #endif // #ifdef __EMSCRIPTEN__

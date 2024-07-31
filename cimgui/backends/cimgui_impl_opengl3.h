@@ -38,7 +38,7 @@ extern "C"
 #include "cimgui.h"
 #ifndef IMGUI_DISABLE
 typedef struct ImDrawData_t ImDrawData;
-// Backend API
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplOpenGL3_Init(void);                                   // Implied glsl_version = nullptr
 CIMGUI_IMPL_API bool cImGui_ImplOpenGL3_InitEx(const char* glsl_version /* = nullptr */);
 CIMGUI_IMPL_API void cImGui_ImplOpenGL3_Shutdown(void);

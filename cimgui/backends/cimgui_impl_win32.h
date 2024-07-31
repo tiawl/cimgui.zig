@@ -2,7 +2,6 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-typedef struct ImDrawData_t ImDrawData;
 // dear imgui: Platform Backend for Windows (standard windows API for 32-bits AND 64-bits applications)
 // This needs to be used along with a Renderer (e.g. DirectX11, OpenGL3, Vulkan..)
 
@@ -29,6 +28,8 @@ extern "C"
 #endif
 #include "cimgui.h"
 #ifndef IMGUI_DISABLE
+typedef struct ImDrawData_t ImDrawData;
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplWin32_Init(void* hwnd);
 CIMGUI_IMPL_API bool cImGui_ImplWin32_InitForOpenGL(void* hwnd);
 CIMGUI_IMPL_API void cImGui_ImplWin32_Shutdown(void);

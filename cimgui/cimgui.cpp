@@ -397,26 +397,6 @@ CIMGUI_API void cimgui::ImGui_SetWindowFocusStr(const char* name)
     ::ImGui::SetWindowFocus(name);
 }
 
-CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetContentRegionAvail(void)
-{
-    return ConvertFromCPP_ImVec2(::ImGui::GetContentRegionAvail());
-}
-
-CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetContentRegionMax(void)
-{
-    return ConvertFromCPP_ImVec2(::ImGui::GetContentRegionMax());
-}
-
-CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetWindowContentRegionMin(void)
-{
-    return ConvertFromCPP_ImVec2(::ImGui::GetWindowContentRegionMin());
-}
-
-CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetWindowContentRegionMax(void)
-{
-    return ConvertFromCPP_ImVec2(::ImGui::GetWindowContentRegionMax());
-}
-
 CIMGUI_API float cimgui::ImGui_GetScrollX(void)
 {
     return ::ImGui::GetScrollX();
@@ -517,24 +497,14 @@ CIMGUI_API void cimgui::ImGui_PopStyleVarEx(int count)
     ::ImGui::PopStyleVar(count);
 }
 
-CIMGUI_API void cimgui::ImGui_PushTabStop(bool tab_stop)
+CIMGUI_API void cimgui::ImGui_PushItemFlag(ImGuiItemFlags option, bool enabled)
 {
-    ::ImGui::PushTabStop(tab_stop);
+    ::ImGui::PushItemFlag(option, enabled);
 }
 
-CIMGUI_API void cimgui::ImGui_PopTabStop(void)
+CIMGUI_API void cimgui::ImGui_PopItemFlag(void)
 {
-    ::ImGui::PopTabStop();
-}
-
-CIMGUI_API void cimgui::ImGui_PushButtonRepeat(bool repeat)
-{
-    ::ImGui::PushButtonRepeat(repeat);
-}
-
-CIMGUI_API void cimgui::ImGui_PopButtonRepeat(void)
-{
-    ::ImGui::PopButtonRepeat();
+    ::ImGui::PopItemFlag();
 }
 
 CIMGUI_API void  cimgui::ImGui_PushItemWidth(float item_width)
@@ -620,6 +590,11 @@ CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetCursorScreenPos(void)
 CIMGUI_API void   cimgui::ImGui_SetCursorScreenPos(cimgui::ImVec2 pos)
 {
     ::ImGui::SetCursorScreenPos(ConvertToCPP_ImVec2(pos));
+}
+
+CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetContentRegionAvail(void)
+{
+    return ConvertFromCPP_ImVec2(::ImGui::GetContentRegionAvail());
 }
 
 CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetCursorPos(void)
@@ -782,6 +757,11 @@ CIMGUI_API ImGuiID cimgui::ImGui_GetIDPtr(const void* ptr_id)
     return ::ImGui::GetID(ptr_id);
 }
 
+CIMGUI_API ImGuiID cimgui::ImGui_GetIDInt(int int_id)
+{
+    return ::ImGui::GetID(int_id);
+}
+
 CIMGUI_API void cimgui::ImGui_TextUnformatted(const char* text)
 {
     ::ImGui::TextUnformatted(text);
@@ -933,6 +913,21 @@ CIMGUI_API void cimgui::ImGui_ProgressBar(float fraction, cimgui::ImVec2 size_ar
 CIMGUI_API void cimgui::ImGui_Bullet(void)
 {
     ::ImGui::Bullet();
+}
+
+CIMGUI_API bool cimgui::ImGui_TextLink(const char* label)
+{
+    return ::ImGui::TextLink(label);
+}
+
+CIMGUI_API void cimgui::ImGui_TextLinkOpenURL(const char* label)
+{
+    ::ImGui::TextLinkOpenURL(label);
+}
+
+CIMGUI_API void cimgui::ImGui_TextLinkOpenURLEx(const char* label, const char* url)
+{
+    ::ImGui::TextLinkOpenURL(label, url);
 }
 
 CIMGUI_API void cimgui::ImGui_Image(ImTextureID user_texture_id, cimgui::ImVec2 image_size)
@@ -1512,6 +1507,11 @@ CIMGUI_API void  cimgui::ImGui_SetNextItemOpen(bool is_open, ImGuiCond cond)
     ::ImGui::SetNextItemOpen(is_open, cond);
 }
 
+CIMGUI_API void  cimgui::ImGui_SetNextItemStorageID(ImGuiID storage_id)
+{
+    ::ImGui::SetNextItemStorageID(storage_id);
+}
+
 CIMGUI_API bool cimgui::ImGui_Selectable(const char* label)
 {
     return ::ImGui::Selectable(label);
@@ -1530,6 +1530,31 @@ CIMGUI_API bool cimgui::ImGui_SelectableBoolPtr(const char* label, bool* p_selec
 CIMGUI_API bool cimgui::ImGui_SelectableBoolPtrEx(const char* label, bool* p_selected, ImGuiSelectableFlags flags, cimgui::ImVec2 size)
 {
     return ::ImGui::Selectable(label, p_selected, flags, ConvertToCPP_ImVec2(size));
+}
+
+CIMGUI_API cimgui::ImGuiMultiSelectIO* cimgui::ImGui_BeginMultiSelect(ImGuiMultiSelectFlags flags)
+{
+    return reinterpret_cast<::cimgui::ImGuiMultiSelectIO*>(::ImGui::BeginMultiSelect(flags));
+}
+
+CIMGUI_API cimgui::ImGuiMultiSelectIO* cimgui::ImGui_BeginMultiSelectEx(ImGuiMultiSelectFlags flags, int selection_size, int items_count)
+{
+    return reinterpret_cast<::cimgui::ImGuiMultiSelectIO*>(::ImGui::BeginMultiSelect(flags, selection_size, items_count));
+}
+
+CIMGUI_API cimgui::ImGuiMultiSelectIO* cimgui::ImGui_EndMultiSelect(void)
+{
+    return reinterpret_cast<::cimgui::ImGuiMultiSelectIO*>(::ImGui::EndMultiSelect());
+}
+
+CIMGUI_API void                cimgui::ImGui_SetNextItemSelectionUserData(ImGuiSelectionUserData selection_user_data)
+{
+    ::ImGui::SetNextItemSelectionUserData(selection_user_data);
+}
+
+CIMGUI_API bool                cimgui::ImGui_IsItemToggledSelection(void)
+{
+    return ::ImGui::IsItemToggledSelection();
 }
 
 CIMGUI_API bool cimgui::ImGui_BeginListBox(const char* label, cimgui::ImVec2 size)
@@ -2281,6 +2306,11 @@ CIMGUI_API void cimgui::ImGui_SetNextItemShortcut(ImGuiKeyChord key_chord, ImGui
     ::ImGui::SetNextItemShortcut(key_chord, flags);
 }
 
+CIMGUI_API void cimgui::ImGui_SetItemKeyOwner(cimgui::ImGuiKey key)
+{
+    ::ImGui::SetItemKeyOwner(static_cast<::ImGuiKey>(key));
+}
+
 CIMGUI_API bool             cimgui::ImGui_IsMouseDown(ImGuiMouseButton button)
 {
     return ::ImGui::IsMouseDown(button);
@@ -2406,25 +2436,42 @@ CIMGUI_API const char* cimgui::ImGui_SaveIniSettingsToMemory(size_t* out_ini_siz
     return ::ImGui::SaveIniSettingsToMemory(out_ini_size);
 }
 
-CIMGUI_API void cimgui::ImGui_DebugTextEncoding(const char* text)
+CIMGUI_API void  cimgui::ImGui_DebugTextEncoding(const char* text)
 {
     ::ImGui::DebugTextEncoding(text);
 }
 
-CIMGUI_API void cimgui::ImGui_DebugFlashStyleColor(ImGuiCol idx)
+CIMGUI_API void  cimgui::ImGui_DebugFlashStyleColor(ImGuiCol idx)
 {
     ::ImGui::DebugFlashStyleColor(idx);
 }
 
-CIMGUI_API void cimgui::ImGui_DebugStartItemPicker(void)
+CIMGUI_API void  cimgui::ImGui_DebugStartItemPicker(void)
 {
     ::ImGui::DebugStartItemPicker();
 }
 
-CIMGUI_API bool cimgui::ImGui_DebugCheckVersionAndDataLayout(const char* version_str, size_t sz_io, size_t sz_style, size_t sz_vec2, size_t sz_vec4, size_t sz_drawvert, size_t sz_drawidx)
+CIMGUI_API bool  cimgui::ImGui_DebugCheckVersionAndDataLayout(const char* version_str, size_t sz_io, size_t sz_style, size_t sz_vec2, size_t sz_vec4, size_t sz_drawvert, size_t sz_drawidx)
 {
     return ::ImGui::DebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx);
 }
+
+#ifndef IMGUI_DISABLE_DEBUG_TOOLS
+
+CIMGUI_API void cimgui::ImGui_DebugLog(const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    ::ImGui::DebugLogV(fmt, args);
+    va_end(args);
+}
+
+CIMGUI_API void cimgui::ImGui_DebugLogV(const char* fmt, va_list args)
+{
+    ::ImGui::DebugLogV(fmt, args);
+}
+
+#endif // #ifndef IMGUI_DISABLE_DEBUG_TOOLS
 
 CIMGUI_API void  cimgui::ImGui_SetAllocatorFunctions(cimgui::ImGuiMemAllocFunc alloc_func, cimgui::ImGuiMemFreeFunc free_func, void* user_data)
 {
@@ -2773,6 +2820,11 @@ CIMGUI_API void cimgui::ImGuiListClipper_IncludeItemsByIndex(cimgui::ImGuiListCl
     reinterpret_cast<::ImGuiListClipper*>(self)->IncludeItemsByIndex(item_begin, item_end);
 }
 
+CIMGUI_API void cimgui::ImGuiListClipper_SeekCursorForItem(cimgui::ImGuiListClipper* self, int item_index)
+{
+    reinterpret_cast<::ImGuiListClipper*>(self)->SeekCursorForItem(item_index);
+}
+
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
 CIMGUI_API void cimgui::ImGuiListClipper_IncludeRangeByIndices(cimgui::ImGuiListClipper* self, int item_begin, int item_end)
@@ -2795,6 +2847,46 @@ CIMGUI_API void    cimgui::ImColor_SetHSV(cimgui::ImColor* self, float h, float 
 CIMGUI_API cimgui::ImColor cimgui::ImColor_HSV(cimgui::ImColor* self, float h, float s, float v, float a)
 {
     return ConvertFromCPP_ImColor(reinterpret_cast<::ImColor*>(self)->ImColor::HSV(h, s, v, a));
+}
+
+CIMGUI_API void    cimgui::ImGuiSelectionBasicStorage_ApplyRequests(cimgui::ImGuiSelectionBasicStorage* self, cimgui::ImGuiMultiSelectIO* ms_io)
+{
+    reinterpret_cast<::ImGuiSelectionBasicStorage*>(self)->ApplyRequests(reinterpret_cast<::ImGuiMultiSelectIO*>(ms_io));
+}
+
+CIMGUI_API bool    cimgui::ImGuiSelectionBasicStorage_Contains(const cimgui::ImGuiSelectionBasicStorage* self, ImGuiID id)
+{
+    return reinterpret_cast<const ::ImGuiSelectionBasicStorage*>(self)->Contains(id);
+}
+
+CIMGUI_API void    cimgui::ImGuiSelectionBasicStorage_Clear(cimgui::ImGuiSelectionBasicStorage* self)
+{
+    reinterpret_cast<::ImGuiSelectionBasicStorage*>(self)->Clear();
+}
+
+CIMGUI_API void    cimgui::ImGuiSelectionBasicStorage_Swap(cimgui::ImGuiSelectionBasicStorage* self, cimgui::ImGuiSelectionBasicStorage* r)
+{
+    reinterpret_cast<::ImGuiSelectionBasicStorage*>(self)->Swap(reinterpret_cast<::ImGuiSelectionBasicStorage&>(*r));
+}
+
+CIMGUI_API void    cimgui::ImGuiSelectionBasicStorage_SetItemSelected(cimgui::ImGuiSelectionBasicStorage* self, ImGuiID id, bool selected)
+{
+    reinterpret_cast<::ImGuiSelectionBasicStorage*>(self)->SetItemSelected(id, selected);
+}
+
+CIMGUI_API bool    cimgui::ImGuiSelectionBasicStorage_GetNextSelectedItem(cimgui::ImGuiSelectionBasicStorage* self, void** opaque_it, ImGuiID* out_id)
+{
+    return reinterpret_cast<::ImGuiSelectionBasicStorage*>(self)->GetNextSelectedItem(opaque_it, out_id);
+}
+
+CIMGUI_API ImGuiID cimgui::ImGuiSelectionBasicStorage_GetStorageIdFromIndex(cimgui::ImGuiSelectionBasicStorage* self, int idx)
+{
+    return reinterpret_cast<::ImGuiSelectionBasicStorage*>(self)->GetStorageIdFromIndex(idx);
+}
+
+CIMGUI_API void cimgui::ImGuiSelectionExternalStorage_ApplyRequests(cimgui::ImGuiSelectionExternalStorage* self, cimgui::ImGuiMultiSelectIO* ms_io)
+{
+    reinterpret_cast<::ImGuiSelectionExternalStorage*>(self)->ApplyRequests(reinterpret_cast<::ImGuiMultiSelectIO*>(ms_io));
 }
 
 CIMGUI_API ImTextureID cimgui::ImDrawCmd_GetTexID(const cimgui::ImDrawCmd* self)
@@ -3540,6 +3632,41 @@ CIMGUI_API cimgui::ImVec2 cimgui::ImGuiViewport_GetWorkCenter(const cimgui::ImGu
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
+CIMGUI_API void     cimgui::ImGui_PushButtonRepeat(bool repeat)
+{
+    ::ImGui::PushButtonRepeat(repeat);
+}
+
+CIMGUI_API void     cimgui::ImGui_PopButtonRepeat(void)
+{
+    ::ImGui::PopButtonRepeat();
+}
+
+CIMGUI_API void     cimgui::ImGui_PushTabStop(bool tab_stop)
+{
+    ::ImGui::PushTabStop(tab_stop);
+}
+
+CIMGUI_API void     cimgui::ImGui_PopTabStop(void)
+{
+    ::ImGui::PopTabStop();
+}
+
+CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetContentRegionMax(void)
+{
+    return ConvertFromCPP_ImVec2(::ImGui::GetContentRegionMax());
+}
+
+CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetWindowContentRegionMin(void)
+{
+    return ConvertFromCPP_ImVec2(::ImGui::GetWindowContentRegionMin());
+}
+
+CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetWindowContentRegionMax(void)
+{
+    return ConvertFromCPP_ImVec2(::ImGui::GetWindowContentRegionMax());
+}
+
 CIMGUI_API bool     cimgui::ImGui_BeginChildFrame(ImGuiID id, cimgui::ImVec2 size)
 {
     return ::ImGui::BeginChildFrame(id, ConvertToCPP_ImVec2(size));
@@ -3560,16 +3687,6 @@ CIMGUI_API void     cimgui::ImGui_ShowStackToolWindow(bool* p_open)
     ::ImGui::ShowStackToolWindow(p_open);
 }
 
-CIMGUI_API bool     cimgui::ImGui_ListBoxObsolete(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count)
-{
-    return ::ImGui::ListBox(label, current_item, old_callback, user_data, items_count);
-}
-
-CIMGUI_API bool     cimgui::ImGui_ListBoxObsoleteEx(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count, int height_in_items)
-{
-    return ::ImGui::ListBox(label, current_item, old_callback, user_data, items_count, height_in_items);
-}
-
 CIMGUI_API bool     cimgui::ImGui_ComboObsolete(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count)
 {
     return ::ImGui::Combo(label, current_item, old_callback, user_data, items_count);
@@ -3578,6 +3695,16 @@ CIMGUI_API bool     cimgui::ImGui_ComboObsolete(const char* label, int* current_
 CIMGUI_API bool     cimgui::ImGui_ComboObsoleteEx(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count, int popup_max_height_in_items)
 {
     return ::ImGui::Combo(label, current_item, old_callback, user_data, items_count, popup_max_height_in_items);
+}
+
+CIMGUI_API bool     cimgui::ImGui_ListBoxObsolete(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count)
+{
+    return ::ImGui::ListBox(label, current_item, old_callback, user_data, items_count);
+}
+
+CIMGUI_API bool     cimgui::ImGui_ListBoxObsoleteEx(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count, int height_in_items)
+{
+    return ::ImGui::ListBox(label, current_item, old_callback, user_data, items_count, height_in_items);
 }
 
 CIMGUI_API void     cimgui::ImGui_SetItemAllowOverlap(void)

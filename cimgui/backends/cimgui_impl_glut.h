@@ -33,8 +33,9 @@ extern "C"
 {
 #endif
 #ifndef IMGUI_DISABLE
-typedef struct ImDrawData_t ImDrawData;
 #include "cimgui.h"
+typedef struct ImDrawData_t ImDrawData;
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplGLUT_Init(void);
 CIMGUI_IMPL_API void cImGui_ImplGLUT_InstallFuncs(void);
 CIMGUI_IMPL_API void cImGui_ImplGLUT_Shutdown(void);

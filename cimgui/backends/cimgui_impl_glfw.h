@@ -31,17 +31,19 @@ extern "C"
 #ifndef IMGUI_DISABLE
 typedef struct GLFWwindow GLFWwindow;
 typedef struct GLFWmonitor GLFWmonitor;
-typedef struct ImDrawData_t ImDrawData;
 
+typedef struct ImDrawData_t ImDrawData;
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplGlfw_InitForOpenGL(GLFWwindow* window, bool install_callbacks);
 CIMGUI_IMPL_API bool cImGui_ImplGlfw_InitForVulkan(GLFWwindow* window, bool install_callbacks);
 CIMGUI_IMPL_API bool cImGui_ImplGlfw_InitForOther(GLFWwindow* window, bool install_callbacks);
 CIMGUI_IMPL_API void cImGui_ImplGlfw_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplGlfw_NewFrame(void);
 
-// Emscripten related initialization phase methods
+// Emscripten related initialization phase methods (call after ImGui_ImplGlfw_InitForOpenGL)
 #ifdef __EMSCRIPTEN__
-CIMGUI_IMPL_API void cImGui_ImplGlfw_InstallEmscriptenCanvasResizeCallback(const char* canvas_selector);
+CIMGUI_IMPL_API void cImGui_ImplGlfw_InstallEmscriptenCallbacks(GLFWwindow* window, const char* canvas_selector);
+//static inline void    ImGui_ImplGlfw_InstallEmscriptenCanvasResizeCallback(const char* canvas_selector) { ImGui_ImplGlfw_InstallEmscriptenCallbacks(nullptr, canvas_selector); } } // Renamed in 1.91.0
 #endif // #ifdef __EMSCRIPTEN__
 // GLFW callbacks install
 // - When calling Init with 'install_callbacks=true': ImGui_ImplGlfw_InstallCallbacks() is called. GLFW callbacks will be installed for you. They will chain-call user's previously installed callbacks, if any.

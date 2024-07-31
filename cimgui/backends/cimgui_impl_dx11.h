@@ -27,8 +27,9 @@ extern "C"
 #ifndef IMGUI_DISABLE
 typedef struct ID3D11Device ID3D11Device;
 typedef struct ID3D11DeviceContext ID3D11DeviceContext;
-typedef struct ImDrawData_t ImDrawData;
 
+typedef struct ImDrawData_t ImDrawData;
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplDX11_Init(ID3D11Device* device, ID3D11DeviceContext* device_context);
 CIMGUI_IMPL_API void cImGui_ImplDX11_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplDX11_NewFrame(void);

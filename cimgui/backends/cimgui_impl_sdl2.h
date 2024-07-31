@@ -34,8 +34,9 @@ typedef struct SDL_Window SDL_Window;
 typedef struct SDL_Renderer SDL_Renderer;
 typedef struct _SDL_GameController _SDL_GameController;
 typedef union SDL_Event SDL_Event;
-typedef struct ImDrawData_t ImDrawData;
 
+typedef struct ImDrawData_t ImDrawData;
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplSDL2_InitForOpenGL(SDL_Window* window, void* sdl_gl_context);
 CIMGUI_IMPL_API bool cImGui_ImplSDL2_InitForVulkan(SDL_Window* window);
 CIMGUI_IMPL_API bool cImGui_ImplSDL2_InitForD3D(SDL_Window* window);

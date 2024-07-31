@@ -35,8 +35,9 @@ extern "C"
 #ifndef IMGUI_DISABLE
 typedef struct ANativeWindow_t ANativeWindow;
 typedef struct AInputEvent_t AInputEvent;
-typedef struct ImDrawData_t ImDrawData;
 
+typedef struct ImDrawData_t ImDrawData;
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplAndroid_Init(ANativeWindow* window);
 CIMGUI_IMPL_API int32_t cImGui_ImplAndroid_HandleInputEvent(const AInputEvent* input_event);
 CIMGUI_IMPL_API void cImGui_ImplAndroid_Shutdown(void);

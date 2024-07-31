@@ -104,7 +104,7 @@ typedef struct ImGui_ImplVulkan_InitInfo_t
 } ImGui_ImplVulkan_InitInfo;
 
 typedef struct ImDrawData_t ImDrawData;
-// Called by user code
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplVulkan_Init(ImGui_ImplVulkan_InitInfo* info);
 CIMGUI_IMPL_API void cImGui_ImplVulkan_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplVulkan_NewFrame(void);
