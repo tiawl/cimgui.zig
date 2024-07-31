@@ -26,8 +26,9 @@ extern "C"
 #include "cimgui.h"
 #ifndef IMGUI_DISABLE
 typedef struct IDirect3DDevice9 IDirect3DDevice9;
-typedef struct ImDrawData_t ImDrawData;
 
+typedef struct ImDrawData_t ImDrawData;
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplDX9_Init(IDirect3DDevice9* device);
 CIMGUI_IMPL_API void cImGui_ImplDX9_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplDX9_NewFrame(void);

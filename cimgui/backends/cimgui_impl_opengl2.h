@@ -2,7 +2,6 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-typedef struct ImDrawData_t ImDrawData;
 // dear imgui: Renderer Backend for OpenGL2 (legacy OpenGL, fixed pipeline)
 // This needs to be used along with a Platform Backend (e.g. GLFW, SDL, Win32, custom..)
 
@@ -33,6 +32,8 @@ extern "C"
 #endif
 #include "cimgui.h"
 #ifndef IMGUI_DISABLE
+typedef struct ImDrawData_t ImDrawData;
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplOpenGL2_Init(void);
 CIMGUI_IMPL_API void cImGui_ImplOpenGL2_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplOpenGL2_NewFrame(void);

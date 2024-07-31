@@ -32,8 +32,9 @@ extern "C"
 #ifndef IMGUI_DISABLE
 typedef struct ALLEGRO_DISPLAY_t ALLEGRO_DISPLAY;
 typedef union ALLEGRO_EVENT_t ALLEGRO_EVENT;
-typedef struct ImDrawData_t ImDrawData;
 
+typedef struct ImDrawData_t ImDrawData;
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplAllegro5_Init(ALLEGRO_DISPLAY* display);
 CIMGUI_IMPL_API void cImGui_ImplAllegro5_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplAllegro5_NewFrame(void);

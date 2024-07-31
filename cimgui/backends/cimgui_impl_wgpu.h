@@ -37,6 +37,7 @@ typedef struct ImGui_ImplWGPU_InitInfo_t
     WGPUMultisampleState PipelineMultisampleState /* = {} */;
 } ImGui_ImplWGPU_InitInfo;
 
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplWGPU_Init(ImGui_ImplWGPU_InitInfo* init_info);
 CIMGUI_IMPL_API void cImGui_ImplWGPU_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplWGPU_NewFrame(void);

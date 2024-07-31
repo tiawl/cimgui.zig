@@ -32,8 +32,9 @@ extern "C"
 #ifndef IMGUI_DISABLE
 #include "cimgui.h"
 typedef struct SDL_Renderer SDL_Renderer;
-typedef struct ImDrawData_t ImDrawData;
 
+typedef struct ImDrawData_t ImDrawData;
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplSDLRenderer2_Init(SDL_Renderer* renderer);
 CIMGUI_IMPL_API void cImGui_ImplSDLRenderer2_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplSDLRenderer2_NewFrame(void);

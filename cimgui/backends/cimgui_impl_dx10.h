@@ -26,8 +26,9 @@ extern "C"
 #include "cimgui.h"
 #ifndef IMGUI_DISABLE
 typedef struct ID3D10Device_t ID3D10Device;
-typedef struct ImDrawData_t ImDrawData;
 
+typedef struct ImDrawData_t ImDrawData;
+// Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplDX10_Init(ID3D10Device* device);
 CIMGUI_IMPL_API void cImGui_ImplDX10_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplDX10_NewFrame(void);
