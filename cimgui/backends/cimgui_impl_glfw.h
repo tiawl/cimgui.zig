@@ -64,6 +64,9 @@ CIMGUI_IMPL_API void cImGui_ImplGlfw_ScrollCallback(GLFWwindow* window, double x
 CIMGUI_IMPL_API void cImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 CIMGUI_IMPL_API void cImGui_ImplGlfw_CharCallback(GLFWwindow* window, unsigned int c);
 CIMGUI_IMPL_API void cImGui_ImplGlfw_MonitorCallback(GLFWmonitor* monitor, int event);
+
+// GLFW helpers
+CIMGUI_IMPL_API void cImGui_ImplGlfw_Sleep(int milliseconds);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
