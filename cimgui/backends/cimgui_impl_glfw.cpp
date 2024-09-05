@@ -108,4 +108,9 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplGlfw_MonitorCallback(cimgui::GLFWmonitor
     ::ImGui_ImplGlfw_MonitorCallback(reinterpret_cast<::GLFWmonitor*>(monitor), event);
 }
 
+CIMGUI_IMPL_API void cimgui::cImGui_ImplGlfw_Sleep(int milliseconds)
+{
+    ::ImGui_ImplGlfw_Sleep(milliseconds);
+}
+
 #endif // #ifndef IMGUI_DISABLE

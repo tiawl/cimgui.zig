@@ -142,22 +142,27 @@ CIMGUI_API cimgui::ImGuiIO* cimgui::ImGui_GetIO(void)
     return reinterpret_cast<::cimgui::ImGuiIO*>(&::ImGui::GetIO());
 }
 
+CIMGUI_API cimgui::ImGuiPlatformIO* cimgui::ImGui_GetPlatformIO(void)
+{
+    return reinterpret_cast<::cimgui::ImGuiPlatformIO*>(&::ImGui::GetPlatformIO());
+}
+
 CIMGUI_API cimgui::ImGuiStyle* cimgui::ImGui_GetStyle(void)
 {
     return reinterpret_cast<::cimgui::ImGuiStyle*>(&::ImGui::GetStyle());
 }
 
-CIMGUI_API void        cimgui::ImGui_NewFrame(void)
+CIMGUI_API void             cimgui::ImGui_NewFrame(void)
 {
     ::ImGui::NewFrame();
 }
 
-CIMGUI_API void        cimgui::ImGui_EndFrame(void)
+CIMGUI_API void             cimgui::ImGui_EndFrame(void)
 {
     ::ImGui::EndFrame();
 }
 
-CIMGUI_API void        cimgui::ImGui_Render(void)
+CIMGUI_API void             cimgui::ImGui_Render(void)
 {
     ::ImGui::Render();
 }
@@ -485,6 +490,16 @@ CIMGUI_API void cimgui::ImGui_PushStyleVar(ImGuiStyleVar idx, float val)
 CIMGUI_API void cimgui::ImGui_PushStyleVarImVec2(ImGuiStyleVar idx, cimgui::ImVec2 val)
 {
     ::ImGui::PushStyleVar(idx, ConvertToCPP_ImVec2(val));
+}
+
+CIMGUI_API void cimgui::ImGui_PushStyleVarX(ImGuiStyleVar idx, float val_x)
+{
+    ::ImGui::PushStyleVarX(idx, val_x);
+}
+
+CIMGUI_API void cimgui::ImGui_PushStyleVarY(ImGuiStyleVar idx, float val_y)
+{
+    ::ImGui::PushStyleVarY(idx, val_y);
 }
 
 CIMGUI_API void cimgui::ImGui_PopStyleVar(void)
@@ -1898,9 +1913,9 @@ CIMGUI_API void  cimgui::ImGui_Columns(void)
     ::ImGui::Columns();
 }
 
-CIMGUI_API void  cimgui::ImGui_ColumnsEx(int count, const char* id, bool border)
+CIMGUI_API void  cimgui::ImGui_ColumnsEx(int count, const char* id, bool borders)
 {
-    ::ImGui::Columns(count, id, border);
+    ::ImGui::Columns(count, id, borders);
 }
 
 CIMGUI_API void  cimgui::ImGui_NextColumn(void)
@@ -3309,6 +3324,11 @@ CIMGUI_API void        cimgui::ImDrawList__OnChangedVtxOffset(cimgui::ImDrawList
     reinterpret_cast<::ImDrawList*>(self)->_OnChangedVtxOffset();
 }
 
+CIMGUI_API void        cimgui::ImDrawList__SetTextureID(cimgui::ImDrawList* self, ImTextureID texture_id)
+{
+    reinterpret_cast<::ImDrawList*>(self)->_SetTextureID(texture_id);
+}
+
 CIMGUI_API int         cimgui::ImDrawList__CalcCircleAutoSegmentCount(const cimgui::ImDrawList* self, float radius)
 {
     return reinterpret_cast<const ::ImDrawList*>(self)->_CalcCircleAutoSegmentCount(radius);
@@ -3720,11 +3740,6 @@ CIMGUI_API void     cimgui::ImGui_PushAllowKeyboardFocus(bool tab_stop)
 CIMGUI_API void     cimgui::ImGui_PopAllowKeyboardFocus(void)
 {
     ::ImGui::PopAllowKeyboardFocus();
-}
-
-CIMGUI_API bool     cimgui::ImGui_ImageButtonImTextureID(ImTextureID user_texture_id, cimgui::ImVec2 size, cimgui::ImVec2 uv0, cimgui::ImVec2 uv1, int frame_padding, cimgui::ImVec4 bg_col, cimgui::ImVec4 tint_col)
-{
-    return ::ImGui::ImageButton(user_texture_id, ConvertToCPP_ImVec2(size), ConvertToCPP_ImVec2(uv0), ConvertToCPP_ImVec2(uv1), frame_padding, ConvertToCPP_ImVec4(bg_col), ConvertToCPP_ImVec4(tint_col));
 }
 
 CIMGUI_API cimgui::ImGuiKey cimgui::ImGui_GetKeyIndex(cimgui::ImGuiKey key)
