@@ -14,8 +14,8 @@
             .hash = "1220847ee6311f56316db150a76ca74c0c3b23f3dde2fa3d6b7f906387e81dae9c66",
         },
         .toolbox = .{
-            .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.11.0.tar.gz",
-            .hash = "12201f1054079c650ec2e3b482ec8635577fc461751a884728947b01f8dcf22d5126",
+            .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.11.1.tar.gz",
+            .hash = "1220ef9bc01cb4a9e4825f651e3df2f14d9ac7673c21ad2459ad6c9150776a7c27ef",
         },
     },
 }
