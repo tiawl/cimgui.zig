@@ -2859,9 +2859,9 @@ CIMGUI_API void    cimgui::ImColor_SetHSV(cimgui::ImColor* self, float h, float 
     reinterpret_cast<::ImColor*>(self)->SetHSV(h, s, v, a);
 }
 
-CIMGUI_API cimgui::ImColor cimgui::ImColor_HSV(cimgui::ImColor* self, float h, float s, float v, float a)
+CIMGUI_API cimgui::ImColor cimgui::ImColor_HSV(float h, float s, float v, float a)
 {
-    return ConvertFromCPP_ImColor(reinterpret_cast<::ImColor*>(self)->ImColor::HSV(h, s, v, a));
+    return ConvertFromCPP_ImColor(::ImColor::HSV(h, s, v, a));
 }
 
 CIMGUI_API void    cimgui::ImGuiSelectionBasicStorage_ApplyRequests(cimgui::ImGuiSelectionBasicStorage* self, cimgui::ImGuiMultiSelectIO* ms_io)

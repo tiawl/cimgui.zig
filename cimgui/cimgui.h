@@ -2935,7 +2935,7 @@ typedef struct ImColor_t
 } ImColor;
 // FIXME-OBSOLETE: May need to obsolete/cleanup those helpers.
 CIMGUI_API void    ImColor_SetHSV(ImColor* self, float h, float s, float v, float a /* = 1.0f */);
-CIMGUI_API ImColor ImColor_HSV(ImColor* self, float h, float s, float v, float a /* = 1.0f */);
+CIMGUI_API ImColor ImColor_HSV(float h, float s, float v, float a /* = 1.0f */);
 
 //-----------------------------------------------------------------------------
 // [SECTION] Multi-Select API flags and structures (ImGuiMultiSelectFlags, ImGuiSelectionRequestType, ImGuiSelectionRequest, ImGuiMultiSelectIO, ImGuiSelectionBasicStorage)

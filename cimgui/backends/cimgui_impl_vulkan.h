@@ -30,6 +30,9 @@
 //   the backend itself (imgui_impl_vulkan.cpp), but should PROBABLY NOT be used by your own engine/app code.
 // Read comments in imgui_impl_vulkan.h.
 
+// Auto-generated forward declarations for C header
+typedef struct ImGui_ImplVulkan_InitInfo_t ImGui_ImplVulkan_InitInfo;
+typedef struct ImGui_ImplVulkanH_FrameSemaphores_t ImGui_ImplVulkanH_FrameSemaphores;
 #pragma once
 
 #ifdef __cplusplus

@@ -18,6 +18,8 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
+// Auto-generated forward declarations for C header
+typedef struct ImGui_ImplWGPU_InitInfo_t ImGui_ImplWGPU_InitInfo;
 #pragma once
 
 #ifdef __cplusplus
