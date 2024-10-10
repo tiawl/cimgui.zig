@@ -17,7 +17,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: tiawl/spaceporn-action-cd-pong@v1.0.2
+    - uses: tiawl/spaceporn-action-cd-pong@v1.1.0
       with:
         to: "${{ github.repository }}"
         from: "${{ github.event.client_payload.from }}"
