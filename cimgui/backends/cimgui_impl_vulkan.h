@@ -8,9 +8,7 @@
 // Implemented features:
 //  [!] Renderer: User texture binding. Use 'VkDescriptorSet' as ImTextureID. Read the FAQ about ImTextureID! See https://github.com/ocornut/imgui/pull/914 for discussions.
 //  [X] Renderer: Large meshes support (64k+ vertices) with 16-bit indices.
-
-// Important: on 32-bit systems, user texture binding is only supported if your imconfig file has '#define ImTextureID ImU64'.
-// See imgui_impl_vulkan.cpp file for details.
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
 
 // The aim of imgui_impl_vulkan.h/.cpp is to be usable in your engine without any modification.
 // IF YOU FEEL YOU NEED TO MAKE ANY CHANGE TO THIS CODE, please share them and your feedback at https://github.com/ocornut/imgui/
@@ -32,6 +30,7 @@
 
 // Auto-generated forward declarations for C header
 typedef struct ImGui_ImplVulkan_InitInfo_t ImGui_ImplVulkan_InitInfo;
+typedef struct ImGui_ImplVulkan_RenderState_t ImGui_ImplVulkan_RenderState;
 typedef struct ImGui_ImplVulkanH_FrameSemaphores_t ImGui_ImplVulkanH_FrameSemaphores;
 #pragma once
 
@@ -127,6 +126,16 @@ CIMGUI_IMPL_API void       cImGui_ImplVulkan_RemoveTexture(VkDescriptorSet descr
 // This is only useful with IMGUI_IMPL_VULKAN_NO_PROTOTYPES / VK_NO_PROTOTYPES
 CIMGUI_IMPL_API bool cImGui_ImplVulkan_LoadFunctions(PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data));                                // Implied user_data = nullptr
 CIMGUI_IMPL_API bool cImGui_ImplVulkan_LoadFunctionsEx(PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data), void* user_data /* = nullptr */);
+
+// [BETA] Selected render state data shared with callbacks.
+// This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplVulkan_RenderDrawData() call.
+// (Please open an issue if you feel you need access to more data)
+typedef struct ImGui_ImplVulkan_RenderState_t
+{
+    VkCommandBuffer  CommandBuffer;
+    VkPipeline       Pipeline;
+    VkPipelineLayout PipelineLayout;
+} ImGui_ImplVulkan_RenderState;
 
 //-------------------------------------------------------------------------
 // Internal / Miscellaneous Vulkan Helpers
