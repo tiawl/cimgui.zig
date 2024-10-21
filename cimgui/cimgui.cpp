@@ -2091,6 +2091,11 @@ CIMGUI_API void cimgui::ImGui_SetKeyboardFocusHereEx(int offset)
     ::ImGui::SetKeyboardFocusHere(offset);
 }
 
+CIMGUI_API void cimgui::ImGui_SetNavCursorVisible(bool visible)
+{
+    ::ImGui::SetNavCursorVisible(visible);
+}
+
 CIMGUI_API void cimgui::ImGui_SetNextItemAllowOverlap(void)
 {
     ::ImGui::SetNextItemAllowOverlap();
@@ -3219,9 +3224,14 @@ CIMGUI_API void        cimgui::ImDrawList_PathRect(cimgui::ImDrawList* self, cim
     reinterpret_cast<::ImDrawList*>(self)->PathRect(ConvertToCPP_ImVec2(rect_min), ConvertToCPP_ImVec2(rect_max), rounding, flags);
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddCallback(cimgui::ImDrawList* self, cimgui::ImDrawCallback callback, void* callback_data)
+CIMGUI_API void        cimgui::ImDrawList_AddCallback(cimgui::ImDrawList* self, cimgui::ImDrawCallback callback, void* userdata)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddCallback(reinterpret_cast<::ImDrawCallback>(callback), callback_data);
+    reinterpret_cast<::ImDrawList*>(self)->AddCallback(reinterpret_cast<::ImDrawCallback>(callback), userdata);
+}
+
+CIMGUI_API void        cimgui::ImDrawList_AddCallbackEx(cimgui::ImDrawList* self, cimgui::ImDrawCallback callback, void* userdata, size_t userdata_size)
+{
+    reinterpret_cast<::ImDrawList*>(self)->AddCallback(reinterpret_cast<::ImDrawCallback>(callback), userdata, userdata_size);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_AddDrawCmd(cimgui::ImDrawList* self)

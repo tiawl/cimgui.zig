@@ -8,6 +8,7 @@
 // Implemented features:
 //  [X] Renderer: User texture binding. Use 'ID3D11ShaderResourceView*' as ImTextureID. Read the FAQ about ImTextureID!
 //  [X] Renderer: Large meshes support (64k+ vertices) with 16-bit indices.
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
@@ -17,6 +18,8 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
+// Auto-generated forward declarations for C header
+typedef struct ImGui_ImplDX11_RenderState_t ImGui_ImplDX11_RenderState;
 #pragma once
 
 #ifdef __cplusplus
@@ -27,6 +30,7 @@ extern "C"
 #ifndef IMGUI_DISABLE
 typedef struct ID3D11Device ID3D11Device;
 typedef struct ID3D11DeviceContext ID3D11DeviceContext;
+typedef struct ID3D11SamplerState_t ID3D11SamplerState;
 
 typedef struct ImDrawData_t ImDrawData;
 // Follow "Getting Started" link and check examples/ folder to learn about using backends!
@@ -38,6 +42,16 @@ CIMGUI_IMPL_API void cImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data);
 // Use if you want to reset your rendering device without losing Dear ImGui state.
 CIMGUI_IMPL_API void cImGui_ImplDX11_InvalidateDeviceObjects(void);
 CIMGUI_IMPL_API bool cImGui_ImplDX11_CreateDeviceObjects(void);
+
+// [BETA] Selected render state data shared with callbacks.
+// This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplDX11_RenderDrawData() call.
+// (Please open an issue if you feel you need access to more data)
+typedef struct ImGui_ImplDX11_RenderState_t
+{
+    ID3D11Device*        Device;
+    ID3D11DeviceContext* DeviceContext;
+    ID3D11SamplerState*  SamplerDefault;
+} ImGui_ImplDX11_RenderState;
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block

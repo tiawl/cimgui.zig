@@ -16,6 +16,7 @@
 // Implemented features:
 //  [X] Renderer: User texture binding. Use 'SDL_Texture*' as ImTextureID. Read the FAQ about ImTextureID!
 //  [X] Renderer: Large meshes support (64k+ vertices) with 16-bit indices.
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
 
 // You can copy and use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
@@ -25,6 +26,8 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
+// Auto-generated forward declarations for C header
+typedef struct ImGui_ImplSDLRenderer3_RenderState_t ImGui_ImplSDLRenderer3_RenderState;
 #pragma once
 
 #ifdef __cplusplus
@@ -47,6 +50,14 @@ CIMGUI_IMPL_API bool cImGui_ImplSDLRenderer3_CreateFontsTexture(void);
 CIMGUI_IMPL_API void cImGui_ImplSDLRenderer3_DestroyFontsTexture(void);
 CIMGUI_IMPL_API bool cImGui_ImplSDLRenderer3_CreateDeviceObjects(void);
 CIMGUI_IMPL_API void cImGui_ImplSDLRenderer3_DestroyDeviceObjects(void);
+
+// [BETA] Selected render state data shared with callbacks.
+// This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplSDLRenderer3_RenderDrawData() call.
+// (Please open an issue if you feel you need access to more data)
+typedef struct ImGui_ImplSDLRenderer3_RenderState_t
+{
+    SDL_Renderer* Renderer;
+} ImGui_ImplSDLRenderer3_RenderState;
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block

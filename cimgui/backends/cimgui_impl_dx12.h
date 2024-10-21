@@ -8,9 +8,7 @@
 // Implemented features:
 //  [X] Renderer: User texture binding. Use 'D3D12_GPU_DESCRIPTOR_HANDLE' as ImTextureID. Read the FAQ about ImTextureID!
 //  [X] Renderer: Large meshes support (64k+ vertices) with 16-bit indices.
-
-// Important: to compile on 32-bit systems, this backend requires code to be compiled with '#define ImTextureID ImU64'.
-// See imgui_impl_dx12.cpp file for details.
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
@@ -20,6 +18,8 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
+// Auto-generated forward declarations for C header
+typedef struct ImGui_ImplDX12_RenderState_t ImGui_ImplDX12_RenderState;
 #pragma once
 
 #ifdef __cplusplus
@@ -37,8 +37,7 @@ typedef struct D3D12_GPU_DESCRIPTOR_HANDLE D3D12_GPU_DESCRIPTOR_HANDLE;
 
 // Follow "Getting Started" link and check examples/ folder to learn about using backends!
 
-// cmd_list is the command list that the implementation will use to render imgui draw lists.
-// Before calling the render function, caller must prepare cmd_list by resetting it and setting the appropriate
+// Before calling the render function, caller must prepare the command list by resetting it and setting the appropriate
 // render target and descriptor heap that contains font_srv_cpu_desc_handle/font_srv_gpu_desc_handle.
 typedef struct ImDrawData_t ImDrawData;
 // font_srv_cpu_desc_handle and font_srv_gpu_desc_handle are handles to a single SRV descriptor to use for the internal font texture.
@@ -50,6 +49,15 @@ CIMGUI_IMPL_API void cImGui_ImplDX12_RenderDrawData(ImDrawData* draw_data, ID3D1
 // Use if you want to reset your rendering device without losing Dear ImGui state.
 CIMGUI_IMPL_API void cImGui_ImplDX12_InvalidateDeviceObjects(void);
 CIMGUI_IMPL_API bool cImGui_ImplDX12_CreateDeviceObjects(void);
+
+// [BETA] Selected render state data shared with callbacks.
+// This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplDX12_RenderDrawData() call.
+// (Please open an issue if you feel you need access to more data)
+typedef struct ImGui_ImplDX12_RenderState_t
+{
+    ID3D12Device*              Device;
+    ID3D12GraphicsCommandList* CommandList;
+} ImGui_ImplDX12_RenderState;
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
