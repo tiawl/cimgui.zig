@@ -62,9 +62,11 @@ These additional options have been implemented for maintainability tasks:
 
 ## License
 
-The unprotected parts of this repository are dedicated to the public domain. See the LICENSE file for more details.
+This repository is not subject to a unique License:
 
-**For other parts, it is not dedicated to the public domain. I can not remove any license restriction their respective owners choosed. If you have any doubt about a file property, open an issue.**
+The parts of this repository originated from this repository are dedicated to the public domain. See the LICENSE file for more details.
+
+**For other parts, it is subject to the License restrictions their respective owners choosed. By design, the public domain code is incompatible with the License notion. In this case, the License prevails. So if you have any doubt about a file property, open an issue.**
 
 [1]:https://github.com/ocornut/imgui
 [2]:https://github.com/ziglang/zig
