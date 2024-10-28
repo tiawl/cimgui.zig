@@ -27,7 +27,7 @@
 extern "C"
 {
 #endif
-#include "cimgui.h"
+#include "dcimgui.h"
 #ifndef IMGUI_DISABLE
 typedef struct GLFWwindow GLFWwindow;
 typedef struct GLFWmonitor GLFWmonitor;

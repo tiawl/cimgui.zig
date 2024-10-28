@@ -28,7 +28,7 @@
 extern "C"
 {
 #endif
-#include "cimgui.h"
+#include "dcimgui.h"
 #ifndef IMGUI_DISABLE
 typedef struct SDL_Window SDL_Window;
 typedef struct SDL_Renderer SDL_Renderer;

@@ -34,7 +34,7 @@ typedef struct ImGui_ImplSDLRenderer3_RenderState_t ImGui_ImplSDLRenderer3_Rende
 extern "C"
 {
 #endif
-#include "cimgui.h"
+#include "dcimgui.h"
 #ifndef IMGUI_DISABLE
 typedef struct SDL_Renderer SDL_Renderer;
 

@@ -26,7 +26,7 @@ typedef struct ImGui_ImplDX11_RenderState_t ImGui_ImplDX11_RenderState;
 extern "C"
 {
 #endif
-#include "cimgui.h"
+#include "dcimgui.h"
 #ifndef IMGUI_DISABLE
 typedef struct ID3D11Device ID3D11Device;
 typedef struct ID3D11DeviceContext ID3D11DeviceContext;

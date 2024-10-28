@@ -33,7 +33,7 @@ extern "C"
 {
 #endif
 #ifndef IMGUI_DISABLE
-#include "cimgui.h"
+#include "dcimgui.h"
 typedef struct SDL_Renderer SDL_Renderer;
 
 typedef struct ImDrawData_t ImDrawData;
