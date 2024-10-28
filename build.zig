@@ -14,7 +14,7 @@ const platformOption = backends.platformOption;
 fn update (builder: *std.Build, path: *const Paths,
   dependencies: *const toolbox.Dependencies) !void
 {
-  for ([_][] const u8 { path.getCimgui (), path.getTmp (), }) |clone_path|
+  for ([_][] const u8 { path.getDcimgui (), path.getTmp (), }) |clone_path|
   {
     std.fs.deleteTreeAbsolute (clone_path) catch |err|
     {
@@ -26,35 +26,35 @@ fn update (builder: *std.Build, path: *const Paths,
     };
   }
 
-  try dependencies.clone (builder, "imgui", path.getCimgui ());
+  try dependencies.clone (builder, "imgui", path.getDcimgui ());
 
-  var cimgui_dir = try std.fs.openDirAbsolute (path.getCimgui (),
+  var dcimgui_dir = try std.fs.openDirAbsolute (path.getDcimgui (),
     .{ .iterate = true, });
-  defer cimgui_dir.close ();
+  defer dcimgui_dir.close ();
 
-  var it = cimgui_dir.iterate ();
+  var it = dcimgui_dir.iterate ();
   while (try it.next ()) |*entry|
   {
     if (!std.mem.eql (u8, entry.name, "backends") and
       !std.mem.startsWith (u8, entry.name, "im"))
         try std.fs.deleteTreeAbsolute (try std.fs.path.join (builder.allocator,
-          &.{ path.getCimgui (), entry.name, }));
+          &.{ path.getDcimgui (), entry.name, }));
   }
 
   var backends_dir = try std.fs.openDirAbsolute (path.getBackends (),
     .{ .iterate = true, });
   defer backends_dir.close ();
 
-  try dependencies.clone (builder, "cimgui", path.getTmp ());
+  try dependencies.clone (builder, "dcimgui", path.getTmp ());
 
   const binding_py = try std.fs.path.join (builder.allocator,
     &.{ path.getTmp (), "dear_bindings.py", });
   const imconfig_h = try std.fs.path.join (builder.allocator,
-    &.{ path.getCimgui (), "imconfig.h", });
+    &.{ path.getDcimgui (), "imconfig.h", });
   const imgui_h = try std.fs.path.join (builder.allocator,
-    &.{ path.getCimgui (), "imgui.h", });
+    &.{ path.getDcimgui (), "imgui.h", });
   const imgui_out = try std.fs.path.join (builder.allocator,
-    &.{ path.getCimgui (), "cimgui", });
+    &.{ path.getDcimgui (), "dcimgui", });
   try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py,
     "--output", imgui_out, imgui_h, }, });
 
@@ -89,7 +89,7 @@ fn update (builder: *std.Build, path: *const Paths,
   }
 
   try std.fs.deleteTreeAbsolute (path.getTmp ());
-  try toolbox.clean (builder, &.{ "cimgui", }, &.{});
+  try toolbox.clean (builder, &.{ "dcimgui", }, &.{});
 }
 
 pub fn build (builder: *std.Build) !void
@@ -100,7 +100,7 @@ pub fn build (builder: *std.Build) !void
   const path = try Paths.init (builder);
 
   const dependencies = try toolbox.Dependencies.init (builder, "cimgui.zig",
-  &.{ "build", "cimgui", },
+  &.{ "build", "dcimgui", },
   .{
      .toolbox = .{
        .name = "tiawl/toolbox",
@@ -118,7 +118,7 @@ pub fn build (builder: *std.Build) !void
        .host = toolbox.Repository.Host.github,
        .ref = toolbox.Repository.Reference.tag,
      },
-     .cimgui = .{
+     .dcimgui = .{
        .name = "dearimgui/dear_bindings",
        .host = toolbox.Repository.Host.github,
        .ref = toolbox.Repository.Reference.commit,
@@ -145,25 +145,25 @@ pub fn build (builder: *std.Build) !void
 
   while (try walk.next ()) |*entry|
   {
-    if (std.mem.startsWith (u8, entry.path, "cimgui") and
+    if (std.mem.startsWith (u8, entry.path, "dcimgui") and
       entry.kind == .directory) toolbox.addInclude (lib, entry.path);
   }
 
-  var cimgui_dir = try std.fs.openDirAbsolute (path.getCimgui (),
+  var dcimgui_dir = try std.fs.openDirAbsolute (path.getDcimgui (),
     .{ .iterate = true, });
-  defer cimgui_dir.close ();
+  defer dcimgui_dir.close ();
 
-  toolbox.addHeader (lib, path.getCimgui (), ".", &.{ ".h", });
+  toolbox.addHeader (lib, path.getDcimgui (), ".", &.{ ".h", });
 
   lib.linkLibCpp ();
 
-  var it = cimgui_dir.iterate ();
+  var it = dcimgui_dir.iterate ();
   while (try it.next ()) |*entry|
   {
     if ((std.mem.startsWith (u8, entry.name, "imgui") or
-      std.mem.startsWith (u8, entry.name, "cimgui")) and
+      std.mem.startsWith (u8, entry.name, "dcimgui")) and
       toolbox.isCppSource (entry.name) and entry.kind == .file)
-        try toolbox.addSource (lib, path.getCimgui (), entry.name,
+        try toolbox.addSource (lib, path.getDcimgui (), entry.name,
           flags.slice ());
   }
 

@@ -2,10 +2,12 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-// dear imgui: Renderer Backend for SDL_Renderer for SDL2
-// (Requires: SDL 2.0.17+)
+// dear imgui: Renderer Backend for SDL_Renderer for SDL3
+// (Requires: SDL 3.0.0+)
 
-// Note how SDL_Renderer is an _optional_ component of SDL2.
+// (**IMPORTANT: SDL 3.0.0 is NOT YET RELEASED AND CURRENTLY HAS A FAST CHANGING API. THIS CODE BREAKS OFTEN AS SDL3 CHANGES.**)
+
+// Note how SDL_Renderer is an _optional_ component of SDL3.
 // For a multi-platform app consider using e.g. SDL+DirectX on Windows and SDL+OpenGL on Linux/OSX.
 // If your application will want to render any non trivial amount of graphics other than UI,
 // please be aware that SDL_Renderer currently offers a limited graphic API to the end-user and
@@ -16,7 +18,7 @@
 //  [X] Renderer: Large meshes support (64k+ vertices) with 16-bit indices.
 //  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
 
-// You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
+// You can copy and use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
 // Learn about Dear ImGui:
 // - FAQ                  https://dearimgui.com/faq
@@ -25,37 +27,37 @@
 // - Introduction, links and more at the top of imgui.cpp
 
 // Auto-generated forward declarations for C header
-typedef struct ImGui_ImplSDLRenderer2_RenderState_t ImGui_ImplSDLRenderer2_RenderState;
+typedef struct ImGui_ImplSDLRenderer3_RenderState_t ImGui_ImplSDLRenderer3_RenderState;
 #pragma once
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+#include "dcimgui.h"
 #ifndef IMGUI_DISABLE
-#include "cimgui.h"
 typedef struct SDL_Renderer SDL_Renderer;
 
 typedef struct ImDrawData_t ImDrawData;
 // Follow "Getting Started" link and check examples/ folder to learn about using backends!
-CIMGUI_IMPL_API bool cImGui_ImplSDLRenderer2_Init(SDL_Renderer* renderer);
-CIMGUI_IMPL_API void cImGui_ImplSDLRenderer2_Shutdown(void);
-CIMGUI_IMPL_API void cImGui_ImplSDLRenderer2_NewFrame(void);
-CIMGUI_IMPL_API void cImGui_ImplSDLRenderer2_RenderDrawData(ImDrawData* draw_data, SDL_Renderer* renderer);
+CIMGUI_IMPL_API bool cImGui_ImplSDLRenderer3_Init(SDL_Renderer* renderer);
+CIMGUI_IMPL_API void cImGui_ImplSDLRenderer3_Shutdown(void);
+CIMGUI_IMPL_API void cImGui_ImplSDLRenderer3_NewFrame(void);
+CIMGUI_IMPL_API void cImGui_ImplSDLRenderer3_RenderDrawData(ImDrawData* draw_data, SDL_Renderer* renderer);
 
 // Called by Init/NewFrame/Shutdown
-CIMGUI_IMPL_API bool cImGui_ImplSDLRenderer2_CreateFontsTexture(void);
-CIMGUI_IMPL_API void cImGui_ImplSDLRenderer2_DestroyFontsTexture(void);
-CIMGUI_IMPL_API bool cImGui_ImplSDLRenderer2_CreateDeviceObjects(void);
-CIMGUI_IMPL_API void cImGui_ImplSDLRenderer2_DestroyDeviceObjects(void);
+CIMGUI_IMPL_API bool cImGui_ImplSDLRenderer3_CreateFontsTexture(void);
+CIMGUI_IMPL_API void cImGui_ImplSDLRenderer3_DestroyFontsTexture(void);
+CIMGUI_IMPL_API bool cImGui_ImplSDLRenderer3_CreateDeviceObjects(void);
+CIMGUI_IMPL_API void cImGui_ImplSDLRenderer3_DestroyDeviceObjects(void);
 
 // [BETA] Selected render state data shared with callbacks.
-// This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplSDLRenderer2_RenderDrawData() call.
+// This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplSDLRenderer3_RenderDrawData() call.
 // (Please open an issue if you feel you need access to more data)
-typedef struct ImGui_ImplSDLRenderer2_RenderState_t
+typedef struct ImGui_ImplSDLRenderer3_RenderState_t
 {
     SDL_Renderer* Renderer;
-} ImGui_ImplSDLRenderer2_RenderState;
+} ImGui_ImplSDLRenderer3_RenderState;
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block

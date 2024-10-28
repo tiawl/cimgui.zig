@@ -35,7 +35,7 @@ typedef struct ImGui_ImplWGPU_RenderState_t ImGui_ImplWGPU_RenderState;
 extern "C"
 {
 #endif
-#include "cimgui.h"
+#include "dcimgui.h"
 #ifndef IMGUI_DISABLE
 #include <webgpu/webgpu.h>                                                               // Initialization data, for ImGui_ImplWGPU_Init()
 typedef struct ImGui_ImplWGPU_InitInfo_ImDrawData_t ImGui_ImplWGPU_InitInfo_ImDrawData;

@@ -26,7 +26,7 @@ typedef struct ImGui_ImplDX12_RenderState_t ImGui_ImplDX12_RenderState;
 extern "C"
 {
 #endif
-#include "cimgui.h"
+#include "dcimgui.h"
 #ifndef IMGUI_DISABLE
 #include <dxgiformat.h>
 typedef struct ID3D12Device ID3D12Device;

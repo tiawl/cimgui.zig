@@ -23,7 +23,7 @@
 extern "C"
 {
 #endif
-#include "cimgui.h"
+#include "dcimgui.h"
 #ifndef IMGUI_DISABLE
 typedef struct IDirect3DDevice9 IDirect3DDevice9;
 

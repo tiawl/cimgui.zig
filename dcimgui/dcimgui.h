@@ -2235,186 +2235,26 @@ CIMGUI_API ImStr ImStr_FromCharStr(const char* b);  // Build an ImStr from a reg
 //-----------------------------------------------------------------------------
 
 IM_MSVC_RUNTIME_CHECKS_OFF
-
-// Instantiation of ImVector<ImWchar>
-
-typedef struct ImVector_ImWchar_t
-{
-    int      Size;
-    int      Capacity;
-    ImWchar* Data;
-} ImVector_ImWchar;
-
-// Instantiation of ImVector<ImGuiTextFilter_ImGuiTextRange>
-
-typedef struct ImVector_ImGuiTextFilter_ImGuiTextRange_t
-{
-    int                             Size;
-    int                             Capacity;
-    ImGuiTextFilter_ImGuiTextRange* Data;
-} ImVector_ImGuiTextFilter_ImGuiTextRange;
-
-// Instantiation of ImVector<char>
-
-typedef struct ImVector_char_t
-{
-    int   Size;
-    int   Capacity;
-    char* Data;
-} ImVector_char;
-
-// Instantiation of ImVector<ImGuiStoragePair>
-
-typedef struct ImVector_ImGuiStoragePair_t
-{
-    int               Size;
-    int               Capacity;
-    ImGuiStoragePair* Data;
-} ImVector_ImGuiStoragePair;
-
-// Instantiation of ImVector<ImGuiSelectionRequest>
-
-typedef struct ImVector_ImGuiSelectionRequest_t
-{
-    int                    Size;
-    int                    Capacity;
-    ImGuiSelectionRequest* Data;
-} ImVector_ImGuiSelectionRequest;
-
-// Instantiation of ImVector<ImDrawCmd>
-
-typedef struct ImVector_ImDrawCmd_t
-{
-    int        Size;
-    int        Capacity;
-    ImDrawCmd* Data;
-} ImVector_ImDrawCmd;
-
-// Instantiation of ImVector<ImDrawIdx>
-
-typedef struct ImVector_ImDrawIdx_t
-{
-    int        Size;
-    int        Capacity;
-    ImDrawIdx* Data;
-} ImVector_ImDrawIdx;
-
-// Instantiation of ImVector<ImDrawChannel>
-
-typedef struct ImVector_ImDrawChannel_t
-{
-    int            Size;
-    int            Capacity;
-    ImDrawChannel* Data;
-} ImVector_ImDrawChannel;
-
-// Instantiation of ImVector<ImDrawVert>
-
-typedef struct ImVector_ImDrawVert_t
-{
-    int         Size;
-    int         Capacity;
-    ImDrawVert* Data;
-} ImVector_ImDrawVert;
-
-// Instantiation of ImVector<ImVec2>
-
-typedef struct ImVector_ImVec2_t
-{
-    int     Size;
-    int     Capacity;
-    ImVec2* Data;
-} ImVector_ImVec2;
-
-// Instantiation of ImVector<ImVec4>
-
-typedef struct ImVector_ImVec4_t
-{
-    int     Size;
-    int     Capacity;
-    ImVec4* Data;
-} ImVector_ImVec4;
-
-// Instantiation of ImVector<ImTextureID>
-
-typedef struct ImVector_ImTextureID_t
-{
-    int          Size;
-    int          Capacity;
-    ImTextureID* Data;
-} ImVector_ImTextureID;
-
-// Instantiation of ImVector<ImU8>
-
-typedef struct ImVector_ImU8_t
-{
-    int   Size;
-    int   Capacity;
-    ImU8* Data;
-} ImVector_ImU8;
-
-// Instantiation of ImVector<ImDrawList*>
-
-typedef struct ImVector_ImDrawListPtr_t
-{
-    int          Size;
-    int          Capacity;
-    ImDrawList** Data;
-} ImVector_ImDrawListPtr;
-
-// Instantiation of ImVector<ImU32>
-
-typedef struct ImVector_ImU32_t
-{
-    int    Size;
-    int    Capacity;
-    ImU32* Data;
-} ImVector_ImU32;
-
-// Instantiation of ImVector<ImFont*>
-
-typedef struct ImVector_ImFontPtr_t
-{
-    int      Size;
-    int      Capacity;
-    ImFont** Data;
-} ImVector_ImFontPtr;
-
-// Instantiation of ImVector<ImFontAtlasCustomRect>
-
-typedef struct ImVector_ImFontAtlasCustomRect_t
-{
-    int                    Size;
-    int                    Capacity;
-    ImFontAtlasCustomRect* Data;
-} ImVector_ImFontAtlasCustomRect;
-
-// Instantiation of ImVector<ImFontConfig>
-
-typedef struct ImVector_ImFontConfig_t
-{
-    int           Size;
-    int           Capacity;
-    ImFontConfig* Data;
-} ImVector_ImFontConfig;
-
-// Instantiation of ImVector<float>
-
-typedef struct ImVector_float_t
-{
-    int    Size;
-    int    Capacity;
-    float* Data;
-} ImVector_float;
-
-// Instantiation of ImVector<ImFontGlyph>
-
-typedef struct ImVector_ImFontGlyph_t
-{
-    int          Size;
-    int          Capacity;
-    ImFontGlyph* Data;
-} ImVector_ImFontGlyph;
+typedef struct ImVector_ImWchar_t { int Size; int Capacity; ImWchar* Data; } ImVector_ImWchar;  // Instantiation of ImVector<ImWchar>
+typedef struct ImVector_ImGuiTextFilter_ImGuiTextRange_t { int Size; int Capacity; ImGuiTextFilter_ImGuiTextRange* Data; } ImVector_ImGuiTextFilter_ImGuiTextRange;  // Instantiation of ImVector<ImGuiTextFilter_ImGuiTextRange>
+typedef struct ImVector_char_t { int Size; int Capacity; char* Data; } ImVector_char;  // Instantiation of ImVector<char>
+typedef struct ImVector_ImGuiStoragePair_t { int Size; int Capacity; ImGuiStoragePair* Data; } ImVector_ImGuiStoragePair;  // Instantiation of ImVector<ImGuiStoragePair>
+typedef struct ImVector_ImGuiSelectionRequest_t { int Size; int Capacity; ImGuiSelectionRequest* Data; } ImVector_ImGuiSelectionRequest;  // Instantiation of ImVector<ImGuiSelectionRequest>
+typedef struct ImVector_ImDrawCmd_t { int Size; int Capacity; ImDrawCmd* Data; } ImVector_ImDrawCmd;  // Instantiation of ImVector<ImDrawCmd>
+typedef struct ImVector_ImDrawIdx_t { int Size; int Capacity; ImDrawIdx* Data; } ImVector_ImDrawIdx;  // Instantiation of ImVector<ImDrawIdx>
+typedef struct ImVector_ImDrawChannel_t { int Size; int Capacity; ImDrawChannel* Data; } ImVector_ImDrawChannel;  // Instantiation of ImVector<ImDrawChannel>
+typedef struct ImVector_ImDrawVert_t { int Size; int Capacity; ImDrawVert* Data; } ImVector_ImDrawVert;  // Instantiation of ImVector<ImDrawVert>
+typedef struct ImVector_ImVec2_t { int Size; int Capacity; ImVec2* Data; } ImVector_ImVec2;  // Instantiation of ImVector<ImVec2>
+typedef struct ImVector_ImVec4_t { int Size; int Capacity; ImVec4* Data; } ImVector_ImVec4;  // Instantiation of ImVector<ImVec4>
+typedef struct ImVector_ImTextureID_t { int Size; int Capacity; ImTextureID* Data; } ImVector_ImTextureID;  // Instantiation of ImVector<ImTextureID>
+typedef struct ImVector_ImU8_t { int Size; int Capacity; ImU8* Data; } ImVector_ImU8;  // Instantiation of ImVector<ImU8>
+typedef struct ImVector_ImDrawListPtr_t { int Size; int Capacity; ImDrawList** Data; } ImVector_ImDrawListPtr;  // Instantiation of ImVector<ImDrawList*>
+typedef struct ImVector_ImU32_t { int Size; int Capacity; ImU32* Data; } ImVector_ImU32;  // Instantiation of ImVector<ImU32>
+typedef struct ImVector_ImFontPtr_t { int Size; int Capacity; ImFont** Data; } ImVector_ImFontPtr;  // Instantiation of ImVector<ImFont*>
+typedef struct ImVector_ImFontAtlasCustomRect_t { int Size; int Capacity; ImFontAtlasCustomRect* Data; } ImVector_ImFontAtlasCustomRect;  // Instantiation of ImVector<ImFontAtlasCustomRect>
+typedef struct ImVector_ImFontConfig_t { int Size; int Capacity; ImFontConfig* Data; } ImVector_ImFontConfig;  // Instantiation of ImVector<ImFontConfig>
+typedef struct ImVector_float_t { int Size; int Capacity; float* Data; } ImVector_float;  // Instantiation of ImVector<float>
+typedef struct ImVector_ImFontGlyph_t { int Size; int Capacity; ImFontGlyph* Data; } ImVector_ImFontGlyph;  // Instantiation of ImVector<ImFontGlyph>
 IM_MSVC_RUNTIME_CHECKS_RESTORE
 
 //-----------------------------------------------------------------------------

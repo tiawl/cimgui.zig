@@ -31,7 +31,7 @@
 extern "C"
 {
 #endif
-#include "cimgui.h"
+#include "dcimgui.h"
 #ifndef IMGUI_DISABLE
 typedef struct ANativeWindow_t ANativeWindow;
 typedef struct AInputEvent_t AInputEvent;

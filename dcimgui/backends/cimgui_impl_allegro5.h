@@ -28,7 +28,7 @@
 extern "C"
 {
 #endif
-#include "cimgui.h"
+#include "dcimgui.h"
 #ifndef IMGUI_DISABLE
 typedef struct ALLEGRO_DISPLAY_t ALLEGRO_DISPLAY;
 typedef union ALLEGRO_EVENT_t ALLEGRO_EVENT;

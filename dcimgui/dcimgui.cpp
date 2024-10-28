@@ -10,7 +10,7 @@
 // Wrap this in a namespace to keep it separate from the C++ API
 namespace cimgui
 {
-#include "cimgui.h"
+#include "dcimgui.h"
 }
 
 // Manual helpers
