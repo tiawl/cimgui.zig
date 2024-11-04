@@ -69,16 +69,14 @@ fn update (builder: *std.Build, path: *const Paths,
       .file => {
         const stem = std.fs.path.stem (entry.name);
         backend_cpp = try std.fs.path.join (builder.allocator,
-          &.{ path.getBackends (), try std.fmt.allocPrint (builder.allocator,
-              "{s}.cpp", .{ stem, }), });
+          &.{ path.getBackends (), builder.fmt ("{s}.cpp", .{ stem, }), });
         if (toolbox.isCHeader (entry.name) and toolbox.exists (backend_cpp)
           and std.mem.startsWith (u8, entry.name, "imgui"))
         {
           backend_h = try std.fs.path.join (builder.allocator,
             &.{ path.getBackends (), entry.name, });
           out = try std.fs.path.join (builder.allocator,
-            &.{ path.getBackends (), try std.fmt.allocPrint (
-                builder.allocator, "c{s}", .{ stem, }), });
+            &.{ path.getBackends (), builder.fmt ("c{s}", .{ stem, }), });
           try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3",
             binding_py, "--backend", "--imconfig-path", imconfig_h,
             "--output", out, backend_h, }, });
