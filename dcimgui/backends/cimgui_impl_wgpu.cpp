@@ -39,14 +39,14 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplWGPU_RenderDrawData(ImDrawData* draw_dat
     ::ImGui_ImplWGPU_RenderDrawData(draw_data, pass_encoder);
 }
 
-CIMGUI_IMPL_API void cimgui::cImGui_ImplWGPU_InvalidateDeviceObjects(void)
-{
-    ::ImGui_ImplWGPU_InvalidateDeviceObjects();
-}
-
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplWGPU_CreateDeviceObjects(void)
 {
     return ::ImGui_ImplWGPU_CreateDeviceObjects();
+}
+
+CIMGUI_IMPL_API void cimgui::cImGui_ImplWGPU_InvalidateDeviceObjects(void)
+{
+    ::ImGui_ImplWGPU_InvalidateDeviceObjects();
 }
 
 #endif // #ifndef IMGUI_DISABLE

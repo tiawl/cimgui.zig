@@ -39,14 +39,14 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplDX11_RenderDrawData(cimgui::ImDrawData* 
     ::ImGui_ImplDX11_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data));
 }
 
-CIMGUI_IMPL_API void cimgui::cImGui_ImplDX11_InvalidateDeviceObjects(void)
-{
-    ::ImGui_ImplDX11_InvalidateDeviceObjects();
-}
-
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplDX11_CreateDeviceObjects(void)
 {
     return ::ImGui_ImplDX11_CreateDeviceObjects();
+}
+
+CIMGUI_IMPL_API void cimgui::cImGui_ImplDX11_InvalidateDeviceObjects(void)
+{
+    ::ImGui_ImplDX11_InvalidateDeviceObjects();
 }
 
 #endif // #ifndef IMGUI_DISABLE

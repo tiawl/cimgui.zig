@@ -35,8 +35,8 @@ CIMGUI_IMPL_API void cImGui_ImplDX10_NewFrame(void);
 CIMGUI_IMPL_API void cImGui_ImplDX10_RenderDrawData(ImDrawData* draw_data);
 
 // Use if you want to reset your rendering device without losing Dear ImGui state.
-CIMGUI_IMPL_API void cImGui_ImplDX10_InvalidateDeviceObjects(void);
 CIMGUI_IMPL_API bool cImGui_ImplDX10_CreateDeviceObjects(void);
+CIMGUI_IMPL_API void cImGui_ImplDX10_InvalidateDeviceObjects(void);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block

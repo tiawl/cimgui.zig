@@ -55,8 +55,8 @@ CIMGUI_IMPL_API void cImGui_ImplWGPU_NewFrame(void);
 CIMGUI_IMPL_API void cImGui_ImplWGPU_RenderDrawData(ImDrawData* draw_data, WGPURenderPassEncoder pass_encoder);
 
 // Use if you want to reset your rendering device without losing Dear ImGui state.
-CIMGUI_IMPL_API void cImGui_ImplWGPU_InvalidateDeviceObjects(void);
 CIMGUI_IMPL_API bool cImGui_ImplWGPU_CreateDeviceObjects(void);
+CIMGUI_IMPL_API void cImGui_ImplWGPU_InvalidateDeviceObjects(void);
 
 // [BETA] Selected render state data shared with callbacks.
 // This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplWGPU_RenderDrawData() call.

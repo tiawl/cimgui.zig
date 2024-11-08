@@ -47,8 +47,8 @@ CIMGUI_IMPL_API void cImGui_ImplDX12_NewFrame(void);
 CIMGUI_IMPL_API void cImGui_ImplDX12_RenderDrawData(ImDrawData* draw_data, ID3D12GraphicsCommandList* graphics_command_list);
 
 // Use if you want to reset your rendering device without losing Dear ImGui state.
-CIMGUI_IMPL_API void cImGui_ImplDX12_InvalidateDeviceObjects(void);
 CIMGUI_IMPL_API bool cImGui_ImplDX12_CreateDeviceObjects(void);
+CIMGUI_IMPL_API void cImGui_ImplDX12_InvalidateDeviceObjects(void);
 
 // [BETA] Selected render state data shared with callbacks.
 // This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplDX12_RenderDrawData() call.
