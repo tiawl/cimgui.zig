@@ -46,12 +46,12 @@ CIMGUI_IMPL_API void cImGui_ImplDX11_InvalidateDeviceObjects(void);
 // [BETA] Selected render state data shared with callbacks.
 // This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplDX11_RenderDrawData() call.
 // (Please open an issue if you feel you need access to more data)
-typedef struct ImGui_ImplDX11_RenderState_t
+struct ImGui_ImplDX11_RenderState_t
 {
     ID3D11Device*        Device;
     ID3D11DeviceContext* DeviceContext;
     ID3D11SamplerState*  SamplerDefault;
-} ImGui_ImplDX11_RenderState;
+};
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
