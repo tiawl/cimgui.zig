@@ -39,14 +39,14 @@ extern "C"
 #ifndef IMGUI_DISABLE
 #include <webgpu/webgpu.h>                                                               // Initialization data, for ImGui_ImplWGPU_Init()
 typedef struct ImGui_ImplWGPU_InitInfo_ImDrawData_t ImGui_ImplWGPU_InitInfo_ImDrawData;
-typedef struct ImGui_ImplWGPU_InitInfo_t
+struct ImGui_ImplWGPU_InitInfo_t
 {
     WGPUDevice           Device;
     int                  NumFramesInFlight /* = 3 */;
     WGPUTextureFormat    RenderTargetFormat /* = WGPUTextureFormat_Undefined */;
     WGPUTextureFormat    DepthStencilFormat /* = WGPUTextureFormat_Undefined */;
     WGPUMultisampleState PipelineMultisampleState /* = {} */;
-} ImGui_ImplWGPU_InitInfo;
+};
 
 // Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplWGPU_Init(ImGui_ImplWGPU_InitInfo* init_info);
@@ -61,11 +61,11 @@ CIMGUI_IMPL_API void cImGui_ImplWGPU_InvalidateDeviceObjects(void);
 // [BETA] Selected render state data shared with callbacks.
 // This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplWGPU_RenderDrawData() call.
 // (Please open an issue if you feel you need access to more data)
-typedef struct ImGui_ImplWGPU_RenderState_t
+struct ImGui_ImplWGPU_RenderState_t
 {
     WGPUDevice            Device;
     WGPURenderPassEncoder RenderPassEncoder;
-} ImGui_ImplWGPU_RenderState;
+};
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
