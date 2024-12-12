@@ -20,9 +20,9 @@ namespace cimgui
 
 #ifndef IMGUI_DISABLE
 
-CIMGUI_IMPL_API bool cimgui::cImGui_ImplDX12_Init(cimgui::ID3D12Device* device, int num_frames_in_flight, DXGI_FORMAT rtv_format, cimgui::ID3D12DescriptorHeap* cbv_srv_heap, cimgui::D3D12_CPU_DESCRIPTOR_HANDLE font_srv_cpu_desc_handle, cimgui::D3D12_GPU_DESCRIPTOR_HANDLE font_srv_gpu_desc_handle)
+CIMGUI_IMPL_API bool cimgui::cImGui_ImplDX12_Init(cimgui::ImGui_ImplDX12_InitInfo* info)
 {
-    return ::ImGui_ImplDX12_Init(reinterpret_cast<::ID3D12Device*>(device), num_frames_in_flight, rtv_format, reinterpret_cast<::ID3D12DescriptorHeap*>(cbv_srv_heap), (*reinterpret_cast<::D3D12_CPU_DESCRIPTOR_HANDLE*>(&font_srv_cpu_desc_handle)), (*reinterpret_cast<::D3D12_GPU_DESCRIPTOR_HANDLE*>(&font_srv_gpu_desc_handle)));
+    return ::ImGui_ImplDX12_Init(reinterpret_cast<::ImGui_ImplDX12_InitInfo*>(info));
 }
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplDX12_Shutdown(void)
@@ -35,10 +35,19 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplDX12_NewFrame(void)
     ::ImGui_ImplDX12_NewFrame();
 }
 
-CIMGUI_IMPL_API void cimgui::cImGui_ImplDX12_RenderDrawData(cimgui::ImDrawData* draw_data, cimgui::ID3D12GraphicsCommandList* graphics_command_list)
+CIMGUI_IMPL_API void cimgui::cImGui_ImplDX12_RenderDrawData(ImDrawData* draw_data, ID3D12GraphicsCommandList* graphics_command_list)
 {
-    ::ImGui_ImplDX12_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data), reinterpret_cast<::ID3D12GraphicsCommandList*>(graphics_command_list));
+    ::ImGui_ImplDX12_RenderDrawData(draw_data, graphics_command_list);
 }
+
+#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+
+CIMGUI_IMPL_API bool cimgui::cImGui_ImplDX12_InitID3D12DevicePtr(ID3D12Device* device, int num_frames_in_flight, DXGI_FORMAT rtv_format, ID3D12DescriptorHeap* srv_descriptor_heap, D3D12_CPU_DESCRIPTOR_HANDLE font_srv_cpu_desc_handle, D3D12_GPU_DESCRIPTOR_HANDLE font_srv_gpu_desc_handle)
+{
+    return ::ImGui_ImplDX12_Init(device, num_frames_in_flight, rtv_format, srv_descriptor_heap, font_srv_cpu_desc_handle, font_srv_gpu_desc_handle);
+}
+
+#endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplDX12_CreateDeviceObjects(void)
 {

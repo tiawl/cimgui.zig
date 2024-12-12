@@ -11,7 +11,7 @@
 //  [X] Platform: Mouse support. Can discriminate Mouse/TouchScreen.
 //  [X] Platform: Keyboard support. Since 1.87 we are using the io.AddKeyEvent() function. Pass ImGuiKey values to all key functions e.g. ImGui::IsKeyPressed(ImGuiKey_Space). [Legacy SDL_SCANCODE_* values are obsolete since 1.87 and not supported since 1.91.5]
 //  [X] Platform: Gamepad support. Enabled with 'io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad'.
-//  [X] Platform: Mouse cursor shape and visibility. Disable with 'io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange'.
+//  [X] Platform: Mouse cursor shape and visibility (ImGuiBackendFlags_HasMouseCursors). Disable with 'io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange'.
 //  [X] Platform: Basic IME support. App needs to call 'SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");' before SDL_CreateWindow()!.
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
@@ -55,8 +55,8 @@ typedef enum
     ImGui_ImplSDL2_GamepadMode_AutoAll,
     ImGui_ImplSDL2_GamepadMode_Manual,
 } ImGui_ImplSDL2_GamepadMode;
-CIMGUI_IMPL_API void cImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode mode); // Implied manual_gamepads_array = NULL, manual_gamepads_count = -1
-CIMGUI_IMPL_API void cImGui_ImplSDL2_SetGamepadModeEx(ImGui_ImplSDL2_GamepadMode mode, struct _SDL_GameController** manual_gamepads_array /* = NULL */, int manual_gamepads_count /* = -1 */);
+CIMGUI_IMPL_API void cImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode mode); // Implied manual_gamepads_array = nullptr, manual_gamepads_count = -1
+CIMGUI_IMPL_API void cImGui_ImplSDL2_SetGamepadModeEx(ImGui_ImplSDL2_GamepadMode mode, struct _SDL_GameController** manual_gamepads_array /* = nullptr */, int manual_gamepads_count /* = -1 */);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
