@@ -99,6 +99,16 @@ CIMGUI_IMPL_API VkPresentModeKHR cimgui::cImGui_ImplVulkanH_SelectPresentMode(Vk
     return ::ImGui_ImplVulkanH_SelectPresentMode(physical_device, surface, request_modes, request_modes_count);
 }
 
+CIMGUI_IMPL_API VkPhysicalDevice cimgui::cImGui_ImplVulkanH_SelectPhysicalDevice(VkInstance instance)
+{
+    return ::ImGui_ImplVulkanH_SelectPhysicalDevice(instance);
+}
+
+CIMGUI_IMPL_API uint32_t      cimgui::cImGui_ImplVulkanH_SelectQueueFamilyIndex(VkPhysicalDevice physical_device)
+{
+    return ::ImGui_ImplVulkanH_SelectQueueFamilyIndex(physical_device);
+}
+
 CIMGUI_IMPL_API int           cimgui::cImGui_ImplVulkanH_GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode)
 {
     return ::ImGui_ImplVulkanH_GetMinImageCountFromPresentMode(present_mode);

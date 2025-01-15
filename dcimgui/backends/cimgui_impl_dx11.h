@@ -31,6 +31,7 @@ extern "C"
 typedef struct ID3D11Device ID3D11Device;
 typedef struct ID3D11DeviceContext ID3D11DeviceContext;
 typedef struct ID3D11SamplerState_t ID3D11SamplerState;
+typedef struct ID3D11Buffer_t ID3D11Buffer;
 
 typedef struct ImDrawData_t ImDrawData;
 // Follow "Getting Started" link and check examples/ folder to learn about using backends!
@@ -51,6 +52,7 @@ struct ImGui_ImplDX11_RenderState_t
     ID3D11Device*        Device;
     ID3D11DeviceContext* DeviceContext;
     ID3D11SamplerState*  SamplerDefault;
+    ID3D11Buffer*        VertexConstantBuffer;
 };
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
