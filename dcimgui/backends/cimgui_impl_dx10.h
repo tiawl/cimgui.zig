@@ -17,6 +17,8 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
+// Auto-generated forward declarations for C header
+typedef struct ImGui_ImplDX10_RenderState_t ImGui_ImplDX10_RenderState;
 #pragma once
 
 #ifdef __cplusplus
@@ -26,6 +28,8 @@ extern "C"
 #include "dcimgui.h"
 #ifndef IMGUI_DISABLE
 typedef struct ID3D10Device_t ID3D10Device;
+typedef struct ID3D10SamplerState_t ID3D10SamplerState;
+typedef struct ID3D10Buffer_t ID3D10Buffer;
 
 typedef struct ImDrawData_t ImDrawData;
 // Follow "Getting Started" link and check examples/ folder to learn about using backends!
@@ -37,6 +41,16 @@ CIMGUI_IMPL_API void cImGui_ImplDX10_RenderDrawData(ImDrawData* draw_data);
 // Use if you want to reset your rendering device without losing Dear ImGui state.
 CIMGUI_IMPL_API bool cImGui_ImplDX10_CreateDeviceObjects(void);
 CIMGUI_IMPL_API void cImGui_ImplDX10_InvalidateDeviceObjects(void);
+
+// [BETA] Selected render state data shared with callbacks.
+// This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplDX10_RenderDrawData() call.
+// (Please open an issue if you feel you need access to more data)
+struct ImGui_ImplDX10_RenderState_t
+{
+    ID3D10Device*       Device;
+    ID3D10SamplerState* SamplerDefault;
+    ID3D10Buffer*       VertexConstantBuffer;
+};
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
