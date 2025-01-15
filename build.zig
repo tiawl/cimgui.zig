@@ -58,6 +58,12 @@ fn update (builder: *std.Build, path: *const Paths,
   try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3", binding_py,
     "--output", imgui_out, imgui_h, }, });
 
+  const templates = try std.fs.path.join (builder.allocator,
+    &.{ path.getTmp (), "src", "templates", });
+  var templates_dir = try std.fs.openDirAbsolute (templates,
+    .{ .iterate = true, });
+  defer templates_dir.close ();
+
   var backend_h: [] const u8 = undefined;
   var backend_cpp: [] const u8 = undefined;
   var out: [] const u8 = undefined;
@@ -68,10 +74,14 @@ fn update (builder: *std.Build, path: *const Paths,
     {
       .file => {
         const stem = std.fs.path.stem (entry.name);
+        const cpp_template = try std.fs.path.join (builder.allocator,
+          &.{ templates, builder.fmt ("{s}-header-template.cpp", .{ stem, }), });
+        const h_template = try std.fs.path.join (builder.allocator,
+          &.{ templates, builder.fmt ("{s}-header-template.h", .{ stem, }), });
         backend_cpp = try std.fs.path.join (builder.allocator,
           &.{ path.getBackends (), builder.fmt ("{s}.cpp", .{ stem, }), });
         if (toolbox.isCHeader (entry.name) and toolbox.exists (backend_cpp)
-          and std.mem.startsWith (u8, entry.name, "imgui"))
+          and std.mem.startsWith (u8, entry.name, "imgui") and !std.meta.isError(std.fs.accessAbsolute (cpp_template, .{})) and !std.meta.isError(std.fs.accessAbsolute (h_template, .{})))
         {
           backend_h = try std.fs.path.join (builder.allocator,
             &.{ path.getBackends (), entry.name, });
