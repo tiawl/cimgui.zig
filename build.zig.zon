@@ -17,5 +17,9 @@
             .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.11.2.tar.gz",
             .hash = "122037046680450473adc3670f08c8695638d05f07c00be18e94ff3f7e21edf9ed9e",
         },
+        .sdl = .{
+            .url = "git+https://github.com/castholm/SDL.git#bbc8dfb78c2a71f10b21548b58dfe5ac46cc3fef",
+            .hash = "122046c6dcdcf941e6e5b1e8fa273185d04420e56436d47b906308eaf70208222f59",
+        },
     },
 }

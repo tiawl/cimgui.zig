@@ -7,13 +7,15 @@ const Renderer = cimgui.Renderer;
 fn platform (dir_name: [] const u8) !Platform
 {
   return if (std.mem.indexOf (u8, dir_name, "_glfw") != null) .GLFW
-         else error.UnknownPlatformBackend;
+  else if(std.mem.indexOf (u8, dir_name, "_sdl3") != null) .SDL3
+  else error.UnknownPlatformBackend;
 }
 
 fn renderer (dir_name: [] const u8) !Renderer
 {
   return if (std.mem.indexOf (u8, dir_name, "_vulkan") != null) .Vulkan
-         else error.UnknownRendererBackend;
+  else if(std.mem.indexOf (u8, dir_name, "_opengl3") != null) .OpenGL3
+  else error.UnknownRendererBackend;
 }
 
 pub fn build (builder: *std.Build) !void
