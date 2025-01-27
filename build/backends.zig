@@ -19,6 +19,8 @@ pub fn rendererOption (builder: *std.Build, lib: *std.Build.Step.Compile,
   _ = target.*;
   _ = optimize.*;
 
+  try flags.append("-DIMGUI_USE_LEGACY_CRC32_ADLER");
+
   if (builder.option (Renderer, "renderer",
     "Specify the renderer backend")) |backend|
   {
@@ -32,7 +34,6 @@ pub fn rendererOption (builder: *std.Build, lib: *std.Build.Step.Compile,
           "cimgui_impl_vulkan.cpp", flags.slice ());
       },
       .OpenGL3 => {
-          try flags.append("-DIMGUI_USE_LEGACY_CRC32_ADLER");
           try toolbox.addSource(lib, path.getBackends(),
           "imgui_impl_opengl3.cpp", flags.slice());
           try toolbox.addSource(lib, path.getBackends(),
@@ -82,6 +83,7 @@ pub fn platformOption (builder: *std.Build, lib: *std.Build.Step.Compile,
           lib.root_module.addCMacro ("GLFW_INCLUDE_NONE", "1");
           lib.root_module.addCMacro ("GLFW_INCLUDE_VULKAN", "1");
         }
+        lib.root_module.addCMacro("IMGUI_USE_LEGACY_CRC32_ADLER", "1");
       },
       .SDL3 => {
         const sdl_dep = builder.dependency("sdl", .{
