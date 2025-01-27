@@ -7,7 +7,7 @@ const c = @cImport({
     @cInclude("backends/cimgui_impl_opengl3.h");
 });
 
-fn errorCallback(errn: c_int, str: [*c]const u8) void {
+fn errorCallback(errn: c_int, str: [*c]const u8) callconv(.C) void {
     std.log.err("GLFW Error '{}'': {s}", .{ errn, str });
 }
 
