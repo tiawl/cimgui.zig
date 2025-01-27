@@ -12,9 +12,9 @@ fn errorCallback(errn: c_int, str: [*c]const u8) callconv(.C) void {
 }
 
 pub fn main() !void {
-    c.glfwSetErrorCallback(errorCallback);
+    _ = c.glfwSetErrorCallback(errorCallback);
 
-    if (!c.glfwInit()) {
+    if (c.glfwInit() != c.GLFW_TRUE) {
         return;
     }
     defer c.glfwTerminate();
@@ -32,8 +32,8 @@ pub fn main() !void {
     c.glfwMakeContextCurrent(window);
     c.glfwSwapInterval(1);
 
-    c.CIMGUI_CHECKVERSION();
-    c.ImGui_CreateContext(null);
+    _ = c.CIMGUI_CHECKVERSION();
+    _ = c.ImGui_CreateContext(null);
     defer c.ImGui_DestroyContext(null);
 
     const imio = c.ImGui_GetIO();
@@ -41,20 +41,20 @@ pub fn main() !void {
 
     c.ImGui_StyleColorsDark(null);
 
-    c.cImGui_ImplGlfw_InitForOpenGL(window, true);
+    _ = c.cImGui_ImplGlfw_InitForOpenGL(window, true);
     defer c.cImGui_ImplGlfw_Shutdown();
 
-    c.cImGui_ImplOpenGL3_InitEx(GLSL_VERSION);
+    _ = c.cImGui_ImplOpenGL3_InitEx(GLSL_VERSION);
     defer c.cImGui_ImplOpenGL3_Shutdown();
 
-    while (!c.glfwWindowShouldClose(window)) {
+    while (c.glfwWindowShouldClose(window) != c.GLFW_TRUE) {
         c.glfwPollEvents();
 
         c.cImGui_ImplOpenGL3_NewFrame();
         c.cImGui_ImplGlfw_NewFrame();
         c.ImGui_NewFrame();
 
-        c.ImGui_ShowDemoWindow();
+        c.ImGui_ShowDemoWindow(null);
 
         c.ImGui_Render();
 
