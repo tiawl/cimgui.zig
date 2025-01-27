@@ -120,6 +120,11 @@ pub fn build (builder: *std.Build) !void
        .host = toolbox.Repository.Host.github,
        .ref = toolbox.Repository.Reference.tag,
      },
+     .sdl = .{
+     .name = "castholm/SDL",
+     .host = toolbox.Repository.Host.github,
+     .ref = toolbox.Repository.Reference.commit,
+  },
    }, .{
      .imgui = .{
        .name = "ocornut/imgui",
