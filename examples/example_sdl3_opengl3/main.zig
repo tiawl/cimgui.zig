@@ -13,6 +13,7 @@ pub fn main() !void {
         std.log.err("SDL Init failed : {s}", .{c.SDL_GetError()});
         return;
     }
+    defer c.SDL_Quit();
 
     const GLSL_VERSION = "#version 130";
     _ = c.SDL_GL_SetAttribute(c.SDL_GL_CONTEXT_FLAGS, 0);
@@ -28,24 +29,31 @@ pub fn main() !void {
         std.log.err("SDL create window failed : {s}", .{c.SDL_GetError()});
         return;
     }
+    defer c.SDL_DestroyWindow(window);
 
     const context = c.SDL_GL_CreateContext(window);
     if (context == null) {
         std.log.err("SDL create context failed : {s}", .{c.SDL_GetError()});
         return;
     }
+    defer _ = c.SDL_GL_DestroyContext(context);
+
     _ = c.SDL_GL_MakeCurrent(window, context);
     _ = c.SDL_GL_SetSwapInterval(1);
 
     _ = c.CIMGUI_CHECKVERSION();
     _ = c.ImGui_CreateContext(null);
+    defer c.ImGui_DestroyContext(null);
+
     const imio = c.ImGui_GetIO();
     imio.*.ConfigFlags = c.ImGuiConfigFlags_NavEnableKeyboard;
 
     c.ImGui_StyleColorsDark(null);
 
     _ = c.cImGui_ImplSDL3_InitForOpenGL(window.?, context.?);
+    defer c.cImGui_ImplSDL3_Shutdown();
     _ = c.cImGui_ImplOpenGL3_InitEx(GLSL_VERSION);
+    defer c.cImGui_ImplOpenGL3_Shutdown();
 
     main_loop: while (true) {
         var event: c.SDL_Event = undefined;
@@ -73,12 +81,4 @@ pub fn main() !void {
         c.cImGui_ImplOpenGL3_RenderDrawData(c.ImGui_GetDrawData());
         _ = c.SDL_GL_SwapWindow(window);
     }
-
-    c.cImGui_ImplOpenGL3_Shutdown();
-    c.cImGui_ImplSDL3_Shutdown();
-    c.ImGui_DestroyContext(null);
-
-    _ = c.SDL_GL_DestroyContext(context);
-    c.SDL_DestroyWindow(window);
-    c.SDL_Quit();
 }
