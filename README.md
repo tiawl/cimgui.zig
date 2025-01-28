@@ -17,7 +17,7 @@ The goal of this repository is not to provide a [Zig][2] binding for [ocornut/im
 - as a daily updated interface for your [Zig][2] binding of [ocornut/imgui][1] (see [here][13] for a private usage).
 
 ### cimgui.zig as a library
-If you want to add `cimgui.zig` as a library to you project, you can do the following (do know that it requires a zig version `>0.13`) :
+If you want to add `cimgui.zig` as a library to your project, you can do the following (do know that it requires a zig version `>0.13`) :
 
 Fetch this repository :
 ```sh
@@ -61,7 +61,6 @@ The backends are separated in two categories : the platforms (handling windows, 
 
 
 > As you can see, these backends do not support all of those supported by ImGUI. Adding a backend is a bit of work because of the needed *maintenance*. Please do not ask for backends to be added if you don't feel like adding them yourselves !
-> You can open an issue and tag `@Lygaen` if you *reallllly* want to add a backend.
 
 ## Dependencies
 
