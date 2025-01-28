@@ -17,8 +17,18 @@ The goal of this repository is not to provide a [Zig][2] binding for [ocornut/im
 - as a daily updated interface for your [Zig][2] binding of [ocornut/imgui][1] (see [here][13] for a private usage).
 
 ## Backends
+The backends are separated in two categories : the platforms (handling windows, events, ...) and the renderers (draw to screen, ..).
 
-Currently only [GLFW][4] and [Vulkan][5] backends are supported. There will be no other backends **if you are not ready to maintain backends you want to use**. The team is not interested to maintain backends nobody uses. If you want to see a new backend available on this repository and you are ready for this, open an issue: we will be happy to talk with you and how we could manage this together.
+### Platform
+  - [GLFW][4]
+  - [SDL3][14]
+
+### Renderers
+  - [Vulkan][5]
+  - [OpenGL][15]
+
+
+> As you can see, these backends do not support all of those supported by ImGUI. Adding a backend is a bit of work because of the needed *maintenance*. Please do not ask for backends to be added if you don't feel like adding them yourselves !
 
 ## Dependencies
 
@@ -81,3 +91,5 @@ The parts of this repository originated from this repository are dedicated to th
 [11]:https://github.com/tiawl/spaceporn-action-cd-ping
 [12]:https://github.com/tiawl/spaceporn-action-cd-pong
 [13]:https://github.com/tiawl/spaceporn/blob/trunk/src/spaceporn/bindings/imgui/imgui.zig
+[14]:https://wiki.libsdl.org/SDL3/FrontPage
+[15]:https://www.opengl.org/
