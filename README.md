@@ -16,6 +16,38 @@ The goal of this repository is not to provide a [Zig][2] binding for [ocornut/im
 - as raw (see the [examples directory](https://github.com/tiawl/cimgui.zig/blob/trunk/examples)),
 - as a daily updated interface for your [Zig][2] binding of [ocornut/imgui][1] (see [here][13] for a private usage).
 
+### cimgui.zig as a library
+If you want to add `cimgui.zig` as a library to you project, you can do the following (do know that it requires a zig version `>0.13`) :
+
+Fetch this repository :
+```sh
+$ zig fetch --save git+https://github.com/tiawl/cimgui.zig
+```
+
+Add it to your `build.zig` :
+```diff
+const std = @import("std");
++const cimgui = @import("cimgui.zig");
+
+pub fn build(b: *std.Build) void {
+    // -- snip --
+
++    const cimgui_dep = b.dependency("cimgui.zig", .{
++        .target = target,
++        .optimize = optimize,
++        .platform = cimgui.Platform.GLFW,
++        .renderer = cimgui.Renderer.Vulkan,
++    });
+
+    // Where `exe` represents your executable/library to link to
++    exe.linkLibrary(cimgui_dep.artifact("cimgui"));
+
+    // -- snip --
+}
+```
+
+And that's it ! You're ready to go ! See the `examples` directory on how to move forward from there.
+
 ## Backends
 The backends are separated in two categories : the platforms (handling windows, events, ...) and the renderers (draw to screen, ..).
 
@@ -29,6 +61,7 @@ The backends are separated in two categories : the platforms (handling windows, 
 
 
 > As you can see, these backends do not support all of those supported by ImGUI. Adding a backend is a bit of work because of the needed *maintenance*. Please do not ask for backends to be added if you don't feel like adding them yourselves !
+> You can open an issue and tag `@Lygaen` if you *reallllly* want to add a backend.
 
 ## Dependencies
 
