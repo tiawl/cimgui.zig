@@ -39,7 +39,15 @@ pub fn rendererOption (builder: *std.Build, lib: *std.Build.Step.Compile,
           try toolbox.addSource(lib, path.getBackends(),
           "cimgui_impl_opengl3.cpp", flags.slice());
 
-          lib.linkSystemLibrary("opengl");
+          if(target.result.os.tag == .windows)
+          {
+              lib.linkSystemLibrary("opengl32");
+          }
+          else
+          {
+              lib.linkSystemLibrary("opengl");
+          }
+        }
       }
     }
     return backend;
