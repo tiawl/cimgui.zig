@@ -86,9 +86,9 @@ fn update (builder: *std.Build, path: *const Paths,
           backend_h = try std.fs.path.join (builder.allocator,
             &.{ path.getBackends (), entry.name, });
           out = try std.fs.path.join (builder.allocator,
-            &.{ path.getBackends (), builder.fmt ("c{s}", .{ stem, }), });
+            &.{ path.getBackends (), builder.fmt ("dc{s}", .{ stem, }), });
           try toolbox.run (builder, .{ .argv = &[_][] const u8 { "python3",
-            binding_py, "--backend", "--imconfig-path", imconfig_h,
+            binding_py, "--backend", "--include", imgui_h, "--imconfig-path", imconfig_h,
             "--output", out, backend_h, }, });
         }
       },

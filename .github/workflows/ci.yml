@@ -14,14 +14,15 @@ jobs:
           - windows-latest
     runs-on: "${{ matrix.os }}"
     steps:
-    - uses: tiawl/spaceporn-action-env@v1.0.4
+    - uses: tiawl/spaceporn-action-env@v1.0.3
     - uses: actions/checkout@v4
     - uses: mlugg/setup-zig@v1
       with:
         version: ${{ env.zig_version }}
     - name: Test building examples
       shell: bash
-      run:
+      run: |
+        unset ZIG_LOCAL_CACHE_DIR
         zig build --build-file "${GITHUB_WORKSPACE}/examples/build.zig"
   build:
     strategy:

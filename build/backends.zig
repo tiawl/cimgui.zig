@@ -31,7 +31,7 @@ pub fn rendererOption (builder: *std.Build, lib: *std.Build.Step.Compile,
         try toolbox.addSource (lib, path.getBackends (),
           "imgui_impl_vulkan.cpp", flags.slice ());
         try toolbox.addSource (lib, path.getBackends (),
-          "cimgui_impl_vulkan.cpp", flags.slice ());
+          "dcimgui_impl_vulkan.cpp", flags.slice ());
       },
       .OpenGL3 => {
           try toolbox.addSource(lib, path.getBackends(),
@@ -84,7 +84,7 @@ pub fn platformOption (builder: *std.Build, lib: *std.Build.Step.Compile,
         try toolbox.addSource (lib, path.getBackends (),
           "imgui_impl_glfw.cpp", flags.slice ());
         try toolbox.addSource (lib, path.getBackends (),
-          "cimgui_impl_glfw.cpp", flags.slice ());
+          "dcimgui_impl_glfw.cpp", flags.slice ());
 
         if (renderer == .Vulkan)
         {

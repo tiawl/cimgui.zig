@@ -10,10 +10,66 @@
 // Wrap this in a namespace to keep it separate from the C++ API
 namespace cimgui
 {
-#include "cimgui_impl_sdl3.h"
+#include "dcimgui_impl_sdl3.h"
 }
 
 // By-value struct conversions
+
+static inline cimgui::ImVec2 ConvertFromCPP_ImVec2(const ::ImVec2& src)
+{
+    cimgui::ImVec2 dest;
+    dest.x = src.x;
+    dest.y = src.y;
+    return dest;
+}
+
+static inline ::ImVec2 ConvertToCPP_ImVec2(const cimgui::ImVec2& src)
+{
+    ::ImVec2 dest;
+    dest.x = src.x;
+    dest.y = src.y;
+    return dest;
+}
+
+static inline cimgui::ImVec4 ConvertFromCPP_ImVec4(const ::ImVec4& src)
+{
+    cimgui::ImVec4 dest;
+    dest.x = src.x;
+    dest.y = src.y;
+    dest.z = src.z;
+    dest.w = src.w;
+    return dest;
+}
+
+static inline ::ImVec4 ConvertToCPP_ImVec4(const cimgui::ImVec4& src)
+{
+    ::ImVec4 dest;
+    dest.x = src.x;
+    dest.y = src.y;
+    dest.z = src.z;
+    dest.w = src.w;
+    return dest;
+}
+
+static inline cimgui::ImColor ConvertFromCPP_ImColor(const ::ImColor& src)
+{
+    cimgui::ImColor dest;
+    dest.Value.x = src.Value.x;
+    dest.Value.y = src.Value.y;
+    dest.Value.z = src.Value.z;
+    dest.Value.w = src.Value.w;
+    return dest;
+}
+
+static inline ::ImColor ConvertToCPP_ImColor(const cimgui::ImColor& src)
+{
+    ::ImColor dest;
+    dest.Value.x = src.Value.x;
+    dest.Value.y = src.Value.y;
+    dest.Value.z = src.Value.z;
+    dest.Value.w = src.Value.w;
+    return dest;
+}
 
 // Function stubs
 

@@ -2,7 +2,7 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-// dear imgui, v1.91.7
+// dear imgui, v1.91.8
 // (headers)
 
 // Help:
@@ -32,8 +32,8 @@
 
 // Library Version
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if IMGUI_VERSION_NUM >= 12345')
-#define IMGUI_VERSION       "1.91.7"
-#define IMGUI_VERSION_NUM   19170
+#define IMGUI_VERSION       "1.91.8"
+#define IMGUI_VERSION_NUM   19180
 #define IMGUI_HAS_TABLE
 
 /*
@@ -173,6 +173,7 @@ typedef struct ImVector_ImFontPtr_t ImVector_ImFontPtr;
 typedef struct ImVector_ImFontAtlasCustomRect_t ImVector_ImFontAtlasCustomRect;
 typedef struct ImVector_ImFontConfig_t ImVector_ImFontConfig;
 typedef struct ImVector_float_t ImVector_float;
+typedef struct ImVector_ImU16_t ImVector_ImU16;
 typedef struct ImVector_ImFontGlyph_t ImVector_ImFontGlyph;
 typedef struct ImGuiTextFilter_ImGuiTextRange_t ImGuiTextFilter_ImGuiTextRange;
 typedef struct ImDrawCmdHeader_t ImDrawCmdHeader;
@@ -188,21 +189,23 @@ typedef unsigned int ImU32;        // 32-bit unsigned integer (often used to sto
 typedef signed long long ImS64;    // 64-bit signed integer
 typedef unsigned long long ImU64;  // 64-bit unsigned integer
 
-// Forward declarations
-typedef struct ImDrawChannel_t ImDrawChannel;                                  // Temporary storage to output draw commands out of order, used by ImDrawListSplitter and ImDrawList::ChannelsSplit()
-typedef struct ImDrawCmd_t ImDrawCmd;                                          // A single draw command within a parent ImDrawList (generally maps to 1 GPU draw call, unless it is a callback)
-typedef struct ImDrawData_t ImDrawData;                                        // All draw command lists required to render the frame + pos/size coordinates to use for the projection matrix.
-typedef struct ImDrawList_t ImDrawList;                                        // A single draw command list (generally one per window, conceptually you may see this as a dynamic "mesh" builder)
-typedef struct ImDrawListSharedData_t ImDrawListSharedData;                    // Data shared among multiple draw lists (typically owned by parent ImGui context, but you may create one yourself)
-typedef struct ImDrawListSplitter_t ImDrawListSplitter;                        // Helper to split a draw list into different layers which can be drawn into out of order, then flattened back.
-typedef struct ImDrawVert_t ImDrawVert;                                        // A single vertex (pos + uv + col = 20 bytes by default. Override layout with IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT)
-typedef struct ImFont_t ImFont;                                                // Runtime data for a single font within a parent ImFontAtlas
-typedef struct ImFontAtlas_t ImFontAtlas;                                      // Runtime data for multiple fonts, bake multiple fonts into a single texture, TTF/OTF font loader
-typedef struct ImFontBuilderIO_t ImFontBuilderIO;                              // Opaque interface to a font builder (stb_truetype or FreeType).
-typedef struct ImFontConfig_t ImFontConfig;                                    // Configuration data when adding a font or merging fonts
-typedef struct ImFontGlyph_t ImFontGlyph;                                      // A single font glyph (code point + coordinates within in ImFontAtlas + offset)
-typedef struct ImFontGlyphRangesBuilder_t ImFontGlyphRangesBuilder;            // Helper to build glyph ranges from text/string data
-typedef struct ImColor_t ImColor;                                              // Helper functions to create a color that can be converted to either u32 or float4 (*OBSOLETE* please avoid using)
+// Forward declarations: ImDrawList, ImFontAtlas layer
+typedef struct ImDrawChannel_t ImDrawChannel;                        // Temporary storage to output draw commands out of order, used by ImDrawListSplitter and ImDrawList::ChannelsSplit()
+typedef struct ImDrawCmd_t ImDrawCmd;                                // A single draw command within a parent ImDrawList (generally maps to 1 GPU draw call, unless it is a callback)
+typedef struct ImDrawData_t ImDrawData;                              // All draw command lists required to render the frame + pos/size coordinates to use for the projection matrix.
+typedef struct ImDrawList_t ImDrawList;                              // A single draw command list (generally one per window, conceptually you may see this as a dynamic "mesh" builder)
+typedef struct ImDrawListSharedData_t ImDrawListSharedData;          // Data shared among multiple draw lists (typically owned by parent ImGui context, but you may create one yourself)
+typedef struct ImDrawListSplitter_t ImDrawListSplitter;              // Helper to split a draw list into different layers which can be drawn into out of order, then flattened back.
+typedef struct ImDrawVert_t ImDrawVert;                              // A single vertex (pos + uv + col = 20 bytes by default. Override layout with IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT)
+typedef struct ImFont_t ImFont;                                      // Runtime data for a single font within a parent ImFontAtlas
+typedef struct ImFontAtlas_t ImFontAtlas;                            // Runtime data for multiple fonts, bake multiple fonts into a single texture, TTF/OTF font loader
+typedef struct ImFontBuilderIO_t ImFontBuilderIO;                    // Opaque interface to a font builder (stb_truetype or FreeType).
+typedef struct ImFontConfig_t ImFontConfig;                          // Configuration data when adding a font or merging fonts
+typedef struct ImFontGlyph_t ImFontGlyph;                            // A single font glyph (code point + coordinates within in ImFontAtlas + offset)
+typedef struct ImFontGlyphRangesBuilder_t ImFontGlyphRangesBuilder;  // Helper to build glyph ranges from text/string data
+typedef struct ImColor_t ImColor;                                    // Helper functions to create a color that can be converted to either u32 or float4 (*OBSOLETE* please avoid using)
+
+// Forward declarations: ImGui layer
 typedef struct ImGuiContext_t ImGuiContext;                                    // Dear ImGui context (opaque structure, unless including imgui_internal.h)
 typedef struct ImGuiIO_t ImGuiIO;                                              // Main configuration and I/O between your application and ImGui (also see: ImGuiPlatformIO)
 typedef struct ImGuiInputTextCallbackData_t ImGuiInputTextCallbackData;        // Shared state of InputText() when using custom ImGuiInputTextCallback (rare/advanced use)
@@ -1091,6 +1094,7 @@ CIMGUI_API bool             ImGui_IsMouseClicked(ImGuiMouseButton button);      
 CIMGUI_API bool             ImGui_IsMouseClickedEx(ImGuiMouseButton button, bool repeat /* = false */);          // did mouse button clicked? (went from !Down to Down). Same as GetMouseClickedCount() == 1.
 CIMGUI_API bool             ImGui_IsMouseReleased(ImGuiMouseButton button);                                      // did mouse button released? (went from Down to !Down)
 CIMGUI_API bool             ImGui_IsMouseDoubleClicked(ImGuiMouseButton button);                                 // did mouse button double-clicked? Same as GetMouseClickedCount() == 2. (note that a double-click will also report IsMouseClicked() == true)
+CIMGUI_API bool             ImGui_IsMouseReleasedWithDelay(ImGuiMouseButton button, float delay);                // delayed mouse release (use very sparingly!). Generally used with 'delay >= io.MouseDoubleClickTime' + combined with a 'io.MouseClickedLastCount==1' test. This is a very rarely used UI idiom, but some apps use this: e.g. MS Explorer single click on an icon to rename.
 CIMGUI_API int              ImGui_GetMouseClickedCount(ImGuiMouseButton button);                                 // return the number of successive mouse-clicks at the time where a click happen (otherwise 0).
 CIMGUI_API bool             ImGui_IsMouseHoveringRect(ImVec2 r_min, ImVec2 r_max);                               // Implied clip = true
 CIMGUI_API bool             ImGui_IsMouseHoveringRectEx(ImVec2 r_min, ImVec2 r_max, bool clip /* = true */);     // is mouse hovering given bounding rect (in screen space). clipped by current clipping settings, but disregarding of other consideration of focus/window ordering/popup-block.
@@ -1910,10 +1914,16 @@ typedef enum
     ImGuiColorEditFlags_NoDragDrop       = 1<<9,   //              // ColorEdit: disable drag and drop target. ColorButton: disable drag and drop source.
     ImGuiColorEditFlags_NoBorder         = 1<<10,  //              // ColorButton: disable border (which is enforced by default)
 
+    // Alpha preview
+    // - Prior to 1.91.8 (2025/01/21): alpha was made opaque in the preview by default using old name ImGuiColorEditFlags_AlphaPreview.
+    // - We now display the preview as transparent by default. You can use ImGuiColorEditFlags_AlphaOpaque to use old behavior.
+    // - The new flags may be combined better and allow finer controls.
+    ImGuiColorEditFlags_AlphaOpaque      = 1<<11,  //              // ColorEdit, ColorPicker, ColorButton: disable alpha in the preview,. Contrary to _NoAlpha it may still be edited when calling ColorEdit4()/ColorPicker4(). For ColorButton() this does the same as _NoAlpha.
+    ImGuiColorEditFlags_AlphaNoBg        = 1<<12,  //              // ColorEdit, ColorPicker, ColorButton: disable rendering a checkerboard background behind transparent color.
+    ImGuiColorEditFlags_AlphaPreviewHalf = 1<<13,  //              // ColorEdit, ColorPicker, ColorButton: display half opaque / half transparent preview.
+
     // User Options (right-click on widget to change some of them).
     ImGuiColorEditFlags_AlphaBar         = 1<<16,  //              // ColorEdit, ColorPicker: show vertical alpha bar/gradient in picker.
-    ImGuiColorEditFlags_AlphaPreview     = 1<<17,  //              // ColorEdit, ColorPicker, ColorButton: display preview as a transparent color over a checkerboard, instead of opaque.
-    ImGuiColorEditFlags_AlphaPreviewHalf = 1<<18,  //              // ColorEdit, ColorPicker, ColorButton: display half opaque / half checkerboard, instead of opaque.
     ImGuiColorEditFlags_HDR              = 1<<19,  //              // (WIP) ColorEdit: Currently only disable 0.0f..1.0f limits in RGBA edition (note: you probably want to use ImGuiColorEditFlags_Float flag as well).
     ImGuiColorEditFlags_DisplayRGB       = 1<<20,  // [Display]    // ColorEdit: override _display_ type among RGB/HSV/Hex. ColorPicker: select any combination using one or more of RGB/HSV/Hex.
     ImGuiColorEditFlags_DisplayHSV       = 1<<21,  // [Display]    // "
@@ -1930,12 +1940,16 @@ typedef enum
     ImGuiColorEditFlags_DefaultOptions_  = ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_PickerHueBar,
 
     // [Internal] Masks
+    ImGuiColorEditFlags_AlphaMask_       = ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_AlphaOpaque | ImGuiColorEditFlags_AlphaNoBg | ImGuiColorEditFlags_AlphaPreviewHalf,
     ImGuiColorEditFlags_DisplayMask_     = ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_DisplayHex,
     ImGuiColorEditFlags_DataTypeMask_    = ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_Float,
     ImGuiColorEditFlags_PickerMask_      = ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_PickerHueBar,
     ImGuiColorEditFlags_InputMask_       = ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_InputHSV,
 
     // Obsolete names
+#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+    ImGuiColorEditFlags_AlphaPreview     = 0,      // [Removed in 1.91.8] This is the default now. Will display a checkerboard unless ImGuiColorEditFlags_AlphaNoBg is set.
+#endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
     //ImGuiColorEditFlags_RGB = ImGuiColorEditFlags_DisplayRGB, ImGuiColorEditFlags_HSV = ImGuiColorEditFlags_DisplayHSV, ImGuiColorEditFlags_HEX = ImGuiColorEditFlags_DisplayHex  // [renamed in 1.69]
 } ImGuiColorEditFlags_;
 
@@ -2230,6 +2244,7 @@ struct ImVector_ImFontPtr_t { int Size; int Capacity; ImFont** Data; };  // Inst
 struct ImVector_ImFontAtlasCustomRect_t { int Size; int Capacity; ImFontAtlasCustomRect* Data; };  // Instantiation of ImVector<ImFontAtlasCustomRect>
 struct ImVector_ImFontConfig_t { int Size; int Capacity; ImFontConfig* Data; };  // Instantiation of ImVector<ImFontConfig>
 struct ImVector_float_t { int Size; int Capacity; float* Data; };  // Instantiation of ImVector<float>
+struct ImVector_ImU16_t { int Size; int Capacity; ImU16* Data; };  // Instantiation of ImVector<ImU16>
 struct ImVector_ImFontGlyph_t { int Size; int Capacity; ImFontGlyph* Data; };  // Instantiation of ImVector<ImFontGlyph>
 IM_MSVC_RUNTIME_CHECKS_RESTORE
 
@@ -2495,6 +2510,7 @@ struct ImGuiIO_t
     ImU16             MouseClickedCount[5];                // == 0 (not clicked), == 1 (same as MouseClicked[]), == 2 (double-clicked), == 3 (triple-clicked) etc. when going from !Down to Down
     ImU16             MouseClickedLastCount[5];            // Count successive number of clicks. Stays valid after mouse release. Reset after another click is done.
     bool              MouseReleased[5];                    // Mouse button went from Down to !Down
+    double            MouseReleasedTime[5];                // Time of last released (rarely used! but useful to handle delayed single-click when trying to disambiguate them from double-click).
     bool              MouseDownOwned[5];                   // Track if button was clicked inside a dear imgui window or over void blocked by a popup. We don't request mouse capture from the application if click started outside ImGui bounds.
     bool              MouseDownOwnedUnlessPopupClose[5];   // Track if button was clicked inside a dear imgui window.
     bool              MouseWheelRequestAxisSwap;           // On a non-Mac system, holding SHIFT requests WheelY to perform the equivalent of a WheelX event. On a Mac system this is already enforced by the system.
@@ -2959,7 +2975,7 @@ CIMGUI_API void ImGuiSelectionExternalStorage_ApplyRequests(ImGuiSelectionExtern
 
 // The maximum line width to bake anti-aliased textures for. Build atlas with ImFontAtlasFlags_NoBakedLines to disable baking.
 #ifndef IM_DRAWLIST_TEX_LINES_WIDTH_MAX
-#define IM_DRAWLIST_TEX_LINES_WIDTH_MAX     (63)
+#define IM_DRAWLIST_TEX_LINES_WIDTH_MAX     (32)
 #endif // #ifndef IM_DRAWLIST_TEX_LINES_WIDTH_MAX
 // ImDrawCallback: Draw callbacks for advanced uses [configurable type: override in imconfig.h]
 // NB: You most likely do NOT need to use draw callbacks just to create your own widget or customized UI rendering,
@@ -3255,26 +3271,27 @@ CIMGUI_API void ImDrawData_ScaleClipRects(ImDrawData* self, ImVec2 fb_scale);   
 // [SECTION] Font API (ImFontConfig, ImFontGlyph, ImFontAtlasFlags, ImFontAtlas, ImFontGlyphRangesBuilder, ImFont)
 //-----------------------------------------------------------------------------
 
+// A font input/source (we may rename this to ImFontSource in the future)
 struct ImFontConfig_t
 {
     void*          FontData;              //          // TTF/OTF data
     int            FontDataSize;          //          // TTF/OTF data size
     bool           FontDataOwnedByAtlas;  // true     // TTF/OTF data ownership taken by the container ImFontAtlas (will delete memory itself).
-    int            FontNo;                // 0        // Index of font within TTF/OTF file
-    float          SizePixels;            //          // Size in pixels for rasterizer (more or less maps to the resulting font height).
-    int            OversampleH;           // 2        // Rasterize at higher quality for sub-pixel positioning. Note the difference between 2 and 3 is minimal. You can reduce this to 1 for large glyphs save memory. Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
-    int            OversampleV;           // 1        // Rasterize at higher quality for sub-pixel positioning. This is not really useful as we don't use sub-pixel positions on the Y axis.
+    bool           MergeMode;             // false    // Merge into previous ImFont, so you can combine multiple inputs font into one ImFont (e.g. ASCII font + icons + Japanese glyphs). You may want to use GlyphOffset.y when merge font of different heights.
     bool           PixelSnapH;            // false    // Align every glyph AdvanceX to pixel boundaries. Useful e.g. if you are merging a non-pixel aligned font with the default font. If enabled, you can set OversampleH/V to 1.
+    int            FontNo;                // 0        // Index of font within TTF/OTF file
+    int            OversampleH;           // 0 (2)    // Rasterize at higher quality for sub-pixel positioning. 0 == auto == 1 or 2 depending on size. Note the difference between 2 and 3 is minimal. You can reduce this to 1 for large glyphs save memory. Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
+    int            OversampleV;           // 0 (1)    // Rasterize at higher quality for sub-pixel positioning. 0 == auto == 1. This is not really useful as we don't use sub-pixel positions on the Y axis.
+    float          SizePixels;            //          // Size in pixels for rasterizer (more or less maps to the resulting font height).
     ImVec2         GlyphExtraSpacing;     // 0, 0     // Extra spacing (in pixels) between glyphs when rendered: essentially add to glyph->AdvanceX. Only X axis is supported for now.
     ImVec2         GlyphOffset;           // 0, 0     // Offset all glyphs from this font input.
     const ImWchar* GlyphRanges;           // NULL     // THE ARRAY DATA NEEDS TO PERSIST AS LONG AS THE FONT IS ALIVE. Pointer to a user-provided list of Unicode range (2 value per range, values are inclusive, zero-terminated list).
     float          GlyphMinAdvanceX;      // 0        // Minimum AdvanceX for glyphs, set Min to align font icons, set both Min/Max to enforce mono-space font
     float          GlyphMaxAdvanceX;      // FLT_MAX  // Maximum AdvanceX for glyphs
-    bool           MergeMode;             // false    // Merge into previous ImFont, so you can combine multiple inputs font into one ImFont (e.g. ASCII font + icons + Japanese glyphs). You may want to use GlyphOffset.y when merge font of different heights.
     unsigned int   FontBuilderFlags;      // 0        // Settings for custom font builder. THIS IS BUILDER IMPLEMENTATION DEPENDENT. Leave as zero if unsure.
     float          RasterizerMultiply;    // 1.0f     // Linearly brighten (>1.0f) or darken (<1.0f) font output. Brightening small fonts may be a good workaround to make them more readable. This is a silly thing we may remove in the future.
     float          RasterizerDensity;     // 1.0f     // DPI scale for rasterization, not altering other font metrics: make it easy to swap between e.g. a 100% and a 400% fonts for a zooming display. IMPORTANT: If you increase this it is expected that you increase font scale accordingly, otherwise quality may look lowered.
-    ImWchar        EllipsisChar;          // 0        // Explicitly specify unicode codepoint of ellipsis character. When fonts are being merged first specified ellipsis will be used.
+    ImWchar        EllipsisChar;          // 0        // Explicitly specify Unicode codepoint of ellipsis character. When fonts are being merged first specified ellipsis will be used.
 
     // [Internal]
     char           Name[40];              // Name (strictly to ease debugging)
@@ -3355,7 +3372,7 @@ struct ImFontAtlas_t
     //-------------------------------------------
 
     //-------------------------------------------
-    // [BETA] Custom Rectangles/Glyphs API
+    // [ALPHA] Custom Rectangles/Glyphs API
     //-------------------------------------------
 
     //-------------------------------------------
@@ -3366,11 +3383,11 @@ struct ImFontAtlas_t
     ImTextureID            TexID;                                          // User data to refer to the texture once it has been uploaded to user's graphic systems. It is passed back to you during rendering via the ImDrawCmd structure.
     int                    TexDesiredWidth;                                // Texture width desired by user before Build(). Must be a power-of-two. If have many glyphs your graphics API have texture size restrictions you may want to increase texture width to decrease height.
     int                    TexGlyphPadding;                                // FIXME: Should be called "TexPackPadding". Padding between glyphs within texture in pixels. Defaults to 1. If your rendering method doesn't rely on bilinear filtering you may set this to 0 (will also need to set AntiAliasedLinesUseTex = false).
-    bool                   Locked;                                         // Marked as Locked by ImGui::NewFrame() so attempt to modify the atlas will assert.
     void*                  UserData;                                       // Store your own atlas related user-data (if e.g. you have multiple font atlas).
 
     // [Internal]
     // NB: Access texture data via GetTexData*() calls! Which will setup a default font for you.
+    bool                   Locked;                                         // Marked as Locked by ImGui::NewFrame() so attempt to modify the atlas will assert.
     bool                   TexReady;                                       // Set when texture was built matching current font input
     bool                   TexPixelsUseColors;                             // Tell whether our texture data is known to use colors (rather than just alpha channel), in order to help backend select a format.
     unsigned char*         TexPixelsAlpha8;                                // 1 component per pixel, each component is unsigned 8-bit. Total size = TexWidth * TexHeight
@@ -3403,8 +3420,8 @@ CIMGUI_API ImFont*                ImFontAtlas_AddFontFromMemoryTTF(ImFontAtlas* 
 CIMGUI_API ImFont*                ImFontAtlas_AddFontFromMemoryCompressedTTF(ImFontAtlas* self, const void* compressed_font_data, int compressed_font_data_size, float size_pixels, const ImFontConfig* font_cfg /* = NULL */, const ImWchar* glyph_ranges /* = NULL */); // 'compressed_font_data' still owned by caller. Compress with binary_to_compressed_c.cpp.
 CIMGUI_API ImFont*                ImFontAtlas_AddFontFromMemoryCompressedBase85TTF(ImFontAtlas* self, const char* compressed_font_data_base85, float size_pixels, const ImFontConfig* font_cfg /* = NULL */, const ImWchar* glyph_ranges /* = NULL */); // 'compressed_font_data_base85' still owned by caller. Compress with binary_to_compressed_c.cpp with -base85 parameter.
 CIMGUI_API void                   ImFontAtlas_ClearInputData(ImFontAtlas* self);                                                                                     // Clear input data (all ImFontConfig structures including sizes, TTF data, glyph ranges, etc.) = all the data used to build the texture and fonts.
+CIMGUI_API void                   ImFontAtlas_ClearFonts(ImFontAtlas* self);                                                                                         // Clear input+output font data (same as ClearInputData() + glyphs storage, UV coordinates).
 CIMGUI_API void                   ImFontAtlas_ClearTexData(ImFontAtlas* self);                                                                                       // Clear output texture data (CPU side). Saves RAM once the texture has been copied to graphics memory.
-CIMGUI_API void                   ImFontAtlas_ClearFonts(ImFontAtlas* self);                                                                                         // Clear output font data (glyphs storage, UV coordinates).
 CIMGUI_API void                   ImFontAtlas_Clear(ImFontAtlas* self);                                                                                              // Clear all input and output.
 // Build atlas, retrieve pixel data.
 // User is in charge of copying the pixels into graphics memory (e.g. create a texture with your engine). Then store your texture handle with SetTexID().
@@ -3448,30 +3465,30 @@ CIMGUI_API bool                   ImFontAtlas_GetMouseCursorTexData(ImFontAtlas*
 struct ImFont_t
 {
     // [Internal] Members: Hot ~20/24 bytes (for CalcTextSize)
-    ImVector_float       IndexAdvanceX;                                         // 12-16 // out //            // Sparse. Glyphs->AdvanceX in a directly indexable way (cache-friendly for CalcTextSize functions which only this info, and are often bottleneck in large UI).
+    ImVector_float       IndexAdvanceX;                                         // 12-16 // out // Sparse. Glyphs->AdvanceX in a directly indexable way (cache-friendly for CalcTextSize functions which only this info, and are often bottleneck in large UI).
     float                FallbackAdvanceX;                                      // 4     // out // = FallbackGlyph->AdvanceX
-    float                FontSize;                                              // 4     // in  //            // Height of characters/line, set during loading (don't change after loading)
+    float                FontSize;                                              // 4     // in  // Height of characters/line, set during loading (don't change after loading)
 
     // [Internal] Members: Hot ~28/40 bytes (for RenderText loop)
-    ImVector_ImWchar     IndexLookup;                                           // 12-16 // out //            // Sparse. Index glyphs by Unicode code-point.
-    ImVector_ImFontGlyph Glyphs;                                                // 12-16 // out //            // All glyphs.
+    ImVector_ImU16       IndexLookup;                                           // 12-16 // out // Sparse. Index glyphs by Unicode code-point.
+    ImVector_ImFontGlyph Glyphs;                                                // 12-16 // out // All glyphs.
     const ImFontGlyph*   FallbackGlyph;                                         // 4-8   // out // = FindGlyph(FontFallbackChar)
 
     // [Internal] Members: Cold ~32/40 bytes
     // Conceptually ConfigData[] is the list of font sources merged to create this font.
-    ImFontAtlas*         ContainerAtlas;                                        // 4-8   // out //            // What we has been loaded into
-    const ImFontConfig*  ConfigData;                                            // 4-8   // in  //            // Pointer within ContainerAtlas->ConfigData to ConfigDataCount instances
-    short                ConfigDataCount;                                       // 2     // in  // ~ 1        // Number of ImFontConfig involved in creating this font. Bigger than 1 when merging multiple font sources into one ImFont.
+    ImFontAtlas*         ContainerAtlas;                                        // 4-8   // out // What we has been loaded into
+    const ImFontConfig*  ConfigData;                                            // 4-8   // in  // Pointer within ContainerAtlas->ConfigData to ConfigDataCount instances
+    short                ConfigDataCount;                                       // 2     // in  // Number of ImFontConfig involved in creating this font. Usually 1, or >1 when merging multiple font sources into one ImFont.
     short                EllipsisCharCount;                                     // 1     // out // 1 or 3
-    ImWchar              EllipsisChar;                                          // 2-4   // out // = '...'/'.'// Character used for ellipsis rendering.
-    ImWchar              FallbackChar;                                          // 2-4   // out // = FFFD/'?' // Character used if a glyph isn't found.
-    float                EllipsisWidth;                                         // 4     // out               // Width
-    float                EllipsisCharStep;                                      // 4     // out               // Step between characters when EllipsisCount > 0
+    ImWchar              EllipsisChar;                                          // 2-4   // out // Character used for ellipsis rendering ('...').
+    ImWchar              FallbackChar;                                          // 2-4   // out // Character used if a glyph isn't found (U+FFFD, '?')
+    float                EllipsisWidth;                                         // 4     // out // Total ellipsis Width
+    float                EllipsisCharStep;                                      // 4     // out // Step between characters when EllipsisCount > 0
+    float                Scale;                                                 // 4     // in  // Base font scale (1.0f), multiplied by the per-window font scale which you can adjust with SetWindowFontScale()
+    float                Ascent, Descent;                                       // 4+4   // out // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize] (unscaled)
+    int                  MetricsTotalSurface;                                   // 4     // out // Total surface in pixels to get an idea of the font rasterization/texture cost (not exact, we approximate the cost of padding between glyphs)
     bool                 DirtyLookupTables;                                     // 1     // out //
-    float                Scale;                                                 // 4     // in  // = 1.f      // Base font scale, multiplied by the per-window font scale which you can adjust with SetWindowFontScale()
-    float                Ascent, Descent;                                       // 4+4   // out //            // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize] (unscaled)
-    int                  MetricsTotalSurface;                                   // 4     // out //            // Total surface in pixels to get an idea of the font rasterization/texture cost (not exact, we approximate the cost of padding between glyphs)
-    ImU8                 Used4kPagesMap[(IM_UNICODE_CODEPOINT_MAX +1)/4096/8];  // 2 bytes if ImWchar=ImWchar16, 34 bytes if ImWchar==ImWchar32. Store 1-bit for each block of 4K codepoints that has one active glyph. This is mainly used to facilitate iterations across all used codepoints.
+    ImU8                 Used8kPagesMap[(IM_UNICODE_CODEPOINT_MAX +1)/8192/8];  // 1 bytes if ImWchar=ImWchar16, 16 bytes if ImWchar==ImWchar32. Store 1-bit for each block of 4K codepoints that has one active glyph. This is mainly used to facilitate iterations across all used codepoints.
 };
 CIMGUI_API const ImFontGlyph* ImFont_FindGlyph(ImFont* self, ImWchar c);
 CIMGUI_API const ImFontGlyph* ImFont_FindGlyphNoFallback(ImFont* self, ImWchar c);

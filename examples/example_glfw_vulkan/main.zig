@@ -1,13 +1,12 @@
 const std = @import ("std");
-const builtin = @import ("builtin");
 
 pub const c = @cImport ({
   @cDefine ("GLFW_INCLUDE_VULKAN", "1");
   @cDefine ("GLFW_INCLUDE_NONE", "1");
   @cInclude ("GLFW/glfw3.h");
   @cInclude ("dcimgui.h");
-  @cInclude ("backends/cimgui_impl_glfw.h");
-  @cInclude ("backends/cimgui_impl_vulkan.h");
+  @cInclude ("backends/dcimgui_impl_glfw.h");
+  @cInclude ("backends/dcimgui_impl_vulkan.h");
 });
 
 var g_Allocator:        *c.VkAllocationCallbacks   = undefined;
@@ -433,8 +432,8 @@ fn FrameRender (wd: *c.ImGui_ImplVulkanH_Window, draw_data: *c.ImDrawData) void
 {
   var err: c.VkResult = undefined;
 
-  var image_acquired_semaphore  = wd.FrameSemaphores [wd.SemaphoreIndex].ImageAcquiredSemaphore;
-  var render_complete_semaphore = wd.FrameSemaphores [wd.SemaphoreIndex].RenderCompleteSemaphore;
+  var image_acquired_semaphore  = wd.FrameSemaphores.Data [wd.SemaphoreIndex].ImageAcquiredSemaphore;
+  var render_complete_semaphore = wd.FrameSemaphores.Data [wd.SemaphoreIndex].RenderCompleteSemaphore;
   err = vkAcquireNextImageKHR (g_Device, wd.Swapchain, std.math.maxInt (u64), image_acquired_semaphore, null, &wd.FrameIndex);
   if (err == c.VK_ERROR_OUT_OF_DATE_KHR or err == c.VK_SUBOPTIMAL_KHR)
   {
@@ -443,7 +442,7 @@ fn FrameRender (wd: *c.ImGui_ImplVulkanH_Window, draw_data: *c.ImDrawData) void
   }
   check_vk_result (err);
 
-  var fd = &wd.Frames [wd.FrameIndex];
+  var fd = &wd.Frames.Data [wd.FrameIndex];
   err = vkWaitForFences (g_Device, 1, &fd.Fence, c.VK_TRUE, std.math.maxInt (u64));    // wait indefinitely instead of periodically checking
   check_vk_result (err);
 
@@ -496,7 +495,7 @@ fn FrameRender (wd: *c.ImGui_ImplVulkanH_Window, draw_data: *c.ImDrawData) void
 fn FramePresent (wd: *c.ImGui_ImplVulkanH_Window) void
 {
   if (g_SwapChainRebuild) return;
-  var render_complete_semaphore = wd.FrameSemaphores [wd.SemaphoreIndex].RenderCompleteSemaphore;
+  var render_complete_semaphore = wd.FrameSemaphores.Data [wd.SemaphoreIndex].RenderCompleteSemaphore;
   var info = c.VkPresentInfoKHR {};
   info.sType = c.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
   info.waitSemaphoreCount = 1;
