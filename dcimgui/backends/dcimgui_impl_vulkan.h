@@ -31,7 +31,9 @@
 // Auto-generated forward declarations for C header
 typedef struct ImGui_ImplVulkan_InitInfo_t ImGui_ImplVulkan_InitInfo;
 typedef struct ImGui_ImplVulkan_RenderState_t ImGui_ImplVulkan_RenderState;
+typedef struct ImVector_ImGui_ImplVulkanH_Frame_t ImVector_ImGui_ImplVulkanH_Frame;
 typedef struct ImGui_ImplVulkanH_FrameSemaphores_t ImGui_ImplVulkanH_FrameSemaphores;
+typedef struct ImVector_ImGui_ImplVulkanH_FrameSemaphores_t ImVector_ImGui_ImplVulkanH_FrameSemaphores;
 #pragma once
 
 #ifdef __cplusplus
@@ -170,6 +172,7 @@ struct ImGui_ImplVulkan_RenderState_t
 //-------------------------------------------------------------------------
 
 typedef struct ImGui_ImplVulkanH_Frame_t ImGui_ImplVulkanH_Frame;
+struct ImVector_ImGui_ImplVulkanH_Frame_t { int Size; int Capacity; ImGui_ImplVulkanH_Frame* Data; };  // Instantiation of ImVector<ImGui_ImplVulkanH_Frame>
 typedef struct ImGui_ImplVulkanH_Window_t ImGui_ImplVulkanH_Window;
 
 // Helpers
@@ -199,6 +202,7 @@ struct ImGui_ImplVulkanH_FrameSemaphores_t
     VkSemaphore ImageAcquiredSemaphore;
     VkSemaphore RenderCompleteSemaphore;
 };
+struct ImVector_ImGui_ImplVulkanH_FrameSemaphores_t { int Size; int Capacity; ImGui_ImplVulkanH_FrameSemaphores* Data; };  // Instantiation of ImVector<ImGui_ImplVulkanH_FrameSemaphores>
 
 // Helper structure to hold the data needed by one rendering context into one OS window
 // (Used by example's main.cpp. Used by multi-viewport features. Probably NOT used by your own engine/app.)
