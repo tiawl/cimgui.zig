@@ -1,5 +1,4 @@
 const std = @import ("std");
-const builtin = @import ("builtin");
 
 pub const c = @cImport ({
   @cDefine ("GLFW_INCLUDE_VULKAN", "1");

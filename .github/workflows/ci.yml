@@ -21,7 +21,8 @@ jobs:
         version: ${{ env.zig_version }}
     - name: Test building examples
       shell: bash
-      run:
+      run: |
+        unset ZIG_LOCAL_CACHE_DIR
         zig build --build-file "${GITHUB_WORKSPACE}/examples/build.zig"
   build:
     strategy:
