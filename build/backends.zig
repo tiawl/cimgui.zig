@@ -8,6 +8,7 @@ const flags_size = utils.flags_size;
 pub const Renderer = enum
 {
   Vulkan,
+  OpenGL3,
 };
 
 pub fn rendererOption (builder: *std.Build, lib: *std.Build.Step.Compile,
@@ -17,6 +18,8 @@ pub fn rendererOption (builder: *std.Build, lib: *std.Build.Step.Compile,
 {
   _ = target.*;
   _ = optimize.*;
+
+  try flags.append("-DIMGUI_USE_LEGACY_CRC32_ADLER");
 
   if (builder.option (Renderer, "renderer",
     "Specify the renderer backend")) |backend|
@@ -30,9 +33,26 @@ pub fn rendererOption (builder: *std.Build, lib: *std.Build.Step.Compile,
         try toolbox.addSource (lib, path.getBackends (),
           "dcimgui_impl_vulkan.cpp", flags.slice ());
       },
+      .OpenGL3 => {
+          try toolbox.addSource(lib, path.getBackends(),
+          "imgui_impl_opengl3.cpp", flags.slice());
+          try toolbox.addSource(lib, path.getBackends(),
+          "dcimgui_impl_opengl3.cpp", flags.slice());
+
+          if(target.result.os.tag == .windows)
+          {
+              lib.linkSystemLibrary("opengl32");
+          }
+          else
+          {
+              lib.linkSystemLibrary("opengl");
+          }
+        }
+      }
+
+      return backend;
     }
-    return backend;
-  }
+  
   std.log.warn ("Unspecified renderer backend", .{});
   return null;
 }
@@ -40,6 +60,7 @@ pub fn rendererOption (builder: *std.Build, lib: *std.Build.Step.Compile,
 pub const Platform = enum
 {
   GLFW,
+  SDL3,
 };
 
 pub fn platformOption (builder: *std.Build, lib: *std.Build.Step.Compile,
@@ -71,7 +92,24 @@ pub fn platformOption (builder: *std.Build, lib: *std.Build.Step.Compile,
           lib.root_module.addCMacro ("GLFW_INCLUDE_NONE", "1");
           lib.root_module.addCMacro ("GLFW_INCLUDE_VULKAN", "1");
         }
+        lib.root_module.addCMacro("IMGUI_USE_LEGACY_CRC32_ADLER", "1");
       },
+      .SDL3 => {
+        const sdl_dep = builder.dependency("sdl", .{
+          .target = target.*,
+          .optimize = optimize.*,
+        });
+
+        lib.linkLibrary(sdl_dep.artifact("SDL3"));
+        lib.installLibraryHeaders(sdl_dep.artifact("SDL3"));
+
+        try toolbox.addSource(lib, path.getBackends(),
+          "imgui_impl_sdl3.cpp", flags.slice());
+        try toolbox.addSource(lib, path.getBackends(),
+          "dcimgui_impl_sdl3.cpp", flags.slice());
+
+        lib.root_module.addCMacro("IMGUI_USE_LEGACY_CRC32_ADLER", "1");
+      }
     }
   } else std.log.warn ("Unspecified platform backend", .{});
 }
