@@ -1,4 +1,5 @@
 const std = @import("std");
+const gl = @import("gl");
 
 const c = @cImport({
     @cInclude("SDL3/SDL.h");
@@ -9,6 +10,8 @@ const c = @cImport({
 });
 
 pub fn main() !void {
+    var procs: gl.ProcTable = undefined;
+
     if (!c.SDL_Init(c.SDL_INIT_VIDEO | c.SDL_INIT_GAMEPAD)) {
         std.log.err("SDL Init failed : {s}", .{c.SDL_GetError()});
         return;
@@ -40,6 +43,11 @@ pub fn main() !void {
 
     _ = c.SDL_GL_MakeCurrent(window, context);
     _ = c.SDL_GL_SetSwapInterval(1);
+
+    if (!procs.init(c.SDL_GL_GetProcAddress)) return error.InitFailed;
+
+    gl.makeProcTableCurrent(&procs);
+    defer gl.makeProcTableCurrent(null);
 
     _ = c.CIMGUI_CHECKVERSION();
     _ = c.ImGui_CreateContext(null);
@@ -75,9 +83,9 @@ pub fn main() !void {
 
         c.ImGui_Render();
 
-        c.glViewport(0, 0, @intFromFloat(imio.*.DisplaySize.x), @intFromFloat(imio.*.DisplaySize.y));
-        c.glClearColor(0.0, 0.0, 0.0, 1.0);
-        c.glClear(c.GL_COLOR_BUFFER_BIT);
+        gl.Viewport(0, 0, @intFromFloat(imio.*.DisplaySize.x), @intFromFloat(imio.*.DisplaySize.y));
+        gl.ClearColor(0.0, 0.0, 0.0, 1.0);
+        gl.Clear(gl.COLOR_BUFFER_BIT);
         c.cImGui_ImplOpenGL3_RenderDrawData(c.ImGui_GetDrawData());
         _ = c.SDL_GL_SwapWindow(window);
     }
