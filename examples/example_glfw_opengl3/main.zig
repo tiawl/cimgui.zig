@@ -3,8 +3,8 @@ const std = @import("std");
 const c = @cImport({
     @cInclude("GLFW/glfw3.h");
     @cInclude("dcimgui.h");
-    @cInclude("backends/cimgui_impl_glfw.h");
-    @cInclude("backends/cimgui_impl_opengl3.h");
+    @cInclude("backends/dcimgui_impl_glfw.h");
+    @cInclude("backends/dcimgui_impl_opengl3.h");
 });
 
 fn errorCallback(errn: c_int, str: [*c]const u8) callconv(.C) void {

@@ -37,7 +37,7 @@ pub fn rendererOption (builder: *std.Build, lib: *std.Build.Step.Compile,
           try toolbox.addSource(lib, path.getBackends(),
           "imgui_impl_opengl3.cpp", flags.slice());
           try toolbox.addSource(lib, path.getBackends(),
-          "cimgui_impl_opengl3.cpp", flags.slice());
+          "dcimgui_impl_opengl3.cpp", flags.slice());
 
           if(target.result.os.tag == .windows)
           {
@@ -49,9 +49,10 @@ pub fn rendererOption (builder: *std.Build, lib: *std.Build.Step.Compile,
           }
         }
       }
+
+      return backend;
     }
-    return backend;
-  }
+  
   std.log.warn ("Unspecified renderer backend", .{});
   return null;
 }
@@ -105,7 +106,7 @@ pub fn platformOption (builder: *std.Build, lib: *std.Build.Step.Compile,
         try toolbox.addSource(lib, path.getBackends(),
           "imgui_impl_sdl3.cpp", flags.slice());
         try toolbox.addSource(lib, path.getBackends(),
-          "cimgui_impl_sdl3.cpp", flags.slice());
+          "dcimgui_impl_sdl3.cpp", flags.slice());
 
         lib.root_module.addCMacro("IMGUI_USE_LEGACY_CRC32_ADLER", "1");
       }
