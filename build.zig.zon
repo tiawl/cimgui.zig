@@ -9,6 +9,10 @@
         "dcimgui",
     },
     .dependencies = .{
+        .vulkan = .{
+            .url = "https://github.com/tiawl/vulkan.zig/archive/refs/tags/v1.4.304.tar.gz",
+            .hash = "122039fab5313623b71118cca07f604639dab5c1557c4897b787297440cb06ab615a",
+        },
         .glfw = .{
             .url = "https://github.com/tiawl/glfw.zig/archive/refs/tags/3.4.tar.gz",
             .hash = "1220bd2d0d5e8b95e9405563c7d43ed7de7597f14df07fb4a5c62b7503021ceae050",
@@ -20,6 +24,10 @@
         .sdl = .{
             .url = "git+https://github.com/castholm/SDL.git#bbc8dfb78c2a71f10b21548b58dfe5ac46cc3fef",
             .hash = "122046c6dcdcf941e6e5b1e8fa273185d04420e56436d47b906308eaf70208222f59",
+        },
+        .zigglgen = .{
+            .url = "git+https://github.com/castholm/zigglgen#1c901bef6d312ef1814b8fce3c5a9e9e8e61ac2d",
+            .hash = "12209d8a018832bee15d9da29a12fa753d89b56cd843cdf1f39501546c6467e38ba1",
         },
     },
 }

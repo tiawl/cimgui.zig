@@ -1,6 +1,8 @@
 const std = @import("std");
+const gl = @import("gl");
 
 const c = @cImport({
+    @cDefine ("GLFW_INCLUDE_NONE", "1");
     @cInclude("GLFW/glfw3.h");
     @cInclude("dcimgui.h");
     @cInclude("backends/dcimgui_impl_glfw.h");
@@ -12,6 +14,8 @@ fn errorCallback(errn: c_int, str: [*c]const u8) callconv(.C) void {
 }
 
 pub fn main() !void {
+    var procs: gl.ProcTable = undefined;
+
     _ = c.glfwSetErrorCallback(errorCallback);
 
     if (c.glfwInit() != c.GLFW_TRUE) {
@@ -31,6 +35,11 @@ pub fn main() !void {
 
     c.glfwMakeContextCurrent(window);
     c.glfwSwapInterval(1);
+
+    if (!procs.init(c.glfwGetProcAddress)) return error.InitFailed;
+
+    gl.makeProcTableCurrent(&procs);
+    defer gl.makeProcTableCurrent(null);
 
     _ = c.CIMGUI_CHECKVERSION();
     _ = c.ImGui_CreateContext(null);
@@ -61,9 +70,9 @@ pub fn main() !void {
         var width: c_int = 0;
         var height: c_int = 0;
         c.glfwGetFramebufferSize(window, &width, &height);
-        c.glViewport(0, 0, width, height);
-        c.glClearColor(0.0, 0.0, 0.0, 1.0);
-        c.glClear(c.GL_COLOR_BUFFER_BIT);
+        gl.Viewport(0, 0, width, height);
+        gl.ClearColor(0.0, 0.0, 0.0, 1.0);
+        gl.Clear(gl.COLOR_BUFFER_BIT);
         c.cImGui_ImplOpenGL3_RenderDrawData(c.ImGui_GetDrawData());
 
         c.glfwSwapBuffers(window);

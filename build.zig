@@ -8,8 +8,7 @@ const flags_size = utils.flags_size;
 const backends = @import ("build/backends.zig");
 pub const Renderer = backends.Renderer;
 pub const Platform = backends.Platform;
-const rendererOption = backends.rendererOption;
-const platformOption = backends.platformOption;
+const backendOptions = backends.backendOptions;
 
 fn update (builder: *std.Build, path: *const Paths,
   dependencies: *const toolbox.Dependencies) !void
@@ -115,16 +114,26 @@ pub fn build (builder: *std.Build) !void
        .host = toolbox.Repository.Host.github,
        .ref = toolbox.Repository.Reference.tag,
      },
+     .vulkan = .{
+       .name = "tiawl/vulkan.zig",
+       .host = toolbox.Repository.Host.github,
+       .ref = toolbox.Repository.Reference.tag,
+     },
      .glfw = .{
        .name = "tiawl/glfw.zig",
        .host = toolbox.Repository.Host.github,
        .ref = toolbox.Repository.Reference.tag,
      },
      .sdl = .{
-     .name = "castholm/SDL",
-     .host = toolbox.Repository.Host.github,
-     .ref = toolbox.Repository.Reference.commit,
-  },
+        .name = "castholm/SDL",
+        .host = toolbox.Repository.Host.github,
+        .ref = toolbox.Repository.Reference.commit,
+     },
+     .gl = .{
+        .name = "castholm/zigglgen",
+        .host = toolbox.Repository.Host.github,
+        .ref = toolbox.Repository.Reference.commit,
+     },
    }, .{
      .imgui = .{
        .name = "ocornut/imgui",
@@ -180,10 +189,7 @@ pub fn build (builder: *std.Build) !void
           flags.slice ());
   }
 
-  const renderer =
-    try rendererOption (builder, lib, &target, &optimize, &path, &flags);
-  try platformOption (builder, lib, &target, &optimize, &path,
-    renderer, &flags);
+  try backendOptions (builder, lib, &target, &optimize, &path, &flags);
 
   builder.installArtifact (lib);
 }

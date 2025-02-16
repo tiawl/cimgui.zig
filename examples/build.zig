@@ -18,6 +18,14 @@ fn renderer (dir_name: [] const u8) !Renderer
   else error.UnknownRendererBackend;
 }
 
+fn linkLibAndImportModules(lib: *std.Build.Step.Compile, exe: *std.Build.Step.Compile, dir_name: []const u8) void {
+    if (std.mem.indexOf (u8, dir_name, "_opengl3") != null) {
+        exe.root_module.addImport("gl", lib.root_module.import_table.get("gl").?);
+        _ = lib.root_module.import_table.swapRemove("gl");
+    }
+    exe.linkLibrary (lib);
+}
+
 pub fn build (builder: *std.Build) !void
 {
   const target = builder.standardTargetOptions (.{});
@@ -54,7 +62,7 @@ pub fn build (builder: *std.Build) !void
         .renderer = try renderer (entry.name),
       });
 
-      exe.linkLibrary (cimgui_dep.artifact ("cimgui"));
+      linkLibAndImportModules(cimgui_dep.artifact ("cimgui"), exe, entry.name);
 
       builder.installArtifact (exe);
     }
