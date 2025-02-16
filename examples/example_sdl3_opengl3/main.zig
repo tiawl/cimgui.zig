@@ -85,7 +85,7 @@ pub fn main() !void {
 
         gl.Viewport(0, 0, @intFromFloat(imio.*.DisplaySize.x), @intFromFloat(imio.*.DisplaySize.y));
         gl.ClearColor(0.0, 0.0, 0.0, 1.0);
-        gl.Clear(c.GL_COLOR_BUFFER_BIT);
+        gl.Clear(gl.COLOR_BUFFER_BIT);
         c.cImGui_ImplOpenGL3_RenderDrawData(c.ImGui_GetDrawData());
         _ = c.SDL_GL_SwapWindow(window);
     }
