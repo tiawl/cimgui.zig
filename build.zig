@@ -175,7 +175,7 @@ pub fn build(builder: *std.Build) !void {
             .host = toolbox.Repository.Host.github,
             .ref = toolbox.Repository.Reference.commit,
         },
-        .gl = .{
+        .zigglgen = .{
             .name = "castholm/zigglgen",
             .host = toolbox.Repository.Host.github,
             .ref = toolbox.Repository.Reference.commit,
