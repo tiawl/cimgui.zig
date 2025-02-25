@@ -14,8 +14,8 @@
             .hash = "1220bd2d0d5e8b95e9405563c7d43ed7de7597f14df07fb4a5c62b7503021ceae050",
         },
         .vulkan = .{
-            .url = "https://github.com/tiawl/vulkan.zig/archive/refs/tags/v1.4.307.tar.gz",
-            .hash = "12203988074f3594ce25a3d0bab091edd232a6f3e38c579320a1d68e3425ce31d139",
+            .url = "https://github.com/tiawl/vulkan.zig/archive/refs/tags/v1.4.309.tar.gz",
+            .hash = "12201b287a93ca5afb0636a8b1a7c87cea1d96f8708f8038f098db25e9c120b380b2",
         },
         .toolbox = .{
             .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.11.2.tar.gz",
