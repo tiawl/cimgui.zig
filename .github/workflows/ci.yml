@@ -45,25 +45,9 @@ jobs:
       with:
         version: ${{ env.ZIG_VERSION }}
 
-    - name: Install apt packages
-      if: runner.os == 'LINUX'
-      shell: bash
-      run: |
-        sudo apt-get install -y python3-venv mesa-utils
-        printf 'ACTIVATE_DIR=bin\n' >> "${GITHUB_ENV}"
-
     - uses: actions/checkout@v4
       with:
         repository: "${{ github.repository_owner }}/${{ matrix.repo }}"
-
-    - name: Activate python virtual env & install pip packages
-      env:
-        RUNNER_TMP: "${{ runner.temp }}"
-      shell: bash
-      run: |
-        python3 -m venv "${RUNNER_TMP}/venv"
-        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
-        pip install ply
 
     - name: Prepare ${{ matrix.repo }}/build.zig.zon
       env:
@@ -83,5 +67,4 @@ jobs:
         RUNNER_TMP: "${{ runner.temp }}"
       shell: bash
       run:
-        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
         zig build ${OPTIONS}
