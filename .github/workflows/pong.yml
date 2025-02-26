@@ -4,11 +4,11 @@ on:
   repository_dispatch:
     types:
       - ping-from-toolbox
+      - ping-from-vulkan.zig
       - ping-from-glfw.zig
-      - ping-from-spaceporn-action-bot
-      - ping-from-spaceporn-action-ci
-      - ping-from-spaceporn-action-cd-ping
-      - ping-from-spaceporn-action-cd-pong
+
+env:
+  ZIG_VERSION: "0.13.0"
 
 jobs:
   pong:
@@ -17,10 +17,69 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: tiawl/spaceporn-action-cd-pong@v1.1.0
+    - uses: actions/checkout@v4
       with:
-        to: "${{ github.repository }}"
-        from: "${{ github.event.client_payload.from }}"
-        tag: "${{ github.event.client_payload.tag }}"
-        hash: "${{ github.event.client_payload.hash }}"
+        repository: "${{ github.repository }}"
         token: "${{ secrets.PAT }}"
+
+    - name: Setup git user information
+      env:
+        BRANCH: "bot"
+        EMAIL: "<>"
+        HASH: "${{ github.event.client_payload.hash }}"
+        NAME: "GitHub Actions[bot]"
+      shell: bash
+      run: |
+        git config user.name "${NAME}"
+        git config user.email "${EMAIL}"
+        git checkout -b "${BRANCH}"
+        printf 'hash_len=%s\n' "${#HASH}" >> "${GITHUB_ENV}"
+
+    - name: Update github actions files
+      if: env.hash_len == '0'
+      env:
+        REPOSITORY: "${{ github.repository_owner }}/${{ github.event.client_payload.from }}"
+        TAG: "${{ github.event.client_payload.tag }}"
+      shell: bash
+      run: |
+        find . -type f -name '*.yml' -exec sed -i "s#uses:\s*${REPOSITORY}@[^@]\+#uses: ${REPOSITORY}@${TAG}#g" {} +
+
+    - name: Setup Zig
+      if: env.hash_len != '0'
+      uses: mlugg/setup-zig@v1
+      with:
+        version: ${{ env.ZIG_VERSION }}
+
+    - name: Update the build.zig.zon
+      if: env.hash_len != '0'
+      env:
+        URL: "${{ github.server_url }}/${{ github.repository_owner }}/${{ github.event.client_payload.from }}/archive"
+        TAG: "${{ github.event.client_payload.tag }}"
+        HASH: "${{ github.event.client_payload.hash }}"
+      shell: bash
+      run: |
+        zon_url="$(grep -o "${URL}/.*\.tar\.gz" build.zig.zon)"
+        zon_hash="$(zig fetch "${zon_url}")"
+        sed -i "s@${zon_url}@${URL}/refs/tags/${TAG}.tar.gz@;
+                s@${zon_hash}@${HASH}@" build.zig.zon
+
+    - name: Diff
+      id: diff
+      shell: bash
+      run: |
+        diffs="$(git diff HEAD --name-only | wc -l)"
+        printf 'len=%s\n' "${diffs}" >> "${GITHUB_OUTPUT}"
+
+    - name: Create Pull Request
+      if: steps.diff.outputs.len != '0'
+      env:
+        BRANCH: "bot"
+        DEFAULT: "trunk"
+        GH_TOKEN: "${{ secrets.PAT }}"
+        TITLE: "Update dependencies"
+      shell: bash
+      run: |
+        git add -A
+        git commit -m "CD: ${TITLE}"
+        git push --force --set-upstream origin "${BRANCH}"
+        gh pr create --base "${DEFAULT}" --fill --assignee "${GITHUB_REPOSITORY_OWNER}" || :

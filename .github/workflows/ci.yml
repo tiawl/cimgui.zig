@@ -5,6 +5,9 @@ on:
     branches:
       - trunk
 
+env:
+  ZIG_VERSION: "0.13.0"
+
 jobs:
   examples:
     strategy:
@@ -14,11 +17,10 @@ jobs:
           - windows-latest
     runs-on: "${{ matrix.os }}"
     steps:
-    - uses: tiawl/spaceporn-action-env@v1.0.3
     - uses: actions/checkout@v4
     - uses: mlugg/setup-zig@v1
       with:
-        version: ${{ env.zig_version }}
+        version: ${{ env.ZIG_VERSION }}
     - name: Test building examples
       shell: bash
       run: |
@@ -38,13 +40,48 @@ jobs:
           - '-Dturbo'
     runs-on: "${{ matrix.os }}"
     steps:
-    - uses: tiawl/spaceporn-action-ci@v1.1.1
+    - name: Setup Zig
+      uses: mlugg/setup-zig@v1
       with:
-        repository: "${{ github.repository }}"
-        additional_zig_opts: "${{ matrix.zig_opts }}"
-        sha: "${{ github.event.pull_request.head.sha }}"
-        user: "${{ matrix.repo }}"
-        token: "${{ github.token }}"
-        test_build: 'true'
-        test_update: 'false'
-        test_fetch: 'false'
+        version: ${{ env.ZIG_VERSION }}
+
+    - name: Install apt packages
+      if: runner.os == 'LINUX'
+      shell: bash
+      run: |
+        sudo apt-get install -y python3-venv mesa-utils
+        printf 'ACTIVATE_DIR=bin\n' >> "${GITHUB_ENV}"
+
+    - uses: actions/checkout@v4
+      with:
+        repository: "${{ github.repository_owner }}/${{ matrix.repo }}"
+
+    - name: Activate python virtual env & install pip packages
+      env:
+        RUNNER_TMP: "${{ runner.temp }}"
+      shell: bash
+      run: |
+        python3 -m venv "${RUNNER_TMP}/venv"
+        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
+        pip install ply
+
+    - name: Prepare ${{ matrix.repo }}/build.zig.zon
+      env:
+        SHA: "${{ github.event.pull_request.head.sha }}"
+        URL: "${{ github.server_url }}/${{ github.repository }}/archive"
+      shell: bash
+      run: |
+        old_url="$(grep -o "${URL}/.*\.tar\.gz" build.zig.zon)"
+        old_hash="$(zig fetch "${old_url}")"
+        new_url="${URL}/${SHA}.tar.gz"
+        new_hash="$(zig fetch "${new_url}")"
+        sed -i "s@${old_url}@${new_url}@;s@${old_hash}@${new_hash}@" build.zig.zon
+
+    - name: Test building ${{ matrix.repo }}
+      env:
+        OPTIONS: "${{ matrix.zig_opts }}"
+        RUNNER_TMP: "${{ runner.temp }}"
+      shell: bash
+      run:
+        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
+        zig build ${OPTIONS}
