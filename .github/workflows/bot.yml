@@ -5,6 +5,9 @@ on:
     - cron: '0 6 * * *'
   workflow_dispatch:
 
+env:
+  ZIG_VERSION: "0.13.0"
+
 jobs:
   update:
     permissions:
@@ -13,7 +16,92 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: tiawl/spaceporn-action-bot@v1.1.1
+    - uses: actions/checkout@v4
       with:
         repository: "${{ github.repository }}"
-        token: "${{ github.token }}"
+
+    - name: Close every bot PRs
+      env:
+        OPTIONS: "--author '@me' --state open --json \"number\""
+        COMMENT: "--comment 'Outdated PR/issue'"
+        GH_TOKEN: "${{ github.token }}"
+        FILTER: ".[] | .number"
+      shell: bash
+      run: |
+        declare -a pr_list=( $(gh pr list ${OPTIONS} | jq "${FILTER}") )
+        for pr_nr in ${pr_list[@]}
+        do
+          gh pr close "${pr_nr}" ${COMMENT} --delete-branch
+        done
+        if [[ "$(gh pr list ${OPTIONS} | jq length)" != '0' ]]
+        then
+          exit 1
+        fi
+
+    - name: Setup Zig
+      uses: mlugg/setup-zig@v1
+      with:
+        version: ${{ env.ZIG_VERSION }}
+
+    - name: Install apt packages
+      shell: bash
+      run: |
+        sudo apt-get install -y python3-venv mesa-utils
+
+    - name: Activate python virtual env & install pip packages
+      env:
+        RUNNER_TMP: "${{ runner.temp }}"
+      shell: bash
+      run: |
+        python3 -m venv "${RUNNER_TMP}/venv"
+        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
+        pip install ply
+
+    - name: Setup git user information
+      env:
+        BRANCH: "bot"
+        EMAIL: "<>"
+        NAME: "GitHub Actions[bot]"
+      shell: bash
+      run: |
+        git config user.name "${NAME}"
+        git config user.email "${EMAIL}"
+        git checkout -b "${BRANCH}"
+
+    - name: Fetch
+      id: fetch
+      env:
+        RUNNER_TMP: "${{ runner.temp }}"
+      shell: bash
+      run: |
+        zig build -Dfetch
+
+    - name: Diff
+      if: steps.fetch.conclusion == 'success'
+      id: diff
+      shell: bash
+      run: |
+        diffs="$(git diff HEAD --name-only | wc -l)"
+        printf 'len=%s\n' "${diffs}" >> "${GITHUB_OUTPUT}"
+
+    - name: Update
+      if: steps.fetch.conclusion == 'success' && steps.diff.outputs.len != '0'
+      env:
+        RUNNER_TMP: "${{ runner.temp }}"
+      shell: bash
+      run: |
+        zig build -Dupdate
+
+    - name: Create Pull Request
+      if: steps.fetch.conclusion == 'success' && steps.diff.outputs.len != '0'
+      env:
+        BRANCH: "bot"
+        DEFAULT: "trunk"
+        GH_TOKEN: "${{ github.token }}"
+        TITLE: "Update dependencies"
+      shell: bash
+      run: |
+        git add -A
+        git commit -m "Bot: ${TITLE}"
+        git push --force --set-upstream origin "${BRANCH}"
+        gh pr create --base "${DEFAULT}" --fill --reviewer "${GITHUB_REPOSITORY_OWNER}"
