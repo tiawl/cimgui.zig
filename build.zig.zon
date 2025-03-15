@@ -1,7 +1,8 @@
 .{
-    .name = "cimgui.zig",
+    .name = .cimgui_zig,
     .version = "1.0.0",
-    .minimum_zig_version = "0.13.0",
+    .fingerprint = 0x4e4978d2929b7bd9,
+    .minimum_zig_version = "0.14.0",
     .paths = .{
         "build.zig",
         "build.zig.zon",
