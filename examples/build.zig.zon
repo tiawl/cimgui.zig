@@ -1,6 +1,7 @@
 .{
-    .name = "examples",
+    .name = .examples,
     .version = "1.0.0",
+    .fingerprint = 0x7bd0ad456daba161,
     .dependencies = .{
         .cimgui = .{
             .path = "..",

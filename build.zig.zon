@@ -1,7 +1,8 @@
 .{
-    .name = "cimgui.zig",
+    .name = .cimgui_zig,
     .version = "1.0.0",
-    .minimum_zig_version = "0.13.0",
+    .fingerprint = 0x4e4978d2929b7bd9,
+    .minimum_zig_version = "0.14.0",
     .paths = .{
         "build.zig",
         "build.zig.zon",
@@ -9,17 +10,9 @@
         "dcimgui",
     },
     .dependencies = .{
-        .glfw = .{
-            .url = "https://github.com/tiawl/glfw.zig/archive/refs/tags/3.4.tar.gz",
-            .hash = "1220bd2d0d5e8b95e9405563c7d43ed7de7597f14df07fb4a5c62b7503021ceae050",
-        },
-        .vulkan = .{
-            .url = "https://github.com/tiawl/vulkan.zig/archive/refs/tags/v1.4.309.tar.gz",
-            .hash = "12201b287a93ca5afb0636a8b1a7c87cea1d96f8708f8038f098db25e9c120b380b2",
-        },
         .toolbox = .{
-            .url = "https://github.com/tiawl/toolbox/archive/refs/tags/1.11.2.tar.gz",
-            .hash = "122037046680450473adc3670f08c8695638d05f07c00be18e94ff3f7e21edf9ed9e",
+            .url = "git+https://github.com/tiawl/toolbox#2ae25fc6c2d328f015e3fe54e9b3d93fda3bb1b9",
+            .hash = "toolbox-1.11.2-AAAAAJlKAABQa5LndMD-wEstzxaaUiua615kyH8x8lpp",
         },
         .sdl = .{
             .url = "https://github.com/castholm/SDL/archive/5179baa2e5154acb229cd4b40c8689498d055691.tar.gz",
@@ -28,6 +21,14 @@
         .zigglgen = .{
             .url = "https://github.com/castholm/zigglgen/archive/1c901bef6d312ef1814b8fce3c5a9e9e8e61ac2d.tar.gz",
             .hash = "12209d8a018832bee15d9da29a12fa753d89b56cd843cdf1f39501546c6467e38ba1",
+        },
+        .glfw = .{
+            .url = "git+https://github.com/tiawl/glfw.zig#7ea94b0a3bd9b8953ba40fa4792c1eae98cbd40d",
+            .hash = "glfw_zig-1.0.0-NrvYozjOFwAQf21InIYBrdJwS02MDqc4KV_va0hzgqsG",
+        },
+        .vulkan = .{
+            .url = "git+https://github.com/tiawl/vulkan.zig#0986b3a22990d29568c0b0d3f639f7711d4d02c3",
+            .hash = "vulkan_zig-1.0.0-p2wg3tbCCgG8szWmESKAZgulpAIeq1A1-tv_lkU2tKWf",
         },
     },
 }
