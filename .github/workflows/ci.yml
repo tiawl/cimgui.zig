@@ -51,15 +51,10 @@ jobs:
 
     - name: Prepare ${{ matrix.repo }}/build.zig.zon
       env:
-        SHA: "${{ github.event.pull_request.head.sha }}"
-        URL: "${{ github.server_url }}/${{ github.repository }}/archive"
-      shell: bash
+        URL: "git+${{ github.server_url }}/${{ github.repository }}#${{ github.event.pull_request.head.sha }}"
+      shell: 'bash'
       run: |
-        old_url="$(grep -o "${URL}/.*\.tar\.gz" build.zig.zon)"
-        old_hash="$(zig fetch "${old_url}")"
-        new_url="${URL}/${SHA}.tar.gz"
-        new_hash="$(zig fetch "${new_url}")"
-        sed -i "s@${old_url}@${new_url}@;s@${old_hash}@${new_hash}@" build.zig.zon
+        zig fetch --save "${URL}"
 
     - name: Test building ${{ matrix.repo }}
       env:

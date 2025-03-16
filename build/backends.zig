@@ -25,7 +25,7 @@ pub fn backendOptions(builder: *std.Build, lib: *std.Build.Step.Compile, target:
             .Vulkan => {
                 if (platform_opt) |platform| {
                     if (platform != .GLFW) {
-                        const vulkan_dep = builder.dependency("vulkan", .{
+                        const vulkan_dep = builder.dependency("vulkan_zig", .{
                             .target = target.*,
                             .optimize = optimize.*,
                         });
@@ -59,7 +59,7 @@ pub fn backendOptions(builder: *std.Build, lib: *std.Build.Step.Compile, target:
     if (platform_opt) |platform| {
         switch (platform) {
             .GLFW => {
-                const glfw_dep = builder.dependency("glfw", .{
+                const glfw_dep = builder.dependency("glfw_zig", .{
                     .target = target.*,
                     .optimize = optimize.*,
                 });

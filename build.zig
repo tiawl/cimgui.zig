@@ -160,12 +160,12 @@ pub fn build(builder: *std.Build) !void {
             .host = toolbox.Repository.Host.github,
             .ref = toolbox.Repository.Reference.commit,
         },
-        .vulkan = .{
+        .vulkan_zig = .{
             .name = "tiawl/vulkan.zig",
             .host = toolbox.Repository.Host.github,
             .ref = toolbox.Repository.Reference.commit,
         },
-        .glfw = .{
+        .glfw_zig = .{
             .name = "tiawl/glfw.zig",
             .host = toolbox.Repository.Host.github,
             .ref = toolbox.Repository.Reference.commit,

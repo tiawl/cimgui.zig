@@ -27,12 +27,12 @@ $ zig fetch --save git+https://github.com/tiawl/cimgui.zig
 Add it to your `build.zig` :
 ```diff
 const std = @import("std");
-+const cimgui = @import("cimgui.zig");
++const cimgui = @import("cimgui_zig");
 
 pub fn build(b: *std.Build) void {
     // -- snip --
 
-+    const cimgui_dep = b.dependency("cimgui.zig", .{
++    const cimgui_dep = b.dependency("cimgui_zig", .{
 +        .target = target,
 +        .optimize = optimize,
 +        .platform = cimgui.Platform.GLFW,

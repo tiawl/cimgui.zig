@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const cimgui = @import("cimgui");
+const cimgui = @import("cimgui_zig");
 const Platform = cimgui.Platform;
 const Renderer = cimgui.Renderer;
 
@@ -52,7 +52,7 @@ pub fn build(builder: *std.Build) !void {
                 .optimize = optimize,
             });
 
-            cimgui_dep = builder.dependency("cimgui", .{
+            cimgui_dep = builder.dependency("cimgui_zig", .{
                 .target = target,
                 .optimize = optimize,
                 .platform = try platform(entry.name),

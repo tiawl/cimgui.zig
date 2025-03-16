@@ -22,11 +22,11 @@
             .url = "https://github.com/castholm/zigglgen/archive/1c901bef6d312ef1814b8fce3c5a9e9e8e61ac2d.tar.gz",
             .hash = "12209d8a018832bee15d9da29a12fa753d89b56cd843cdf1f39501546c6467e38ba1",
         },
-        .glfw = .{
+        .glfw_zig = .{
             .url = "git+https://github.com/tiawl/glfw.zig#7ea94b0a3bd9b8953ba40fa4792c1eae98cbd40d",
             .hash = "glfw_zig-1.0.0-NrvYozjOFwAQf21InIYBrdJwS02MDqc4KV_va0hzgqsG",
         },
-        .vulkan = .{
+        .vulkan_zig = .{
             .url = "git+https://github.com/tiawl/vulkan.zig#364ff102ffdcb80cfd6abddd7f34a49bb2fa499f",
             .hash = "vulkan_zig-1.0.0-p2wg3tbCCgEP2iII204_S0HQ-mt0csIgvPgRzbfvsjTm",
         },
