@@ -158,17 +158,17 @@ pub fn build(builder: *std.Build) !void {
         .toolbox = .{
             .name = "tiawl/toolbox",
             .host = toolbox.Repository.Host.github,
-            .ref = toolbox.Repository.Reference.tag,
+            .ref = toolbox.Repository.Reference.commit,
         },
         .vulkan = .{
             .name = "tiawl/vulkan.zig",
             .host = toolbox.Repository.Host.github,
-            .ref = toolbox.Repository.Reference.tag,
+            .ref = toolbox.Repository.Reference.commit,
         },
         .glfw = .{
             .name = "tiawl/glfw.zig",
             .host = toolbox.Repository.Host.github,
-            .ref = toolbox.Repository.Reference.tag,
+            .ref = toolbox.Repository.Reference.commit,
         },
         .sdl = .{
             .name = "castholm/SDL",
