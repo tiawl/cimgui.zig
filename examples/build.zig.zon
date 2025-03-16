@@ -3,7 +3,7 @@
     .version = "1.0.0",
     .fingerprint = 0x7bd0ad456daba161,
     .dependencies = .{
-        .cimgui = .{
+        .cimgui_zig = .{
             .path = "..",
         },
     },

@@ -53,15 +53,10 @@ jobs:
     - name: Update the build.zig.zon
       if: env.hash_len != '0'
       env:
-        URL: "${{ github.server_url }}/${{ github.repository_owner }}/${{ github.event.client_payload.from }}/archive"
-        TAG: "${{ github.event.client_payload.tag }}"
-        HASH: "${{ github.event.client_payload.hash }}"
+        URL: "git+${{ github.server_url }}/${{ github.repository_owner }}/${{ github.event.client_payload.from }}"
       shell: bash
       run: |
-        zon_url="$(grep -o "${URL}/.*\.tar\.gz" build.zig.zon)"
-        zon_hash="$(zig fetch "${zon_url}")"
-        sed -i "s@${zon_url}@${URL}/refs/tags/${TAG}.tar.gz@;
-                s@${zon_hash}@${HASH}@" build.zig.zon
+        zig fetch --save "${URL}"
 
     - name: Diff
       id: diff
