@@ -11,8 +11,8 @@
     },
     .dependencies = .{
         .toolbox = .{
-            .url = "git+https://github.com/tiawl/toolbox#a1e559d4af4e6d4992c949654d64c516c2f057fb",
-            .hash = "toolbox-1.11.2-kRAu4NRNAAAmfBT3UgvZQdtwry08DkZ3bQj-P2oFPHNH",
+            .url = "git+https://github.com/tiawl/toolbox#73131f884f21b52f1047d9773a51962022bb8386",
+            .hash = "toolbox-1.11.2-kRAu4O1NAACcrknGDEXHMjGXtoMbvlggfFyh7jGUSqlD",
         },
         .sdl = .{
             .url = "https://github.com/castholm/SDL/archive/5179baa2e5154acb229cd4b40c8689498d055691.tar.gz",
