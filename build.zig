@@ -151,7 +151,7 @@ pub fn build(builder: *std.Build) !void {
 
     const path = try Paths.init(builder);
 
-    const dependencies = try toolbox.Dependencies.init(builder, "cimgui.zig", &.{
+    const dependencies = try toolbox.Dependencies.init(builder, .cimgui_zig, "0x4e4978d2929b7bd9", &.{
         "build",
         "dcimgui",
     }, .{
