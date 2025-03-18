@@ -14,7 +14,7 @@ The intention under this fork is to package [ocornut/imgui][1] for [Zig][2]. So:
 
 The goal of this repository is not to provide a [Zig][2] binding for [ocornut/imgui][1]. There are at least as many legit ways as possible to make a binding as there are active accounts on Github. So you are not going to find an answer for this question here. The point of this repository is to abstract the [ocornut/imgui][1] compilation process with [Zig][2] (which is not new comers friendly and not easy to maintain) to let you focus on your application. So you can use **cimgui.zig**:
 - as raw (see the [examples directory](https://github.com/tiawl/cimgui.zig/blob/trunk/examples)),
-- as a daily updated interface for your [Zig][2] binding of [ocornut/imgui][1] (see [here][13] for a private usage).
+- as a daily updated interface for your [Zig][2] binding of [ocornut/imgui][1] (see [here][9] for a private usage).
 
 ### cimgui.zig as a library
 If you want to add `cimgui.zig` as a library to your project, you can do the following (do know that it requires a zig version `>0.13`) :
@@ -53,12 +53,11 @@ The backends are separated in two categories : the platforms (handling windows, 
 
 ### Platform
   - [GLFW][4]
-  - [SDL3][14]
+  - [SDL3][10]
 
 ### Renderers
   - [Vulkan][5]
-  - [OpenGL][15]
-
+  - [OpenGL][11]
 
 > As you can see, these backends do not support all of those supported by ImGUI. Adding a backend is a bit of work because of the needed *maintenance*. Please do not ask for backends to be added if you don't feel like adding them yourselves !
 
@@ -83,10 +82,6 @@ This repository is automatically updated when a new release is available from th
 * [dearimgui/dear_bindings][3]
 * [tiawl/toolbox][7]
 * [tiawl/glfw.zig][8]
-* [tiawl/spaceporn-action-bot][9]
-* [tiawl/spaceporn-action-ci][10]
-* [tiawl/spaceporn-action-cd-ping][11]
-* [tiawl/spaceporn-action-cd-pong][12]
 
 ## `zig build` options
 
@@ -120,10 +115,6 @@ The parts of this repository originated from this repository are dedicated to th
 [6]:https://github.com/tiawl/spaceporn
 [7]:https://github.com/tiawl/toolbox
 [8]:https://github.com/tiawl/glfw.zig
-[9]:https://github.com/tiawl/spaceporn-action-bot
-[10]:https://github.com/tiawl/spaceporn-action-ci
-[11]:https://github.com/tiawl/spaceporn-action-cd-ping
-[12]:https://github.com/tiawl/spaceporn-action-cd-pong
-[13]:https://github.com/tiawl/spaceporn/blob/trunk/src/spaceporn/bindings/imgui/imgui.zig
-[14]:https://wiki.libsdl.org/SDL3/FrontPage
-[15]:https://www.opengl.org/
+[9]:https://github.com/tiawl/spaceporn/blob/trunk/src/spaceporn/bindings/imgui/imgui.zig
+[10]:https://wiki.libsdl.org/SDL3/FrontPage
+[11]:https://www.opengl.org/
