@@ -75,6 +75,7 @@ jobs:
         RUNNER_TMP: "${{ runner.temp }}"
       shell: bash
       run: |
+        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
         zig build -Dfetch
 
     - name: Diff
@@ -91,6 +92,7 @@ jobs:
         RUNNER_TMP: "${{ runner.temp }}"
       shell: bash
       run: |
+        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
         zig build -Dupdate
 
     - name: Create Pull Request
