@@ -3,6 +3,12 @@
 // https://github.com/dearimgui/dear_bindings
 
 // dear imgui: Platform Backend for Windows (standard windows API for 32-bits AND 64-bits applications)
+// ImDrawIdx: vertex index. [Compile-time configurable type]
+// - To use 16-bit indices + allow large meshes: backend need to set 'io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset' and handle ImDrawCmd::VtxOffset (recommended).
+// - To use 32-bit indices: override with '#define ImDrawIdx unsigned int' in your imconfig.h file.
+#ifndef ImDrawIdx
+typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility with renderer backends)
+#endif // #ifndef ImDrawIdx
 // This needs to be used along with a Renderer (e.g. DirectX11, OpenGL3, Vulkan..)
 
 // Implemented features:

@@ -125,14 +125,14 @@ CIMGUI_IMPL_API void       cimgui::cImGui_ImplVulkan_RemoveTexture(VkDescriptorS
     ::ImGui_ImplVulkan_RemoveTexture(descriptor_set);
 }
 
-CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_LoadFunctions(PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data))
+CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_LoadFunctions(uint32_t api_version, PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data))
 {
-    return ::ImGui_ImplVulkan_LoadFunctions(loader_func);
+    return ::ImGui_ImplVulkan_LoadFunctions(api_version, loader_func);
 }
 
-CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_LoadFunctionsEx(PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data), void* user_data)
+CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_LoadFunctionsEx(uint32_t api_version, PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data), void* user_data)
 {
-    return ::ImGui_ImplVulkan_LoadFunctions(loader_func, user_data);
+    return ::ImGui_ImplVulkan_LoadFunctions(api_version, loader_func, user_data);
 }
 
 CIMGUI_IMPL_API void          cimgui::cImGui_ImplVulkanH_CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, cimgui::ImGui_ImplVulkanH_Window* wnd, uint32_t queue_family, const VkAllocationCallbacks* allocator, int w, int h, uint32_t min_image_count)

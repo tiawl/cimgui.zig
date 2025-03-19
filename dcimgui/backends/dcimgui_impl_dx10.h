@@ -3,6 +3,14 @@
 // https://github.com/dearimgui/dear_bindings
 
 // dear imgui: Renderer Backend for DirectX10
+// Auto-generated forward declarations for C header
+typedef struct ImGui_ImplDX10_RenderState_t ImGui_ImplDX10_RenderState;
+// ImDrawIdx: vertex index. [Compile-time configurable type]
+// - To use 16-bit indices + allow large meshes: backend need to set 'io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset' and handle ImDrawCmd::VtxOffset (recommended).
+// - To use 32-bit indices: override with '#define ImDrawIdx unsigned int' in your imconfig.h file.
+#ifndef ImDrawIdx
+typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility with renderer backends)
+#endif // #ifndef ImDrawIdx
 // This needs to be used along with a Platform Backend (e.g. Win32)
 
 // Implemented features:
@@ -17,8 +25,6 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
-// Auto-generated forward declarations for C header
-typedef struct ImGui_ImplDX10_RenderState_t ImGui_ImplDX10_RenderState;
 #pragma once
 
 #ifdef __cplusplus
