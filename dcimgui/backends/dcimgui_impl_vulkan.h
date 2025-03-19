@@ -3,6 +3,18 @@
 // https://github.com/dearimgui/dear_bindings
 
 // dear imgui: Renderer Backend for Vulkan
+// Auto-generated forward declarations for C header
+typedef struct ImGui_ImplVulkan_InitInfo_t ImGui_ImplVulkan_InitInfo;
+typedef struct ImGui_ImplVulkan_RenderState_t ImGui_ImplVulkan_RenderState;
+typedef struct ImVector_ImGui_ImplVulkanH_Frame_t ImVector_ImGui_ImplVulkanH_Frame;
+typedef struct ImGui_ImplVulkanH_FrameSemaphores_t ImGui_ImplVulkanH_FrameSemaphores;
+typedef struct ImVector_ImGui_ImplVulkanH_FrameSemaphores_t ImVector_ImGui_ImplVulkanH_FrameSemaphores;
+// ImDrawIdx: vertex index. [Compile-time configurable type]
+// - To use 16-bit indices + allow large meshes: backend need to set 'io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset' and handle ImDrawCmd::VtxOffset (recommended).
+// - To use 32-bit indices: override with '#define ImDrawIdx unsigned int' in your imconfig.h file.
+#ifndef ImDrawIdx
+typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility with renderer backends)
+#endif // #ifndef ImDrawIdx
 // This needs to be used along with a Platform Backend (e.g. GLFW, SDL, Win32, custom..)
 
 // Implemented features:
@@ -28,12 +40,6 @@
 //   the backend itself (imgui_impl_vulkan.cpp), but should PROBABLY NOT be used by your own engine/app code.
 // Read comments in imgui_impl_vulkan.h.
 
-// Auto-generated forward declarations for C header
-typedef struct ImGui_ImplVulkan_InitInfo_t ImGui_ImplVulkan_InitInfo;
-typedef struct ImGui_ImplVulkan_RenderState_t ImGui_ImplVulkan_RenderState;
-typedef struct ImVector_ImGui_ImplVulkanH_Frame_t ImVector_ImGui_ImplVulkanH_Frame;
-typedef struct ImGui_ImplVulkanH_FrameSemaphores_t ImGui_ImplVulkanH_FrameSemaphores;
-typedef struct ImVector_ImGui_ImplVulkanH_FrameSemaphores_t ImVector_ImGui_ImplVulkanH_FrameSemaphores;
 #pragma once
 
 #ifdef __cplusplus
@@ -87,6 +93,7 @@ extern "C"
 //   - When using dynamic rendering, set UseDynamicRendering=true and fill PipelineRenderingCreateInfo structure.
 struct ImGui_ImplVulkan_InitInfo_t
 {
+    uint32_t                         ApiVersion;         // Fill with API version of Instance, e.g. VK_API_VERSION_1_3 or your value of VkApplicationInfo::apiVersion. May be lower than header version (VK_HEADER_VERSION_COMPLETE)
     VkInstance                       Instance;
     VkPhysicalDevice                 PhysicalDevice;
     VkDevice                         Device;
@@ -136,8 +143,8 @@ CIMGUI_IMPL_API void       cImGui_ImplVulkan_RemoveTexture(VkDescriptorSet descr
 
 // Optional: load Vulkan functions with a custom function loader
 // This is only useful with IMGUI_IMPL_VULKAN_NO_PROTOTYPES / VK_NO_PROTOTYPES
-CIMGUI_IMPL_API bool cImGui_ImplVulkan_LoadFunctions(PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data));                                // Implied user_data = nullptr
-CIMGUI_IMPL_API bool cImGui_ImplVulkan_LoadFunctionsEx(PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data), void* user_data /* = nullptr */);
+CIMGUI_IMPL_API bool cImGui_ImplVulkan_LoadFunctions(uint32_t api_version, PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data));                                // Implied user_data = nullptr
+CIMGUI_IMPL_API bool cImGui_ImplVulkan_LoadFunctionsEx(uint32_t api_version, PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data), void* user_data /* = nullptr */);
 
 // [BETA] Selected render state data shared with callbacks.
 // This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplVulkan_RenderDrawData() call.

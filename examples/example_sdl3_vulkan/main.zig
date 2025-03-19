@@ -22,6 +22,8 @@ var g_MainWindowData: c.ImGui_ImplVulkanH_Window = undefined;
 var g_MinImageCount: u32 = 2;
 var g_SwapChainRebuild: bool = false;
 
+const g_ApiVersion: u32 = c.VK_API_VERSION_1_2;
+
 const required_layers = [_][*:0]const u8{
     "VK_LAYER_KHRONOS_validation",
 };
@@ -225,10 +227,10 @@ fn SetupVulkan(allocator: std.mem.Allocator, instance_extensions: *std.ArrayList
 
     var app_info = c.VkApplicationInfo{};
     app_info.pApplicationName = "example_sdl3_vulkan";
-    app_info.applicationVersion = c.VK_API_VERSION_1_2;
+    app_info.applicationVersion = g_ApiVersion;
     app_info.pEngineName = "No Engine";
-    app_info.engineVersion = c.VK_API_VERSION_1_2;
-    app_info.apiVersion = c.VK_API_VERSION_1_2;
+    app_info.engineVersion = g_ApiVersion;
+    app_info.apiVersion = g_ApiVersion;
 
     // Setup the debug report callback
     var debug_report_ci = c.VkDebugReportCallbackCreateInfoEXT{};
@@ -491,7 +493,7 @@ pub fn main() !void {
     if (!c.SDL_Vulkan_CreateSurface(window, g_Instance, g_Allocator, &surface))
         return error.SDL_Vulkan_CreateSurfaceFailure;
     defer c.SDL_Vulkan_DestroySurface(g_Instance, surface, g_Allocator);
-    if (!c.cImGui_ImplVulkan_LoadFunctions(loader)) return error.ImGuiVulkanLoadFailure;
+    if (!c.cImGui_ImplVulkan_LoadFunctions(g_ApiVersion, loader)) return error.ImGuiVulkanLoadFailure;
 
     // Create Framebuffers
     var w: i32 = undefined;
