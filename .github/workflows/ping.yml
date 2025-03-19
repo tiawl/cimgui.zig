@@ -29,13 +29,11 @@ jobs:
         GH_TOKEN: "${{ secrets.PAT }}"
         PAYLOAD_FROM: "client_payload[from]=${{ github.event.repository.name }}"
         PAYLOAD_TAG: "client_payload[tag]=${{ github.ref_name }}"
-        URL: "${{ github.server_url }}/${{ github.repository_owner }}/${{ github.event.repository.name }}/archive/refs/tags/${{ github.ref_name }}.tar.gz"
       shell: 'bash'
       run: |
-        payload_hash="client_payload[hash]=$(zig fetch "${URL}")"
         gh api --method POST \
           -H 'Accept: application/vnd.github+json' \
           -H 'X-GitHub-Api-Version: 2022-11-28' \
           -f "${EVENT_TYPE}" \
-          -F "${PAYLOAD_FROM}" -F "${PAYLOAD_TAG}" -F "${payload_hash}" \
+          -F "${PAYLOAD_FROM}" -F "${PAYLOAD_TAG}" \
           "${ENDPOINT}"
