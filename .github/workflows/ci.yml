@@ -9,6 +9,17 @@ env:
   ZIG_VERSION: "0.14.0"
 
 jobs:
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: mlugg/setup-zig@v1
+      with:
+        version: ${{ env.ZIG_VERSION }}
+    - name: Check zig is canonical
+      shell: bash
+      run: |
+        zig fmt --check .
   examples:
     strategy:
       matrix:
