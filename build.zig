@@ -17,11 +17,11 @@ fn update(builder: *std.Build, path: *const Paths, dependencies: *const toolbox.
     }) |clone_path| {
         std.fs.deleteTreeAbsolute(clone_path) catch |err|
             {
-            switch (err) {
-                error.FileNotFound => {},
-                else => return err,
-            }
-        };
+                switch (err) {
+                    error.FileNotFound => {},
+                    else => return err,
+                }
+            };
     }
 
     try dependencies.clone(builder, "imgui", path.getDcimgui());
