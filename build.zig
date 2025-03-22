@@ -10,21 +10,19 @@ pub const Renderer = backends.Renderer;
 pub const Platform = backends.Platform;
 const backendOptions = backends.backendOptions;
 
-fn update(builder: *std.Build, path: *const Paths, dependencies: *const toolbox.Dependencies) !void {
+fn update(path: *const Paths, dependencies: *const toolbox.Dependencies) !void {
     for ([_][]const u8{
-        path.getDcimgui(),
-        path.getTmp(),
+        path.getDcimgui(), path.getTmp(),
     }) |clone_path| {
-        std.fs.deleteTreeAbsolute(clone_path) catch |err|
-            {
-                switch (err) {
-                    error.FileNotFound => {},
-                    else => return err,
-                }
-            };
+        std.fs.deleteTreeAbsolute(clone_path) catch |err| {
+            switch (err) {
+                error.FileNotFound => {},
+                else => return err,
+            }
+        };
     }
 
-    try dependencies.clone(builder, "imgui", path.getDcimgui());
+    try dependencies.clone("imgui", path.getDcimgui());
 
     var dcimgui_dir = try std.fs.openDirAbsolute(path.getDcimgui(), .{
         .iterate = true,
@@ -33,12 +31,11 @@ fn update(builder: *std.Build, path: *const Paths, dependencies: *const toolbox.
 
     var it = dcimgui_dir.iterate();
     while (try it.next()) |*entry| {
-        if (!std.mem.eql(u8, entry.name, "backends") and
-            !std.mem.startsWith(u8, entry.name, "im"))
-            try std.fs.deleteTreeAbsolute(try std.fs.path.join(builder.allocator, &.{
-                path.getDcimgui(),
-                entry.name,
+        if (!std.mem.eql(u8, entry.name, "backends") and !std.mem.startsWith(u8, entry.name, "im")) {
+            try std.fs.deleteTreeAbsolute(toolbox.instance().ptrBuilder().pathJoin(&.{
+                path.getDcimgui(), entry.name,
             }));
+        }
     }
 
     var backends_dir = try std.fs.openDirAbsolute(path.getBackends(), .{
@@ -46,36 +43,28 @@ fn update(builder: *std.Build, path: *const Paths, dependencies: *const toolbox.
     });
     defer backends_dir.close();
 
-    try dependencies.clone(builder, "dcimgui", path.getTmp());
+    try dependencies.clone("dcimgui", path.getTmp());
 
-    const binding_py = try std.fs.path.join(builder.allocator, &.{
-        path.getTmp(),
-        "dear_bindings.py",
+    const binding_py = toolbox.instance().ptrBuilder().pathJoin(&.{
+        path.getTmp(), "dear_bindings.py",
     });
-    const imconfig_h = try std.fs.path.join(builder.allocator, &.{
-        path.getDcimgui(),
-        "imconfig.h",
+    const imconfig_h = toolbox.instance().ptrBuilder().pathJoin(&.{
+        path.getDcimgui(), "imconfig.h",
     });
-    const imgui_h = try std.fs.path.join(builder.allocator, &.{
-        path.getDcimgui(),
-        "imgui.h",
+    const imgui_h = toolbox.instance().ptrBuilder().pathJoin(&.{
+        path.getDcimgui(), "imgui.h",
     });
-    const imgui_out = try std.fs.path.join(builder.allocator, &.{
-        path.getDcimgui(),
-        "dcimgui",
+    const imgui_out = toolbox.instance().ptrBuilder().pathJoin(&.{
+        path.getDcimgui(), "dcimgui",
     });
-    try toolbox.run(builder, .{
+    try toolbox.instance().run(.{
         .argv = &[_][]const u8{
-            "python3",  binding_py,
-            "--output", imgui_out,
-            imgui_h,
+            "python3", binding_py, "--output", imgui_out, imgui_h,
         },
     });
 
-    const templates = try std.fs.path.join(builder.allocator, &.{
-        path.getTmp(),
-        "src",
-        "templates",
+    const templates = toolbox.instance().ptrBuilder().pathJoin(&.{
+        path.getTmp(), "src", "templates",
     });
     var templates_dir = try std.fs.openDirAbsolute(templates, .{
         .iterate = true,
@@ -90,47 +79,33 @@ fn update(builder: *std.Build, path: *const Paths, dependencies: *const toolbox.
         switch (entry.kind) {
             .file => {
                 const stem = std.fs.path.stem(entry.name);
-                const cpp_template = try std.fs.path.join(builder.allocator, &.{
-                    templates,
-                    builder.fmt("{s}-header-template.cpp", .{
+                const cpp_template = toolbox.instance().ptrBuilder().pathJoin(&.{
+                    templates, toolbox.instance().ptrBuilder().fmt("{s}-header-template.cpp", .{
                         stem,
                     }),
                 });
-                const h_template = try std.fs.path.join(builder.allocator, &.{
-                    templates,
-                    builder.fmt("{s}-header-template.h", .{
+                const h_template = toolbox.instance().ptrBuilder().pathJoin(&.{
+                    templates, toolbox.instance().ptrBuilder().fmt("{s}-header-template.h", .{
                         stem,
                     }),
                 });
-                backend_cpp = try std.fs.path.join(builder.allocator, &.{
-                    path.getBackends(),
-                    builder.fmt("{s}.cpp", .{
+                backend_cpp = toolbox.instance().ptrBuilder().pathJoin(&.{
+                    path.getBackends(), toolbox.instance().ptrBuilder().fmt("{s}.cpp", .{
                         stem,
                     }),
                 });
                 if (toolbox.isCHeader(entry.name) and toolbox.exists(backend_cpp) and std.mem.startsWith(u8, entry.name, "imgui") and !std.meta.isError(std.fs.accessAbsolute(cpp_template, .{})) and !std.meta.isError(std.fs.accessAbsolute(h_template, .{}))) {
-                    backend_h = try std.fs.path.join(builder.allocator, &.{
-                        path.getBackends(),
-                        entry.name,
+                    backend_h = toolbox.instance().ptrBuilder().pathJoin(&.{
+                        path.getBackends(), entry.name,
                     });
-                    out = try std.fs.path.join(builder.allocator, &.{
-                        path.getBackends(),
-                        builder.fmt("dc{s}", .{
+                    out = toolbox.instance().ptrBuilder().pathJoin(&.{
+                        path.getBackends(), toolbox.instance().ptrBuilder().fmt("dc{s}", .{
                             stem,
                         }),
                     });
-                    try toolbox.run(builder, .{
+                    try toolbox.instance().run(.{
                         .argv = &[_][]const u8{
-                            "python3",
-                            binding_py,
-                            "--backend",
-                            "--include",
-                            imgui_h,
-                            "--imconfig-path",
-                            imconfig_h,
-                            "--output",
-                            out,
-                            backend_h,
+                            "python3", binding_py, "--backend", "--include", imgui_h, "--imconfig-path", imconfig_h, "--output", out, backend_h,
                         },
                     });
                 }
@@ -140,7 +115,7 @@ fn update(builder: *std.Build, path: *const Paths, dependencies: *const toolbox.
     }
 
     try std.fs.deleteTreeAbsolute(path.getTmp());
-    try toolbox.clean(builder, &.{
+    try toolbox.instance().clean(&.{
         "dcimgui",
     }, &.{});
 }
@@ -149,11 +124,10 @@ pub fn build(builder: *std.Build) !void {
     const target = builder.standardTargetOptions(.{});
     const optimize = builder.standardOptimizeOption(.{});
 
-    const path = try Paths.init(builder);
-
-    const dependencies = try toolbox.Dependencies.init(builder, .cimgui_zig, "0x4e4978d2929b7bd9", &.{
-        "build",
-        "dcimgui",
+    toolbox.init(builder, optimize);
+    defer toolbox.deinit();
+    const dependencies = try toolbox.Dependencies.init(.cimgui_zig, "0x4e4978d2929b7bd9", &.{
+        "build", "dcimgui",
     }, .{
         .toolbox = .{
             .name = "tiawl/toolbox",
@@ -193,28 +167,32 @@ pub fn build(builder: *std.Build) !void {
         },
     });
 
-    if (builder.option(bool, "update", "Update binding") orelse false)
-        try update(builder, &path, &dependencies);
+    const path = try Paths.init();
 
-    const lib = builder.addStaticLibrary(.{
+    if (toolbox.instance().ptrBuilder().option(bool, "update", "Update binding") orelse false) {
+        try update(&path, &dependencies);
+    }
+
+    const lib = toolbox.instance().ptrBuilder().addStaticLibrary(.{
         .name = "cimgui",
-        .root_source_file = builder.addWriteFiles().add("empty.c", ""),
+        .root_source_file = toolbox.instance().ptrBuilder().addWriteFiles().add("empty.c", ""),
         .target = target,
         .optimize = optimize,
     });
 
     var flags = try std.BoundedArray([]const u8, flags_size).init(0);
 
-    var root_dir = try builder.build_root.handle.openDir(".", .{
+    var root_dir = try toolbox.instance().getBuilder().build_root.handle.openDir(".", .{
         .iterate = true,
     });
     defer root_dir.close();
 
-    var walk = try root_dir.walk(builder.allocator);
+    var walk = try root_dir.walk(toolbox.instance().getBuilder().allocator);
 
     while (try walk.next()) |*entry| {
-        if (std.mem.startsWith(u8, entry.path, "dcimgui") and
-            entry.kind == .directory) toolbox.addInclude(lib, entry.path);
+        if (std.mem.startsWith(u8, entry.path, "dcimgui") and entry.kind == .directory) {
+            toolbox.instance().addInclude(lib, entry.path);
+        }
     }
 
     var dcimgui_dir = try std.fs.openDirAbsolute(path.getDcimgui(), .{
@@ -222,7 +200,7 @@ pub fn build(builder: *std.Build) !void {
     });
     defer dcimgui_dir.close();
 
-    toolbox.addHeader(lib, path.getDcimgui(), ".", &.{
+    toolbox.instance().addHeader(lib, path.getDcimgui(), ".", &.{
         ".h",
     });
 
@@ -230,13 +208,12 @@ pub fn build(builder: *std.Build) !void {
 
     var it = dcimgui_dir.iterate();
     while (try it.next()) |*entry| {
-        if ((std.mem.startsWith(u8, entry.name, "imgui") or
-            std.mem.startsWith(u8, entry.name, "dcimgui")) and
-            toolbox.isCppSource(entry.name) and entry.kind == .file)
-            try toolbox.addSource(lib, path.getDcimgui(), entry.name, flags.slice());
+        if ((std.mem.startsWith(u8, entry.name, "imgui") or std.mem.startsWith(u8, entry.name, "dcimgui")) and toolbox.isCppSource(entry.name) and entry.kind == .file) {
+            try toolbox.instance().addSource(lib, path.getDcimgui(), entry.name, flags.slice());
+        }
     }
 
-    try backendOptions(builder, lib, &target, &optimize, &path, &flags);
+    try backendOptions(lib, &target, &optimize, &path, &flags);
 
-    builder.installArtifact(lib);
+    toolbox.instance().ptrBuilder().installArtifact(lib);
 }
