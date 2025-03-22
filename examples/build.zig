@@ -28,8 +28,8 @@ pub fn build(builder: *std.Build) !void {
 
     var examples_dir =
         try builder.build_root.handle.openDir(".", .{
-        .iterate = true,
-    });
+            .iterate = true,
+        });
     defer examples_dir.close();
 
     var exe: *std.Build.Step.Compile = undefined;
