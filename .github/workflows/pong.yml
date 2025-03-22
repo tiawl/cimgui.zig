@@ -26,23 +26,19 @@ jobs:
       env:
         BRANCH: "bot"
         EMAIL: "<>"
-        HASH: "${{ github.event.client_payload.hash }}"
         NAME: "GitHub Actions[bot]"
       shell: bash
       run: |
         git config user.name "${NAME}"
         git config user.email "${EMAIL}"
         git checkout -b "${BRANCH}"
-        printf 'hash_len=%s\n' "${#HASH}" >> "${GITHUB_ENV}"
 
     - name: Setup Zig
-      if: env.hash_len != '0'
       uses: mlugg/setup-zig@v1
       with:
         version: ${{ env.ZIG_VERSION }}
 
     - name: Update the build.zig.zon
-      if: env.hash_len != '0'
       env:
         URL: "git+${{ github.server_url }}/${{ github.repository_owner }}/${{ github.event.client_payload.from }}#${{ github.event.client_payload.tag }}"
       shell: bash
