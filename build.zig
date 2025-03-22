@@ -169,9 +169,7 @@ pub fn build(builder: *std.Build) !void {
 
     const path = try Paths.init();
 
-    if (toolbox.instance().ptrBuilder().option(bool, "update", "Update binding") orelse false) {
-        try update(&path, &dependencies);
-    }
+    if (toolbox.instance().getUpdate()) try update(&path, &dependencies);
 
     const lib = toolbox.instance().ptrBuilder().addStaticLibrary(.{
         .name = "cimgui",
