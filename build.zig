@@ -218,7 +218,7 @@ pub fn build(builder: *std.Build) !void {
         }
     }
 
-    try backendOptions(lib, &target, &optimize, &path, &flags);
+    try backendOptions(builder, lib, &target, &optimize, &path, &flags);
 
     builder.installArtifact(lib);
 }
