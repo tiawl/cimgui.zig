@@ -10,7 +10,7 @@ pub const Renderer = backends.Renderer;
 pub const Platform = backends.Platform;
 const backendOptions = backends.backendOptions;
 
-fn update(path: *const Paths, dependencies: *const toolbox.Dependencies) !void {
+fn update(path: *const Paths) !void {
     for ([_][]const u8{
         path.getDcimgui(), path.getTmp(),
     }) |clone_path| {
@@ -22,7 +22,7 @@ fn update(path: *const Paths, dependencies: *const toolbox.Dependencies) !void {
         };
     }
 
-    try dependencies.clone("imgui", path.getDcimgui());
+    try toolbox.instance().clone("imgui", path.getDcimgui());
 
     var dcimgui_dir = try std.fs.openDirAbsolute(path.getDcimgui(), .{
         .iterate = true,
@@ -43,7 +43,7 @@ fn update(path: *const Paths, dependencies: *const toolbox.Dependencies) !void {
     });
     defer backends_dir.close();
 
-    try dependencies.clone("dcimgui", path.getTmp());
+    try toolbox.instance().clone("dcimgui", path.getTmp());
 
     const binding_py = toolbox.instance().ptrBuilder().pathJoin(&.{
         path.getTmp(), "dear_bindings.py",
@@ -120,58 +120,63 @@ fn update(path: *const Paths, dependencies: *const toolbox.Dependencies) !void {
     }, &.{});
 }
 
+const FromZon = toolbox.Repositories(.{
+    .toolbox, .vulkan_zig, .glfw_zig, .sdl, .zigglgen,
+});
+
+const DuringExec = toolbox.Repositories(.{
+    .imgui, .dcimgui,
+});
+
 pub fn build(builder: *std.Build) !void {
     const target = builder.standardTargetOptions(.{});
     const optimize = builder.standardOptimizeOption(.{});
 
-    toolbox.init(builder, optimize);
-    defer toolbox.deinit();
-    const dependencies = try toolbox.Dependencies.init(.cimgui_zig, "0x4e4978d2929b7bd9", &.{
+    try toolbox.init(FromZon, DuringExec, builder, optimize, .cimgui_zig, "0x4e4978d2929b7bd9", &.{
         "build", "dcimgui",
     }, .{
         .toolbox = .{
             .name = "tiawl/toolbox",
-            .host = toolbox.Repository.Host.github,
-            .ref = toolbox.Repository.Reference.tag,
+            .host = .github,
+            .ref = .tag,
         },
         .vulkan_zig = .{
             .name = "tiawl/vulkan.zig",
-            .host = toolbox.Repository.Host.github,
-            .ref = toolbox.Repository.Reference.tag,
+            .host = .github,
+            .ref = .tag,
         },
         .glfw_zig = .{
             .name = "tiawl/glfw.zig",
-            .host = toolbox.Repository.Host.github,
-            .ref = toolbox.Repository.Reference.tag,
+            .host = .github,
+            .ref = .tag,
         },
         .sdl = .{
             .name = "castholm/SDL",
-            .host = toolbox.Repository.Host.github,
-            .ref = toolbox.Repository.Reference.commit,
+            .host = .github,
+            .ref = .commit,
         },
         .zigglgen = .{
             .name = "castholm/zigglgen",
-            .host = toolbox.Repository.Host.github,
-            .ref = toolbox.Repository.Reference.commit,
+            .host = .github,
+            .ref = .commit,
         },
     }, .{
         .imgui = .{
             .name = "ocornut/imgui",
-            .host = toolbox.Repository.Host.github,
-            .ref = toolbox.Repository.Reference.tag,
+            .host = .github,
+            .ref = .tag,
         },
         .dcimgui = .{
             .name = "dearimgui/dear_bindings",
-            .host = toolbox.Repository.Host.github,
-            .ref = toolbox.Repository.Reference.commit,
+            .host = .github,
+            .ref = .commit,
         },
     });
+    defer toolbox.deinit();
 
     const path = try Paths.init();
 
-    if (toolbox.instance().ptrBuilder().option(bool, "update", "Update binding") orelse false) {
-        try update(&path, &dependencies);
-    }
+    if (toolbox.instance().getUpdate()) try update(&path);
 
     const lib = toolbox.instance().ptrBuilder().addStaticLibrary(.{
         .name = "cimgui",
