@@ -11,7 +11,7 @@
             .hash = "sdl-0.2.0+3.2.8-7uIn9FxHfQE325TK7b0qpgt10G3x1xl-3ZMOfTzxUg3C",
         },
         .toolbox = .{
-            .url = "git+https://github.com/tiawl/toolbox#b498c0a99edebefea3c5583b9c309c86c5c6f603",
+            .url = "git+https://github.com/tiawl/toolbox?ref=1.12.1#ae40a89693764fbe8366c1d91188173e0cb4aecf",
             .hash = "toolbox-1.12.0-kRAu4NpbAAD1Udg7-EaHBo3CdoO7yEV4e6obmze-rmsf",
         },
         .zigglgen = .{
