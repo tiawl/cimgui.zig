@@ -16,16 +16,16 @@ pub const Platform = enum {
     SDL3,
 };
 
-pub fn backendOptions(lib: *std.Build.Step.Compile, target: *const std.Build.ResolvedTarget, optimize: *const std.builtin.OptimizeMode, path: *const Paths, flags: *std.BoundedArray([]const u8, flags_size)) !void {
-    const renderer_opt = toolbox.instance().ptrBuilder().option(Renderer, "renderer", "Specify the renderer backend");
-    const platform_opt = toolbox.instance().ptrBuilder().option(Platform, "platform", "Specify the platform backend");
+pub fn backendOptions(builder: *std.Build, lib: *std.Build.Step.Compile, target: *const std.Build.ResolvedTarget, optimize: *const std.builtin.OptimizeMode, path: *const Paths, flags: *std.BoundedArray([]const u8, flags_size)) !void {
+    const renderer_opt = builder.option(Renderer, "renderer", "Specify the renderer backend");
+    const platform_opt = builder.option(Platform, "platform", "Specify the platform backend");
 
     if (renderer_opt) |renderer| {
         switch (renderer) {
             .Vulkan => {
                 if (platform_opt) |platform| {
                     if (platform != .GLFW) {
-                        const vulkan_dep = toolbox.instance().ptrBuilder().dependency("vulkan_zig", .{
+                        const vulkan_dep = builder.dependency("vulkan_zig", .{
                             .target = target.*,
                             .optimize = optimize.*,
                         });
@@ -44,11 +44,11 @@ pub fn backendOptions(lib: *std.Build.Step.Compile, target: *const std.Build.Res
                 try toolbox.instance().addSource(lib, path.getBackends(), "imgui_impl_opengl3.cpp", flags.slice());
                 try toolbox.instance().addSource(lib, path.getBackends(), "dcimgui_impl_opengl3.cpp", flags.slice());
 
-                const gl_bindings = zigglgen.generateBindingsModule(toolbox.instance().ptrBuilder(), .{
+                const gl_bindings = zigglgen.generateBindingsModule(builder, .{
                     .api = .gl,
-                    .version = toolbox.instance().ptrBuilder().option(zigglgen.GeneratorOptions.Version, "gl_version", "Specify the gl version") orelse .@"4.6",
+                    .version = builder.option(zigglgen.GeneratorOptions.Version, "gl_version", "Specify the gl version") orelse .@"4.6",
                     .profile = .core,
-                    .extensions = toolbox.instance().ptrBuilder().option([]const zigglgen.GeneratorOptions.Extension, "gl_ext", "Specify the gl extensions") orelse &.{},
+                    .extensions = builder.option([]const zigglgen.GeneratorOptions.Extension, "gl_ext", "Specify the gl extensions") orelse &.{},
                 });
 
                 lib.root_module.addImport("gl", gl_bindings);
@@ -59,7 +59,7 @@ pub fn backendOptions(lib: *std.Build.Step.Compile, target: *const std.Build.Res
     if (platform_opt) |platform| {
         switch (platform) {
             .GLFW => {
-                const glfw_dep = toolbox.instance().ptrBuilder().dependency("glfw_zig", .{
+                const glfw_dep = builder.dependency("glfw_zig", .{
                     .target = target.*,
                     .optimize = optimize.*,
                 });
@@ -80,7 +80,7 @@ pub fn backendOptions(lib: *std.Build.Step.Compile, target: *const std.Build.Res
                 }
             },
             .SDL3 => {
-                const sdl_dep = toolbox.instance().ptrBuilder().dependency("sdl", .{
+                const sdl_dep = builder.dependency("sdl", .{
                     .target = target.*,
                     .optimize = optimize.*,
                 });

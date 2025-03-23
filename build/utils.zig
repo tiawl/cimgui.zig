@@ -21,16 +21,16 @@ pub const Paths = struct {
     }
 
     pub fn init() !@This() {
-        const dcimgui_path = try toolbox.instance().ptrBuilder().build_root.join(toolbox.instance().ptrBuilder().allocator, &.{
+        const dcimgui_path = try toolbox.instance().buildRootJoin(&.{
             "dcimgui",
         });
 
         return .{
             .__dcimgui = dcimgui_path,
-            .__backends = toolbox.instance().ptrBuilder().pathJoin(&.{
+            .__backends = toolbox.instance().pathJoin(&.{
                 dcimgui_path, "backends",
             }),
-            .__tmp = try toolbox.instance().ptrBuilder().build_root.join(toolbox.instance().ptrBuilder().allocator, &.{
+            .__tmp = try toolbox.instance().buildRootJoin(&.{
                 "tmp",
             }),
         };
