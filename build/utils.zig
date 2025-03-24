@@ -1,5 +1,6 @@
 const std = @import("std");
-const toolbox = @import("toolbox");
+const toolbox_pkg = @import("toolbox");
+const Toolbox = toolbox_pkg.Toolbox;
 
 pub const flags_size: usize = 16;
 
@@ -20,17 +21,17 @@ pub const Paths = struct {
         return self.__tmp;
     }
 
-    pub fn init() !@This() {
-        const dcimgui_path = try toolbox.instance().buildRootJoin(&.{
+    pub fn init(toolbox: *Toolbox) !@This() {
+        const dcimgui_path = try toolbox.buildRootJoin(&.{
             "dcimgui",
         });
 
         return .{
             .__dcimgui = dcimgui_path,
-            .__backends = toolbox.instance().pathJoin(&.{
+            .__backends = toolbox.pathJoin(&.{
                 dcimgui_path, "backends",
             }),
-            .__tmp = try toolbox.instance().buildRootJoin(&.{
+            .__tmp = try toolbox.buildRootJoin(&.{
                 "tmp",
             }),
         };

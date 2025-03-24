@@ -1,5 +1,6 @@
 const std = @import("std");
-const toolbox = @import("toolbox");
+const toolbox_pkg = @import("toolbox");
+const Toolbox = toolbox_pkg.Toolbox;
 const zigglgen = @import("zigglgen");
 
 const utils = @import("utils.zig");
@@ -16,7 +17,7 @@ pub const Platform = enum {
     SDL3,
 };
 
-pub fn backendOptions(builder: *std.Build, lib: *std.Build.Step.Compile, target: *const std.Build.ResolvedTarget, optimize: *const std.builtin.OptimizeMode, path: *const Paths, flags: *std.BoundedArray([]const u8, flags_size)) !void {
+pub fn backendOptions(toolbox: *Toolbox, builder: *std.Build, lib: *std.Build.Step.Compile, target: *const std.Build.ResolvedTarget, optimize: *const std.builtin.OptimizeMode, path: *const Paths, flags: *std.BoundedArray([]const u8, flags_size)) !void {
     const renderer_opt = builder.option(Renderer, "renderer", "Specify the renderer backend");
     const platform_opt = builder.option(Platform, "platform", "Specify the platform backend");
 
@@ -37,12 +38,12 @@ pub fn backendOptions(builder: *std.Build, lib: *std.Build.Step.Compile, target:
                     }
                 }
                 try flags.append("-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES");
-                try toolbox.instance().addSource(lib, path.getBackends(), "imgui_impl_vulkan.cpp", flags.slice());
-                try toolbox.instance().addSource(lib, path.getBackends(), "dcimgui_impl_vulkan.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_vulkan.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_vulkan.cpp", flags.slice());
             },
             .OpenGL3 => {
-                try toolbox.instance().addSource(lib, path.getBackends(), "imgui_impl_opengl3.cpp", flags.slice());
-                try toolbox.instance().addSource(lib, path.getBackends(), "dcimgui_impl_opengl3.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_opengl3.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_opengl3.cpp", flags.slice());
 
                 const gl_bindings = zigglgen.generateBindingsModule(builder, .{
                     .api = .gl,
@@ -69,8 +70,8 @@ pub fn backendOptions(builder: *std.Build, lib: *std.Build.Step.Compile, target:
                 lib.linkLibrary(glfw_lib);
                 lib.installLibraryHeaders(glfw_lib);
 
-                try toolbox.instance().addSource(lib, path.getBackends(), "imgui_impl_glfw.cpp", flags.slice());
-                try toolbox.instance().addSource(lib, path.getBackends(), "dcimgui_impl_glfw.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_glfw.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_glfw.cpp", flags.slice());
 
                 lib.root_module.addCMacro("GLFW_INCLUDE_NONE", "1");
                 if (renderer_opt) |renderer| {
@@ -88,8 +89,8 @@ pub fn backendOptions(builder: *std.Build, lib: *std.Build.Step.Compile, target:
                 lib.linkLibrary(sdl_dep.artifact("SDL3"));
                 lib.installLibraryHeaders(sdl_dep.artifact("SDL3"));
 
-                try toolbox.instance().addSource(lib, path.getBackends(), "imgui_impl_sdl3.cpp", flags.slice());
-                try toolbox.instance().addSource(lib, path.getBackends(), "dcimgui_impl_sdl3.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdl3.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdl3.cpp", flags.slice());
             },
         }
         lib.root_module.addCMacro("IMGUI_USE_LEGACY_CRC32_ADLER", "1");
