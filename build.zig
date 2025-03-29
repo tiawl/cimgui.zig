@@ -95,7 +95,12 @@ fn update(toolbox: *Toolbox, path: *const Paths) !void {
                         stem,
                     }),
                 });
-                if (toolbox_pkg.isCHeader(entry.name) and toolbox_pkg.exists(backend_cpp) and std.mem.startsWith(u8, entry.name, "imgui") and !std.meta.isError(std.fs.accessAbsolute(cpp_template, .{})) and !std.meta.isError(std.fs.accessAbsolute(h_template, .{}))) {
+                if (toolbox_pkg.isCHeader(entry.name) and
+                    toolbox_pkg.exists(backend_cpp) and
+                    std.mem.startsWith(u8, entry.name, "imgui") and
+                    !std.meta.isError(std.fs.accessAbsolute(cpp_template, .{})) and
+                    !std.meta.isError(std.fs.accessAbsolute(h_template, .{})))
+                {
                     backend_h = toolbox.pathJoin(&.{
                         path.getBackends(), entry.name,
                     });
@@ -133,7 +138,7 @@ pub fn build(builder: *std.Build) !void {
     const target = builder.standardTargetOptions(.{});
     const optimize = builder.standardOptimizeOption(.{});
 
-    var toolbox = try Toolbox.init(FromZon, DuringExec, builder, optimize, .cimgui_zig, "0x4e4978d2929b7bd9", &.{
+    var toolbox = try Toolbox.init(FromZon, DuringExec, builder, .ReleaseFast, .cimgui_zig, "0x4e4978d2929b7bd9", &.{
         "build", "dcimgui",
     }, .{
         .toolbox = .{
@@ -214,7 +219,10 @@ pub fn build(builder: *std.Build) !void {
 
     var it = dcimgui_dir.iterate();
     while (try it.next()) |*entry| {
-        if ((std.mem.startsWith(u8, entry.name, "imgui") or std.mem.startsWith(u8, entry.name, "dcimgui")) and toolbox_pkg.isCppSource(entry.name) and entry.kind == .file) {
+        if ((std.mem.startsWith(u8, entry.name, "imgui") or std.mem.startsWith(u8, entry.name, "dcimgui")) and
+            toolbox_pkg.isCppSource(entry.name) and
+            entry.kind == .file)
+        {
             try toolbox.addSource(lib, path.getDcimgui(), entry.name, flags.slice());
         }
     }
