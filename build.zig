@@ -137,47 +137,58 @@ const DuringExec = toolbox_pkg.Repositories(.{
 pub fn build(builder: *std.Build) !void {
     const target = builder.standardTargetOptions(.{});
     const optimize = builder.standardOptimizeOption(.{});
+    const logging = builder.option(bool, "debug-build-script", "enable debug logging for the build script") orelse false;
 
-    var toolbox = try Toolbox.init(FromZon, DuringExec, builder, .ReleaseFast, .cimgui_zig, "0x4e4978d2929b7bd9", &.{
-        "build", "dcimgui",
-    }, .{
-        .toolbox = .{
-            .name = "tiawl/toolbox",
-            .host = .github,
-            .ref = .tag,
+    var toolbox = try Toolbox.init(
+        FromZon,
+        DuringExec,
+        builder,
+        if (logging) .Debug else .ReleaseFast,
+        .cimgui_zig,
+        "0x4e4978d2929b7bd9",
+        &.{
+            "build", "dcimgui",
         },
-        .vulkan_zig = .{
-            .name = "tiawl/vulkan.zig",
-            .host = .github,
-            .ref = .tag,
+        .{
+            .toolbox = .{
+                .name = "tiawl/toolbox",
+                .host = .github,
+                .ref = .tag,
+            },
+            .vulkan_zig = .{
+                .name = "tiawl/vulkan.zig",
+                .host = .github,
+                .ref = .tag,
+            },
+            .glfw_zig = .{
+                .name = "tiawl/glfw.zig",
+                .host = .github,
+                .ref = .tag,
+            },
+            .sdl = .{
+                .name = "castholm/SDL",
+                .host = .github,
+                .ref = .commit,
+            },
+            .zigglgen = .{
+                .name = "castholm/zigglgen",
+                .host = .github,
+                .ref = .commit,
+            },
         },
-        .glfw_zig = .{
-            .name = "tiawl/glfw.zig",
-            .host = .github,
-            .ref = .tag,
+        .{
+            .imgui = .{
+                .name = "ocornut/imgui",
+                .host = .github,
+                .ref = .tag,
+            },
+            .dcimgui = .{
+                .name = "dearimgui/dear_bindings",
+                .host = .github,
+                .ref = .commit,
+            },
         },
-        .sdl = .{
-            .name = "castholm/SDL",
-            .host = .github,
-            .ref = .commit,
-        },
-        .zigglgen = .{
-            .name = "castholm/zigglgen",
-            .host = .github,
-            .ref = .commit,
-        },
-    }, .{
-        .imgui = .{
-            .name = "ocornut/imgui",
-            .host = .github,
-            .ref = .tag,
-        },
-        .dcimgui = .{
-            .name = "dearimgui/dear_bindings",
-            .host = .github,
-            .ref = .commit,
-        },
-    });
+    );
     defer toolbox.deinit();
 
     const path = try Paths.init(&toolbox);
