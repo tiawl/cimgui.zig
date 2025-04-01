@@ -58,9 +58,20 @@ fn update(toolbox: *Toolbox, path: *const Paths) !void {
     const imgui_out = toolbox.pathJoin(&.{
         path.getDcimgui(), "dcimgui",
     });
+    const imgui_internal_h = toolbox.pathJoin(&.{
+        path.getDcimgui(), "imgui_internal.h",
+    });
+    const imgui_internal_out = toolbox.pathJoin(&.{
+        path.getDcimgui(), "dcimgui_internal",
+    });
     try toolbox.run(.{
         .argv = &[_][]const u8{
             "python3", binding_py, "--output", imgui_out, imgui_h,
+        },
+    });
+    try toolbox.run(.{
+        .argv = &[_][]const u8{
+            "python3", binding_py, "-o", imgui_internal_out, "--include", imgui_h, imgui_internal_h,
         },
     });
 
