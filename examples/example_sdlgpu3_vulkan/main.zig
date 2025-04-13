@@ -128,7 +128,7 @@ pub fn main() !void {
         try errify(c.SDL_SubmitGPUCommandBuffer(cmdbuf));
     }
 
-    c.SDL_WaitForGPUIdle(device);
+    _ = c.SDL_WaitForGPUIdle(device);
 }
 
 /// Converts the return value of an SDL function to an error union.
