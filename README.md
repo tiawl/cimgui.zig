@@ -54,6 +54,7 @@ The backends are separated in two categories : the platforms (handling windows, 
 ### Platform
   - [GLFW][4]
   - [SDL3][11]
+  - [SDLGPU3][11] (technically a renderer but needs linkage againt OpenGL/Vulkan)
 
 ### Renderers
   - [Vulkan][5]

@@ -5,7 +5,7 @@ const Platform = cimgui.Platform;
 const Renderer = cimgui.Renderer;
 
 fn platform(dir_name: []const u8) !Platform {
-    return if (std.mem.indexOf(u8, dir_name, "_glfw") != null) .GLFW else if (std.mem.indexOf(u8, dir_name, "_sdl3") != null) .SDL3 else error.UnknownPlatformBackend;
+    return if (std.mem.indexOf(u8, dir_name, "_glfw") != null) .GLFW else if (std.mem.indexOf(u8, dir_name, "_sdl3") != null) .SDL3 else if (std.mem.indexOf(u8, dir_name, "_sdlgpu3") != null) .SDLGPU3 else error.UnknownPlatformBackend;
 }
 
 fn renderer(dir_name: []const u8) !Renderer {

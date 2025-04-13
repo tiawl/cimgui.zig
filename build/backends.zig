@@ -1,4 +1,5 @@
 const std = @import("std");
+
 const toolbox_pkg = @import("toolbox");
 const Toolbox = toolbox_pkg.Toolbox;
 const zigglgen = @import("zigglgen");
@@ -15,6 +16,7 @@ pub const Renderer = enum {
 pub const Platform = enum {
     GLFW,
     SDL3,
+    SDLGPU3,
 };
 
 pub fn backendOptions(toolbox: *Toolbox, builder: *std.Build, lib: *std.Build.Step.Compile, target: *const std.Build.ResolvedTarget, optimize: *const std.builtin.OptimizeMode, path: *const Paths, flags: *std.BoundedArray([]const u8, flags_size)) !void {
@@ -91,6 +93,20 @@ pub fn backendOptions(toolbox: *Toolbox, builder: *std.Build, lib: *std.Build.St
 
                 try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdl3.cpp", flags.slice());
                 try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdl3.cpp", flags.slice());
+            },
+            .SDLGPU3 => {
+                const sdl_dep = builder.dependency("sdl", .{
+                    .target = target.*,
+                    .optimize = optimize.*,
+                });
+
+                lib.linkLibrary(sdl_dep.artifact("SDL3"));
+                lib.installLibraryHeaders(sdl_dep.artifact("SDL3"));
+
+                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdl3.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdl3.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdlgpu3.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdlgpu3.cpp", flags.slice());
             },
         }
         lib.root_module.addCMacro("IMGUI_USE_LEGACY_CRC32_ADLER", "1");
