@@ -101,6 +101,7 @@ These additional options have been implemented for maintainability tasks:
                                  Supported Values:
                                    GLFW
                                    SDL3
+                                   SDLGPU3
 ```
 
 ## License
