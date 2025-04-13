@@ -1,4 +1,5 @@
 const std = @import("std");
+
 const toolbox_pkg = @import("toolbox");
 const Toolbox = toolbox_pkg.Toolbox;
 const zigglgen = @import("zigglgen");
@@ -101,6 +102,9 @@ pub fn backendOptions(toolbox: *Toolbox, builder: *std.Build, lib: *std.Build.St
 
                 lib.linkLibrary(sdl_dep.artifact("SDL3"));
                 lib.installLibraryHeaders(sdl_dep.artifact("SDL3"));
+
+                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdl3.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdl3.cpp", flags.slice());
                 try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdlgpu3.cpp", flags.slice());
                 try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdlgpu3.cpp", flags.slice());
             },
