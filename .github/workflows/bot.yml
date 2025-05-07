@@ -5,9 +5,6 @@ on:
     - cron: '0 6 * * *'
   workflow_dispatch:
 
-env:
-  ZIG_VERSION: "0.14.0"
-
 jobs:
   update:
     permissions:
@@ -39,10 +36,7 @@ jobs:
         fi
 
     - name: Setup Zig
-      uses: mlugg/setup-zig@v1
-      with:
-        version: ${{ env.ZIG_VERSION }}
-
+      uses: mlugg/setup-zig@v2
     - name: Install apt packages
       shell: bash
       run: |

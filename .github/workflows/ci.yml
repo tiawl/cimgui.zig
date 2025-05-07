@@ -5,17 +5,12 @@ on:
     branches:
       - trunk
 
-env:
-  ZIG_VERSION: "0.14.0"
-
 jobs:
   linter:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: mlugg/setup-zig@v1
-      with:
-        version: ${{ env.ZIG_VERSION }}
+    - uses: mlugg/setup-zig@v2
     - name: Check zig is canonical
       shell: bash
       run: |
@@ -29,9 +24,7 @@ jobs:
     runs-on: "${{ matrix.os }}"
     steps:
     - uses: actions/checkout@v4
-    - uses: mlugg/setup-zig@v1
-      with:
-        version: ${{ env.ZIG_VERSION }}
+    - uses: mlugg/setup-zig@v2
     - name: Test building examples
       shell: bash
       run: |
@@ -52,10 +45,7 @@ jobs:
     runs-on: "${{ matrix.os }}"
     steps:
     - name: Setup Zig
-      uses: mlugg/setup-zig@v1
-      with:
-        version: ${{ env.ZIG_VERSION }}
-
+      uses: mlugg/setup-zig@v2
     - uses: actions/checkout@v4
       with:
         repository: "${{ github.repository_owner }}/${{ matrix.repo }}"
