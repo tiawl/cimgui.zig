@@ -7,9 +7,6 @@ on:
       - ping-from-vulkan.zig
       - ping-from-glfw.zig
 
-env:
-  ZIG_VERSION: "0.14.0"
-
 jobs:
   pong:
     permissions:
@@ -34,10 +31,7 @@ jobs:
         git checkout -b "${BRANCH}"
 
     - name: Setup Zig
-      uses: mlugg/setup-zig@v1
-      with:
-        version: ${{ env.ZIG_VERSION }}
-
+      uses: mlugg/setup-zig@v2
     - name: Update the build.zig.zon
       env:
         URL: "git+${{ github.server_url }}/${{ github.repository_owner }}/${{ github.event.client_payload.from }}#${{ github.event.client_payload.tag }}"
