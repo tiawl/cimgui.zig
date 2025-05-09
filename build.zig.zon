@@ -3,8 +3,8 @@
     .version = "1.0.0",
     .dependencies = .{
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=X11.zig-xkbcommon-1.9.2#2fc716b97758075c30da670f1c1b4793a3ddd3f3",
-            .hash = "glfw_zig-1.0.0-NrvYo_HNFwCPfYUrb3E-WKlCkLCKkjizPTHBVKsPWKjX",
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=toolbox-1.12.4#c3e337de2f3bd8e690142c83c2a7d119c346e7fa",
+            .hash = "glfw_zig-1.0.0-NrvYo-7NFwATd-7x3iKtx6Qt1J6ljHSuHnxvH6S1p3kS",
         },
         .sdl = .{
             .url = "git+https://github.com/castholm/SDL#fce122b6b1e963285b3359f95a1bfe876afc20a6",
