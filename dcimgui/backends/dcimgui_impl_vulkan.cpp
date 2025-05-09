@@ -135,14 +135,14 @@ CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_LoadFunctionsEx(uint32_t api_vers
     return ::ImGui_ImplVulkan_LoadFunctions(api_version, loader_func, user_data);
 }
 
-CIMGUI_IMPL_API void          cimgui::cImGui_ImplVulkanH_CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, cimgui::ImGui_ImplVulkanH_Window* wnd, uint32_t queue_family, const VkAllocationCallbacks* allocator, int w, int h, uint32_t min_image_count)
+CIMGUI_IMPL_API void          cimgui::cImGui_ImplVulkanH_CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, cimgui::ImGui_ImplVulkanH_Window* wd, uint32_t queue_family, const VkAllocationCallbacks* allocator, int w, int h, uint32_t min_image_count)
 {
-    ::ImGui_ImplVulkanH_CreateOrResizeWindow(instance, physical_device, device, reinterpret_cast<::ImGui_ImplVulkanH_Window*>(wnd), queue_family, allocator, w, h, min_image_count);
+    ::ImGui_ImplVulkanH_CreateOrResizeWindow(instance, physical_device, device, reinterpret_cast<::ImGui_ImplVulkanH_Window*>(wd), queue_family, allocator, w, h, min_image_count);
 }
 
-CIMGUI_IMPL_API void          cimgui::cImGui_ImplVulkanH_DestroyWindow(VkInstance instance, VkDevice device, cimgui::ImGui_ImplVulkanH_Window* wnd, const VkAllocationCallbacks* allocator)
+CIMGUI_IMPL_API void          cimgui::cImGui_ImplVulkanH_DestroyWindow(VkInstance instance, VkDevice device, cimgui::ImGui_ImplVulkanH_Window* wd, const VkAllocationCallbacks* allocator)
 {
-    ::ImGui_ImplVulkanH_DestroyWindow(instance, device, reinterpret_cast<::ImGui_ImplVulkanH_Window*>(wnd), allocator);
+    ::ImGui_ImplVulkanH_DestroyWindow(instance, device, reinterpret_cast<::ImGui_ImplVulkanH_Window*>(wd), allocator);
 }
 
 CIMGUI_IMPL_API VkSurfaceFormatKHR cimgui::cImGui_ImplVulkanH_SelectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkFormat* request_formats, int request_formats_count, VkColorSpaceKHR request_color_space)

@@ -23,6 +23,7 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 //  [ ] Platform: Missing mouse cursor shape/visibility support.
 //  [ ] Platform: Missing clipboard support (not supported by Glut).
 //  [ ] Platform: Missing gamepad support.
+//  [ ] Platform: Missing multi-viewport support (multiple windows).
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.

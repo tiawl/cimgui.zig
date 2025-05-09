@@ -177,6 +177,7 @@ pub fn build(builder: *std.Build) !void {
             .name = "ocornut/imgui",
             .host = .github,
             .ref = .tag,
+            .branch = "docking",
         },
         .dcimgui = .{
             .name = "dearimgui/dear_bindings",

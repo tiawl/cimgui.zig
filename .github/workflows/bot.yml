@@ -7,6 +7,11 @@ on:
 
 jobs:
   update:
+    strategy:
+      matrix:
+        branch:
+          - trunk
+          - docking
     permissions:
       contents: write
       issues: write
@@ -16,24 +21,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         repository: "${{ github.repository }}"
-
-    - name: Close every bot PRs
-      env:
-        OPTIONS: "--author '@me' --state open --json \"number\""
-        COMMENT: "--comment 'Outdated PR/issue'"
-        GH_TOKEN: "${{ github.token }}"
-        FILTER: ".[] | .number"
-      shell: bash
-      run: |
-        declare -a pr_list=( $(gh pr list ${OPTIONS} | jq "${FILTER}") )
-        for pr_nr in ${pr_list[@]}
-        do
-          gh pr close "${pr_nr}" ${COMMENT} --delete-branch
-        done
-        if [[ "$(gh pr list ${OPTIONS} | jq length)" != '0' ]]
-        then
-          exit 1
-        fi
+        ref: "${{ matrix.branch }}"
 
     - name: Setup Zig
       uses: mlugg/setup-zig@v2
@@ -54,7 +42,7 @@ jobs:
 
     - name: Setup git user information
       env:
-        BRANCH: "bot"
+        BRANCH: "bot-${{ matrix.branch }}"
         EMAIL: "<>"
         NAME: "GitHub Actions[bot]"
       shell: bash
@@ -92,8 +80,8 @@ jobs:
     - name: Create Pull Request
       if: steps.fetch.conclusion == 'success' && steps.diff.outputs.len != '0'
       env:
-        BRANCH: "bot"
-        DEFAULT: "trunk"
+        BRANCH: "bot-${{ matrix.branch }}"
+        DEFAULT: "${{ matrix.branch }}"
         GH_TOKEN: "${{ github.token }}"
         TITLE: "Update dependencies"
       shell: bash
