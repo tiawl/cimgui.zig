@@ -284,8 +284,9 @@ CIMGUI_API int         cimgui::cImFormatString(char* buf, size_t buf_size, const
 {
     va_list args;
     va_start(args, fmt);
-    return ::ImFormatStringV(buf, buf_size, fmt, args);
+    auto temp_result = ::ImFormatStringV(buf, buf_size, fmt, args);
     va_end(args);
+    return temp_result;
 }
 
 CIMGUI_API int         cimgui::cImFormatStringV(char* buf, size_t buf_size, const char* fmt, va_list args)
