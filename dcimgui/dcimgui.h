@@ -38,6 +38,9 @@
 #define IMGUI_HAS_VIEWPORT           // Viewport WIP branch
 #define IMGUI_HAS_DOCK               // Docking WIP branch
 
+// Extra defines set by Dear Bindings for internal purposes
+#define IMGUI_DEAR_BINDINGS_HAS_GETWINDOWWORKAREAINSETS
+
 /*
 
 Index of this file:
@@ -2284,6 +2287,11 @@ struct ImGuiTableColumnSortSpecs_t
 CIMGUI_API void ImVector_Construct(void* vector);  // Construct a zero-size ImVector<> (of any type). This is primarily useful when calling ImFontGlyphRangesBuilder_BuildRanges()
 CIMGUI_API void ImVector_Destruct(void* vector);   // Destruct an ImVector<> (of any type). Important: Frees the vector memory but does not call destructors on contained objects (if they have them)
 
+CIMGUI_API void ImGuiPlatformIO_SetPlatform_GetWindowWorkAreaInsets(void (*getWindowWorkAreaInsetsFunc)(ImGuiViewport* vp, ImVec4* result));  // Set ImGuiPlatformIO::Platform_GetWindowWorkAreaInsets in a C-compatible mannner
+
+CIMGUI_API void ImGuiPlatformIO_SetPlatform_GetWindowPos(void (*getWindowPosFunc)(ImGuiViewport* vp, ImVec2* result));    // Set ImGuiPlatformIO::Platform_GetWindowPos in a C-compatible mannner
+CIMGUI_API void ImGuiPlatformIO_SetPlatform_GetWindowSize(void (*getWindowSizeFunc)(ImGuiViewport* vp, ImVec2* result));  // Set ImGuiPlatformIO::Platform_GetWindowSize in a C-compatible mannner
+
 #if defined(IMGUI_HAS_IMSTR)
 #if IMGUI_HAS_IMSTR
 CIMGUI_API ImStr ImStr_FromCharStr(const char* b);  // Build an ImStr from a regular const char* (no data is copied, so you need to make sure the original char* isn't altered as long as you are using the ImStr).
@@ -3821,9 +3829,9 @@ struct ImGuiPlatformIO_t
     void (*Platform_DestroyWindow)(ImGuiViewport* vp);                                                // N . U . D  //
     void (*Platform_ShowWindow)(ImGuiViewport* vp);                                                   // . . U . .  // Newly created windows are initially hidden so SetWindowPos/Size/Title can be called on them before showing the window
     void (*Platform_SetWindowPos)(ImGuiViewport* vp, ImVec2 pos);                                     // . . U . .  // Set platform window position (given the upper-left corner of client area)
-    ImVec2 (*Platform_GetWindowPos)(ImGuiViewport* vp);                                               // N . . . .  //
+    ImVec2 (*Platform_GetWindowPos)(ImGuiViewport* vp);                                               // N . . . .  // (Use ImGuiPlatformIO_SetPlatform_GetWindowPos() to set this from C, otherwise you will likely encounter stack corruption)
     void (*Platform_SetWindowSize)(ImGuiViewport* vp, ImVec2 size);                                   // . . U . .  // Set platform window client area size (ignoring OS decorations such as OS title bar etc.)
-    ImVec2 (*Platform_GetWindowSize)(ImGuiViewport* vp);                                              // N . . . .  // Get platform window client area size
+    ImVec2 (*Platform_GetWindowSize)(ImGuiViewport* vp);                                              // N . . . .  // Get platform window client area size (Use ImGuiPlatformIO_SetPlatform_GetWindowSize() to set this from C, otherwise you will likely encounter stack corruption)
     void (*Platform_SetWindowFocus)(ImGuiViewport* vp);                                               // N . . . .  // Move window to front and set input focus
     bool (*Platform_GetWindowFocus)(ImGuiViewport* vp);                                               // . . U . .  //
     bool (*Platform_GetWindowMinimized)(ImGuiViewport* vp);                                           // N . . . .  // Get platform window minimized state. When minimized, we generally won't attempt to get/set size and contents will be culled more easily
@@ -3834,7 +3842,7 @@ struct ImGuiPlatformIO_t
     void (*Platform_SwapBuffers)(ImGuiViewport* vp, void* render_arg);                                // . . . R .  // (Optional) Call Present/SwapBuffers (platform side! This is often unused!). 'render_arg' is the value passed to RenderPlatformWindowsDefault().
     float (*Platform_GetWindowDpiScale)(ImGuiViewport* vp);                                           // N . . . .  // (Optional) [BETA] FIXME-DPI: DPI handling: Return DPI scale for this viewport. 1.0f = 96 DPI.
     void (*Platform_OnChangedViewport)(ImGuiViewport* vp);                                            // . F . . .  // (Optional) [BETA] FIXME-DPI: DPI handling: Called during Begin() every time the viewport we are outputting into changes, so backend has a chance to swap fonts to adjust style.
-    ImVec4 (*Platform_GetWindowWorkAreaInsets)(ImGuiViewport* vp);                                    // N . . . .  // (Optional) [BETA] Get initial work area inset for the viewport (won't be covered by main menu bar, dockspace over viewport etc.). Default to (0,0),(0,0). 'safeAreaInsets' in iOS land, 'DisplayCutout' in Android land.
+    ImVec4 (*Platform_GetWindowWorkAreaInsets)(ImGuiViewport* vp);                                    // N . . . .  // (Optional) [BETA] Get initial work area inset for the viewport (won't be covered by main menu bar, dockspace over viewport etc.). Default to (0,0),(0,0). 'safeAreaInsets' in iOS land, 'DisplayCutout' in Android land. (Use ImGuiPlatformIO_SetPlatform_GetWindowWorkAreaInsets() to set this from C, otherwise you will likely encounter stack corruption)
     int (*Platform_CreateVkSurface)(ImGuiViewport* vp, ImU64 vk_inst, const void* vk_allocators, ImU64* out_vk_surface); // (Optional) For a Vulkan Renderer to call into Platform code (since the surface creation needs to tie them both).
 
     // Renderer Backend functions (e.g. DirectX, OpenGL, Vulkan) ------------ Called by -----
