@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        ref: "${{ github.event.pull_request.base.ref }}"
+        ref: "${{ github.event.pull_request.head.ref }}"
     - uses: mlugg/setup-zig@v2
     - name: Check zig is canonical
       shell: bash
@@ -28,13 +28,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        ref: "${{ github.event.pull_request.base.ref }}"
+        ref: "${{ github.event.pull_request.head.ref }}"
     - uses: mlugg/setup-zig@v2
     - name: Test building examples
       shell: bash
       run: |
         unset ZIG_LOCAL_CACHE_DIR
-        zig build --build-file "${GITHUB_WORKSPACE}/examples/build.zig"
+        env -C "${GITHUB_WORKSPACE}/examples" zig build
   build:
     strategy:
       matrix:
