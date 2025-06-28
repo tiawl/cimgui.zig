@@ -51,6 +51,22 @@ static inline ::ImVec4 ConvertToCPP_ImVec4(const cimgui::ImVec4& src)
     return dest;
 }
 
+static inline cimgui::ImTextureRef ConvertFromCPP_ImTextureRef(const ::ImTextureRef& src)
+{
+    cimgui::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<cimgui::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
+static inline ::ImTextureRef ConvertToCPP_ImTextureRef(const cimgui::ImTextureRef& src)
+{
+    ::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
 static inline cimgui::ImColor ConvertFromCPP_ImColor(const ::ImColor& src)
 {
     cimgui::ImColor dest;
@@ -167,6 +183,16 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplGlfw_MonitorCallback(cimgui::GLFWmonitor
 CIMGUI_IMPL_API void cimgui::cImGui_ImplGlfw_Sleep(int milliseconds)
 {
     ::ImGui_ImplGlfw_Sleep(milliseconds);
+}
+
+CIMGUI_IMPL_API float cimgui::cImGui_ImplGlfw_GetContentScaleForWindow(cimgui::GLFWwindow* window)
+{
+    return ::ImGui_ImplGlfw_GetContentScaleForWindow(reinterpret_cast<::GLFWwindow*>(window));
+}
+
+CIMGUI_IMPL_API float cimgui::cImGui_ImplGlfw_GetContentScaleForMonitor(cimgui::GLFWmonitor* monitor)
+{
+    return ::ImGui_ImplGlfw_GetContentScaleForMonitor(reinterpret_cast<::GLFWmonitor*>(monitor));
 }
 
 #endif // #ifndef IMGUI_DISABLE

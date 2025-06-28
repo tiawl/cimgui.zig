@@ -15,7 +15,8 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 
 // Implemented features:
 //  [X] Renderer: User texture binding. Use simply cast a reference to your SDL_GPUTextureSamplerBinding to ImTextureID.
-//  [X] Renderer: Large meshes support (64k+ vertices) with 16-bit indices.
+//  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
+//  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
 
 // The aim of imgui_impl_sdlgpu3.h/.cpp is to be usable in your engine without any modification.
 // IF YOU FEEL YOU NEED TO MAKE ANY CHANGE TO THIS CODE, please share them and your feedback at https://github.com/ocornut/imgui/
@@ -29,7 +30,7 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 // - Introduction, links and more at the top of imgui.cpp
 
 // Important note to the reader who wish to integrate imgui_impl_sdlgpu3.cpp/.h in their own engine/app.
-// - Unline other backends, the user must call the function Imgui_ImplSDLGPU_PrepareDrawData BEFORE issuing a SDL_GPURenderPass containing ImGui_ImplSDLGPU_RenderDrawData.
+// - Unlike other backends, the user must call the function ImGui_ImplSDLGPU_PrepareDrawData BEFORE issuing a SDL_GPURenderPass containing ImGui_ImplSDLGPU_RenderDrawData.
 //   Calling the function is MANDATORY, otherwise the ImGui will not upload neither the vertex nor the index buffer for the GPU. See imgui_impl_sdlgpu3.cpp for more info.
 
 #pragma once
@@ -54,14 +55,16 @@ typedef struct ImDrawData_t ImDrawData;
 CIMGUI_IMPL_API bool cImGui_ImplSDLGPU3_Init(ImGui_ImplSDLGPU3_InitInfo* info);
 CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_NewFrame(void);
-CIMGUI_IMPL_API void cImgui_ImplSDLGPU3_PrepareDrawData(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer);
+CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_PrepareDrawData(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer);
 CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_RenderDrawData(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass);                                                  // Implied pipeline = nullptr
 CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_RenderDrawDataEx(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass, SDL_GPUGraphicsPipeline* pipeline /* = nullptr */);
 
+// Use if you want to reset your rendering device without losing Dear ImGui state.
 CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_CreateDeviceObjects(void);
 CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_DestroyDeviceObjects(void);
-CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_CreateFontsTexture(void);
-CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_DestroyFontsTexture(void);
+
+// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
+CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_UpdateTexture(ImTextureData* tex);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block

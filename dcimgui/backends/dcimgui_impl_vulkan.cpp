@@ -51,6 +51,22 @@ static inline ::ImVec4 ConvertToCPP_ImVec4(const cimgui::ImVec4& src)
     return dest;
 }
 
+static inline cimgui::ImTextureRef ConvertFromCPP_ImTextureRef(const ::ImTextureRef& src)
+{
+    cimgui::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<cimgui::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
+static inline ::ImTextureRef ConvertToCPP_ImTextureRef(const cimgui::ImTextureRef& src)
+{
+    ::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
 static inline cimgui::ImColor ConvertFromCPP_ImColor(const ::ImColor& src)
 {
     cimgui::ImColor dest;
@@ -100,19 +116,14 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_RenderDrawDataEx(cimgui::ImDrawDa
     ::ImGui_ImplVulkan_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data), command_buffer, pipeline);
 }
 
-CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_CreateFontsTexture(void)
-{
-    return ::ImGui_ImplVulkan_CreateFontsTexture();
-}
-
-CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_DestroyFontsTexture(void)
-{
-    ::ImGui_ImplVulkan_DestroyFontsTexture();
-}
-
 CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_SetMinImageCount(uint32_t min_image_count)
 {
     ::ImGui_ImplVulkan_SetMinImageCount(min_image_count);
+}
+
+CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_UpdateTexture(cimgui::ImTextureData* tex)
+{
+    ::ImGui_ImplVulkan_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
 }
 
 CIMGUI_IMPL_API VkDescriptorSet cimgui::cImGui_ImplVulkan_AddTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout)
