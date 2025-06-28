@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        ref: "${{ github.event.pull_request.base.ref }}"
+        ref: "${{ github.event.pull_request.head.ref }}"
     - uses: mlugg/setup-zig@v2
     - name: Check zig is canonical
       shell: bash
@@ -28,7 +28,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        ref: "${{ github.event.pull_request.base.ref }}"
+        ref: "${{ github.event.pull_request.head.ref }}"
     - uses: mlugg/setup-zig@v2
     - name: Test building examples
       shell: bash
