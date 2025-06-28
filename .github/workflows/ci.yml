@@ -34,7 +34,7 @@ jobs:
       shell: bash
       run: |
         unset ZIG_LOCAL_CACHE_DIR
-        zig build --build-file "${GITHUB_WORKSPACE}/examples/build.zig"
+        env -C "${GITHUB_WORKSPACE}/examples" zig build
   build:
     strategy:
       matrix:
