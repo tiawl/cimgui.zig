@@ -18,6 +18,7 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 //  [X] Platform: Keyboard support. Since 1.87 we are using the io.AddKeyEvent() function. Pass ImGuiKey values to all key functions e.g. ImGui::IsKeyPressed(ImGuiKey_Space). [Legacy GLFW_KEY_* values are obsolete since 1.87 and not supported since 1.91.5]
 //  [X] Platform: Gamepad support. Enable with 'io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad'.
 //  [X] Platform: Mouse cursor shape and visibility (ImGuiBackendFlags_HasMouseCursors). Resizing cursors requires GLFW 3.4+! Disable with 'io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange'.
+//  [X] Multiple Dear ImGui contexts support.
 // Missing features or Issues:
 //  [ ] Touch events are only correctly identified as Touch on Windows. This create issues with some interactions. GLFW doesn't provide a way to identify touch inputs from mouse inputs, we cannot call io.AddMouseSourceEvent() to identify the source. We provide a Windows-specific workaround.
 //  [ ] Missing ImGuiMouseCursor_Wait and ImGuiMouseCursor_Progress cursors.
@@ -76,6 +77,8 @@ CIMGUI_IMPL_API void cImGui_ImplGlfw_MonitorCallback(GLFWmonitor* monitor, int e
 
 // GLFW helpers
 CIMGUI_IMPL_API void cImGui_ImplGlfw_Sleep(int milliseconds);
+CIMGUI_IMPL_API float cImGui_ImplGlfw_GetContentScaleForWindow(GLFWwindow* window);
+CIMGUI_IMPL_API float cImGui_ImplGlfw_GetContentScaleForMonitor(GLFWmonitor* monitor);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
