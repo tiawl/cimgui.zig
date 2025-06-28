@@ -35,6 +35,7 @@ pub fn build(builder: *std.Build) !void {
     var exe: *std.Build.Step.Compile = undefined;
     var cimgui_dep: *std.Build.Dependency = undefined;
     var it = examples_dir.iterate();
+    const logging = builder.option(bool, "toolbox-logging", "toolbox logging") orelse false;
     while (try it.next()) |*entry| {
         if (entry.kind == .directory and
             std.mem.startsWith(u8, entry.name, "example_") and
@@ -57,6 +58,7 @@ pub fn build(builder: *std.Build) !void {
                 .optimize = optimize,
                 .platform = try platform(entry.name),
                 .renderer = try renderer(entry.name),
+                .@"toolbox-logging" = logging,
             });
 
             linkLibAndImportModules(cimgui_dep.artifact("cimgui"), exe, entry.name);

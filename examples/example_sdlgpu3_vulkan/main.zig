@@ -108,7 +108,7 @@ pub fn main() !void {
         c.ImGui_Render();
         const drawData: *c.ImDrawData = c.ImGui_GetDrawData();
 
-        c.cImgui_ImplSDLGPU3_PrepareDrawData(drawData, cmdbuf);
+        c.cImGui_ImplSDLGPU3_PrepareDrawData(drawData, cmdbuf);
 
         const targetInfo = c.SDL_GPUColorTargetInfo{
             .texture = swapchainTexture,
