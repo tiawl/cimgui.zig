@@ -51,6 +51,22 @@ static inline ::ImVec4 ConvertToCPP_ImVec4(const cimgui::ImVec4& src)
     return dest;
 }
 
+static inline cimgui::ImTextureRef ConvertFromCPP_ImTextureRef(const ::ImTextureRef& src)
+{
+    cimgui::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<cimgui::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
+static inline ::ImTextureRef ConvertToCPP_ImTextureRef(const cimgui::ImTextureRef& src)
+{
+    ::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
 static inline cimgui::ImColor ConvertFromCPP_ImColor(const ::ImColor& src)
 {
     cimgui::ImColor dest;
@@ -95,24 +111,19 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_RenderDrawData(cimgui::ImDr
     ::ImGui_ImplSDLRenderer3_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data), reinterpret_cast<::SDL_Renderer*>(renderer));
 }
 
-CIMGUI_IMPL_API bool cimgui::cImGui_ImplSDLRenderer3_CreateFontsTexture(void)
+CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_CreateDeviceObjects(void)
 {
-    return ::ImGui_ImplSDLRenderer3_CreateFontsTexture();
-}
-
-CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_DestroyFontsTexture(void)
-{
-    ::ImGui_ImplSDLRenderer3_DestroyFontsTexture();
-}
-
-CIMGUI_IMPL_API bool cimgui::cImGui_ImplSDLRenderer3_CreateDeviceObjects(void)
-{
-    return ::ImGui_ImplSDLRenderer3_CreateDeviceObjects();
+    ::ImGui_ImplSDLRenderer3_CreateDeviceObjects();
 }
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_DestroyDeviceObjects(void)
 {
     ::ImGui_ImplSDLRenderer3_DestroyDeviceObjects();
+}
+
+CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_UpdateTexture(cimgui::ImTextureData* tex)
+{
+    ::ImGui_ImplSDLRenderer3_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
 }
 
 #endif // #ifndef IMGUI_DISABLE

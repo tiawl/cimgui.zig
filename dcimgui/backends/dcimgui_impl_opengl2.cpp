@@ -51,6 +51,22 @@ static inline ::ImVec4 ConvertToCPP_ImVec4(const cimgui::ImVec4& src)
     return dest;
 }
 
+static inline cimgui::ImTextureRef ConvertFromCPP_ImTextureRef(const ::ImTextureRef& src)
+{
+    cimgui::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<cimgui::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
+static inline ::ImTextureRef ConvertToCPP_ImTextureRef(const cimgui::ImTextureRef& src)
+{
+    ::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
 static inline cimgui::ImColor ConvertFromCPP_ImColor(const ::ImColor& src)
 {
     cimgui::ImColor dest;
@@ -95,16 +111,6 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplOpenGL2_RenderDrawData(cimgui::ImDrawDat
     ::ImGui_ImplOpenGL2_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data));
 }
 
-CIMGUI_IMPL_API bool cimgui::cImGui_ImplOpenGL2_CreateFontsTexture(void)
-{
-    return ::ImGui_ImplOpenGL2_CreateFontsTexture();
-}
-
-CIMGUI_IMPL_API void cimgui::cImGui_ImplOpenGL2_DestroyFontsTexture(void)
-{
-    ::ImGui_ImplOpenGL2_DestroyFontsTexture();
-}
-
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplOpenGL2_CreateDeviceObjects(void)
 {
     return ::ImGui_ImplOpenGL2_CreateDeviceObjects();
@@ -113,6 +119,11 @@ CIMGUI_IMPL_API bool cimgui::cImGui_ImplOpenGL2_CreateDeviceObjects(void)
 CIMGUI_IMPL_API void cimgui::cImGui_ImplOpenGL2_DestroyDeviceObjects(void)
 {
     ::ImGui_ImplOpenGL2_DestroyDeviceObjects();
+}
+
+CIMGUI_IMPL_API void cimgui::cImGui_ImplOpenGL2_UpdateTexture(cimgui::ImTextureData* tex)
+{
+    ::ImGui_ImplOpenGL2_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
 }
 
 #endif // #ifndef IMGUI_DISABLE

@@ -52,6 +52,22 @@ static inline ::ImVec4 ConvertToCPP_ImVec4(const cimgui::ImVec4& src)
     return dest;
 }
 
+static inline cimgui::ImTextureRef ConvertFromCPP_ImTextureRef(const ::ImTextureRef& src)
+{
+    cimgui::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<cimgui::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
+static inline ::ImTextureRef ConvertToCPP_ImTextureRef(const cimgui::ImTextureRef& src)
+{
+    ::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
 static inline cimgui::ImColor ConvertFromCPP_ImColor(const ::ImColor& src)
 {
     cimgui::ImColor dest;
@@ -113,6 +129,11 @@ CIMGUI_IMPL_API bool cimgui::cImGui_ImplDX12_CreateDeviceObjects(void)
 CIMGUI_IMPL_API void cimgui::cImGui_ImplDX12_InvalidateDeviceObjects(void)
 {
     ::ImGui_ImplDX12_InvalidateDeviceObjects();
+}
+
+CIMGUI_IMPL_API void cimgui::cImGui_ImplDX12_UpdateTexture(cimgui::ImTextureData* tex)
+{
+    ::ImGui_ImplDX12_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
 }
 
 #endif // #ifndef IMGUI_DISABLE

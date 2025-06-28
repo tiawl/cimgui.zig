@@ -51,6 +51,22 @@ static inline ::ImVec4 ConvertToCPP_ImVec4(const cimgui::ImVec4& src)
     return dest;
 }
 
+static inline cimgui::ImTextureRef ConvertFromCPP_ImTextureRef(const ::ImTextureRef& src)
+{
+    cimgui::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<cimgui::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
+static inline ::ImTextureRef ConvertToCPP_ImTextureRef(const cimgui::ImTextureRef& src)
+{
+    ::ImTextureRef dest;
+    dest._TexData = reinterpret_cast<::ImTextureData*>(src._TexData);
+    dest._TexID = src._TexID;
+    return dest;
+}
+
 static inline cimgui::ImColor ConvertFromCPP_ImColor(const ::ImColor& src)
 {
     cimgui::ImColor dest;
@@ -118,6 +134,16 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplSDL2_NewFrame(void)
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplSDL2_ProcessEvent(const SDL_Event* event)
 {
     return ::ImGui_ImplSDL2_ProcessEvent(event);
+}
+
+CIMGUI_IMPL_API float cimgui::cImGui_ImplSDL2_GetContentScaleForWindow(cimgui::SDL_Window* window)
+{
+    return ::ImGui_ImplSDL2_GetContentScaleForWindow(reinterpret_cast<::SDL_Window*>(window));
+}
+
+CIMGUI_IMPL_API float cimgui::cImGui_ImplSDL2_GetContentScaleForDisplay(int display_index)
+{
+    return ::ImGui_ImplSDL2_GetContentScaleForDisplay(display_index);
 }
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplSDL2_SetGamepadMode(cimgui::ImGui_ImplSDL2_GamepadMode mode)
