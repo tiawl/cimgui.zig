@@ -35,11 +35,6 @@ extern "C"
 #endif
 #include "dcimgui.h"
 #ifndef IMGUI_DISABLE
-typedef struct ID3D11Device ID3D11Device;
-typedef struct ID3D11DeviceContext ID3D11DeviceContext;
-typedef struct ID3D11SamplerState_t ID3D11SamplerState;
-typedef struct ID3D11Buffer_t ID3D11Buffer;
-
 typedef struct ImDrawData_t ImDrawData;
 // Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplDX11_Init(ID3D11Device* device, ID3D11DeviceContext* device_context);
