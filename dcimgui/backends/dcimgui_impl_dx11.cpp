@@ -91,9 +91,9 @@ static inline ::ImColor ConvertToCPP_ImColor(const cimgui::ImColor& src)
 
 #ifndef IMGUI_DISABLE
 
-CIMGUI_IMPL_API bool cimgui::cImGui_ImplDX11_Init(cimgui::ID3D11Device* device, cimgui::ID3D11DeviceContext* device_context)
+CIMGUI_IMPL_API bool cimgui::cImGui_ImplDX11_Init(ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
-    return ::ImGui_ImplDX11_Init(reinterpret_cast<::ID3D11Device*>(device), reinterpret_cast<::ID3D11DeviceContext*>(device_context));
+    return ::ImGui_ImplDX11_Init(device, device_context);
 }
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplDX11_Shutdown(void)
