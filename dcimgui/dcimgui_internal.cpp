@@ -3959,6 +3959,11 @@ CIMGUI_API cimgui::ImFontGlyph* cimgui::cImFontAtlasBakedAddFontGlyph(cimgui::Im
     return reinterpret_cast<::cimgui::ImFontGlyph*>(::ImFontAtlasBakedAddFontGlyph(reinterpret_cast<::ImFontAtlas*>(atlas), reinterpret_cast<::ImFontBaked*>(baked), reinterpret_cast<::ImFontConfig*>(src), reinterpret_cast<const ::ImFontGlyph*>(in_glyph)));
 }
 
+CIMGUI_API void         cimgui::cImFontAtlasBakedAddFontGlyphAdvancedX(cimgui::ImFontAtlas* atlas, cimgui::ImFontBaked* baked, cimgui::ImFontConfig* src, ImWchar codepoint, float advance_x)
+{
+    ::ImFontAtlasBakedAddFontGlyphAdvancedX(reinterpret_cast<::ImFontAtlas*>(atlas), reinterpret_cast<::ImFontBaked*>(baked), reinterpret_cast<::ImFontConfig*>(src), codepoint, advance_x);
+}
+
 CIMGUI_API void         cimgui::cImFontAtlasBakedDiscardFontGlyph(cimgui::ImFontAtlas* atlas, cimgui::ImFont* font, cimgui::ImFontBaked* baked, cimgui::ImFontGlyph* glyph)
 {
     ::ImFontAtlasBakedDiscardFontGlyph(reinterpret_cast<::ImFontAtlas*>(atlas), reinterpret_cast<::ImFont*>(font), reinterpret_cast<::ImFontBaked*>(baked), reinterpret_cast<::ImFontGlyph*>(glyph));

@@ -2,7 +2,7 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-// dear imgui, v1.92.0
+// dear imgui, v1.92.1
 // (headers)
 
 // Help:
@@ -32,8 +32,8 @@
 
 // Library Version
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if IMGUI_VERSION_NUM >= 12345')
-#define IMGUI_VERSION       "1.92.0"
-#define IMGUI_VERSION_NUM   19200
+#define IMGUI_VERSION       "1.92.1"
+#define IMGUI_VERSION_NUM   19210
 #define IMGUI_HAS_TABLE              // Added BeginTable() - from IMGUI_VERSION_NUM >= 18000
 #define IMGUI_HAS_TEXTURES           // Added ImGuiBackendFlags_RendererHasTextures - from IMGUI_VERSION_NUM >= 19198
 #define IMGUI_HAS_VIEWPORT           // In 'docking' WIP branch.
@@ -364,7 +364,7 @@ IM_MSVC_RUNTIME_CHECKS_RESTORE
 //     constructors if you like. You will need to implement ==/!= operators.
 // History:
 // - In v1.91.4 (2024/10/08): the default type for ImTextureID was changed from 'void*' to 'ImU64'. This allowed backends requirig 64-bit worth of data to build on 32-bit architectures. Use intermediary intptr_t cast and read FAQ if you have casting warnings.
-// - In v1.92.0 (2025/XX/XX): added ImTextureRef which carry either a ImTextureID either a pointer to internal texture atlas. All user facing functions taking ImTextureID changed to ImTextureRef
+// - In v1.92.0 (2025/06/11): added ImTextureRef which carry either a ImTextureID either a pointer to internal texture atlas. All user facing functions taking ImTextureID changed to ImTextureRef
 #ifndef ImTextureID
 typedef ImU64 ImTextureID;  // Default: store up to 64-bits (any pointer or integer). A majority of backends are ok with that.
 #endif // #ifndef ImTextureID
@@ -1934,7 +1934,7 @@ typedef enum
     ImGuiBackendFlags_HasMouseCursors         = 1<<1,   // Backend Platform supports honoring GetMouseCursor() value to change the OS cursor shape.
     ImGuiBackendFlags_HasSetMousePos          = 1<<2,   // Backend Platform supports io.WantSetMousePos requests to reposition the OS mouse position (only used if io.ConfigNavMoveSetMousePos is set).
     ImGuiBackendFlags_RendererHasVtxOffset    = 1<<3,   // Backend Renderer supports ImDrawCmd::VtxOffset. This enables output of large meshes (64K+ vertices) while still using 16-bit indices.
-    ImGuiBackendFlags_RendererHasTextures     = 1<<4,   // Backend Renderer supports ImTextureData requests to create/update/destroy textures. This enables incremental texture updates and texture reloads.
+    ImGuiBackendFlags_RendererHasTextures     = 1<<4,   // Backend Renderer supports ImTextureData requests to create/update/destroy textures. This enables incremental texture updates and texture reloads. See https://github.com/ocornut/imgui/blob/master/docs/BACKENDS.md for instructions on how to upgrade your custom backend.
 
     // [BETA] Viewports
     ImGuiBackendFlags_PlatformHasViewports    = 1<<10,  // Backend Platform supports multiple viewports.
@@ -3535,7 +3535,7 @@ CIMGUI_API void ImDrawData_ScaleClipRects(ImDrawData* self, ImVec2 fb_scale);   
 // FOR ALL OTHER ImTextureXXXX TYPES: ONLY CORE LIBRARY AND RENDERER BACKENDS NEED TO KNOW AND CARE ABOUT THEM.
 //-----------------------------------------------------------------------------
 
-// We intentionally support a limited amount of texture formats to limit burden on CPU-side code and extension.
+#undef Status // X11 headers are leaking this.                                                                         // We intentionally support a limited amount of texture formats to limit burden on CPU-side code and extension.
 // Most standard backends only support RGBA32 but we provide a single channel option for low-resource/embedded systems.
 typedef enum
 {
@@ -3618,9 +3618,9 @@ struct ImFontConfig_t
     bool                MergeMode;             // false    // Merge into previous ImFont, so you can combine multiple inputs font into one ImFont (e.g. ASCII font + icons + Japanese glyphs). You may want to use GlyphOffset.y when merge font of different heights.
     bool                PixelSnapH;            // false    // Align every glyph AdvanceX to pixel boundaries. Useful e.g. if you are merging a non-pixel aligned font with the default font. If enabled, you can set OversampleH/V to 1.
     bool                PixelSnapV;            // true     // Align Scaled GlyphOffset.y to pixel boundaries.
-    ImS8                FontNo;                // 0        // Index of font within TTF/OTF file
     ImS8                OversampleH;           // 0 (2)    // Rasterize at higher quality for sub-pixel positioning. 0 == auto == 1 or 2 depending on size. Note the difference between 2 and 3 is minimal. You can reduce this to 1 for large glyphs save memory. Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
     ImS8                OversampleV;           // 0 (1)    // Rasterize at higher quality for sub-pixel positioning. 0 == auto == 1. This is not really useful as we don't use sub-pixel positions on the Y axis.
+    ImWchar             EllipsisChar;          // 0        // Explicitly specify Unicode codepoint of ellipsis character. When fonts are being merged first specified ellipsis will be used.
     float               SizePixels;            //          // Size in pixels for rasterizer (more or less maps to the resulting font height).
     const ImWchar*      GlyphRanges;           // NULL     // *LEGACY* THE ARRAY DATA NEEDS TO PERSIST AS LONG AS THE FONT IS ALIVE. Pointer to a user-provided list of Unicode range (2 value per range, values are inclusive, zero-terminated list).
     const ImWchar*      GlyphExcludeRanges;    // NULL     // Pointer to a small user-provided list of Unicode ranges (2 value per range, values are inclusive, zero-terminated list). This is very close to GlyphRanges[] but designed to exclude ranges from a font source, when merging fonts with overlapping glyphs. Use "Input Glyphs Overlap Detection Tool" to find about your overlapping ranges.
@@ -3629,16 +3629,16 @@ struct ImFontConfig_t
     float               GlyphMinAdvanceX;      // 0        // Minimum AdvanceX for glyphs, set Min to align font icons, set both Min/Max to enforce mono-space font. Absolute value for default size, other sizes will scale this value.
     float               GlyphMaxAdvanceX;      // FLT_MAX  // Maximum AdvanceX for glyphs
     float               GlyphExtraAdvanceX;    // 0        // Extra spacing (in pixels) between glyphs. Please contact us if you are using this. // FIXME-NEWATLAS: Intentionally unscaled
+    ImU32               FontNo;                // 0        // Index of font within TTF/OTF file
     unsigned int        FontLoaderFlags;       // 0        // Settings for custom font builder. THIS IS BUILDER IMPLEMENTATION DEPENDENT. Leave as zero if unsure.
     //unsigned int  FontBuilderFlags;       // --       // [Renamed in 1.92] Ue FontLoaderFlags.
     float               RasterizerMultiply;    // 1.0f     // Linearly brighten (>1.0f) or darken (<1.0f) font output. Brightening small fonts may be a good workaround to make them more readable. This is a silly thing we may remove in the future.
     float               RasterizerDensity;     // 1.0f     // [LEGACY: this only makes sense when ImGuiBackendFlags_RendererHasTextures is not supported] DPI scale multiplier for rasterization. Not altering other font metrics: makes it easy to swap between e.g. a 100% and a 400% fonts for a zooming display, or handle Retina screen. IMPORTANT: If you change this it is expected that you increase/decrease font scale roughly to the inverse of this, otherwise quality may look lowered.
-    ImWchar             EllipsisChar;          // 0        // Explicitly specify Unicode codepoint of ellipsis character. When fonts are being merged first specified ellipsis will be used.
 
     // [Internal]
     ImFontFlags         Flags;                 // Font flags (don't use just yet, will be exposed in upcoming 1.92.X updates)
     ImFont*             DstFont;               // Target font (as we merging fonts, multiple ImFontConfig may target the same font)
-    const ImFontLoader* FontLoader;            // Custom font backend for this source (other use one stored in ImFontAtlas)
+    const ImFontLoader* FontLoader;            // Custom font backend for this source (default source is the one stored in ImFontAtlas)
     void*               FontLoaderData;        // Font loader opaque storage (per font config)
 };
 
@@ -3766,7 +3766,7 @@ struct ImFontAtlas_t
     int                       FontNextUniqueID;                               // Next value to be stored in ImFont->FontID
     ImVector_ImDrawListSharedDataPtr DrawListSharedDatas;                     // List of users for this atlas. Typically one per Dear ImGui context.
     ImFontAtlasBuilder*       Builder;                                        // Opaque interface to our data that doesn't need to be public and may be discarded when rebuilding.
-    const ImFontLoader*       FontLoader;                                     // Font loader opaque interface (default to stb_truetype, can be changed to use FreeType by defining IMGUI_ENABLE_FREETYPE). Don't set directly!
+    const ImFontLoader*       FontLoader;                                     // Font loader opaque interface (default to use FreeType when IMGUI_ENABLE_FREETYPE is defined, otherwise default to use stb_truetype). Use SetFontLoader() to change this at runtime.
     const char*               FontLoaderName;                                 // Font loader name (for display e.g. in About box) == FontLoader->Name
     void*                     FontLoaderData;                                 // Font backend opaque storage
     unsigned int              FontLoaderFlags;                                // Shared flags (for all fonts) for font loader. THIS IS BUILD IMPLEMENTATION DEPENDENT (e.g. Per-font override is also available in ImFontConfig).
@@ -3793,6 +3793,7 @@ CIMGUI_API ImFont*           ImFontAtlas_AddFontFromMemoryCompressedBase85TTF(Im
 CIMGUI_API void              ImFontAtlas_RemoveFont(ImFontAtlas* self, ImFont* font);
 CIMGUI_API void              ImFontAtlas_Clear(ImFontAtlas* self);                                                                      // Clear everything (input fonts, output glyphs/textures)
 CIMGUI_API void              ImFontAtlas_CompactCache(ImFontAtlas* self);                                                               // Compact cached glyphs and texture.
+CIMGUI_API void              ImFontAtlas_SetFontLoader(ImFontAtlas* self, const ImFontLoader* font_loader);                             // Change font loader at runtime.
 // As we are transitioning toward a new font system, we expect to obsolete those soon:
 CIMGUI_API void              ImFontAtlas_ClearInputData(ImFontAtlas* self);                                                             // [OBSOLETE] Clear input data (all ImFontConfig structures including sizes, TTF data, glyph ranges, etc.) = all the data used to build the texture and fonts.
 CIMGUI_API void              ImFontAtlas_ClearFonts(ImFontAtlas* self);                                                                 // [OBSOLETE] Clear input+output font data (same as ClearInputData() + glyphs storage, UV coordinates).
