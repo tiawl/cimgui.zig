@@ -15,8 +15,8 @@
             .hash = "toolbox-1.12.4-kRAu4NNaAAAegkCN8l5sQBlsisel3yRGMXHq-z14rRLe",
         },
         .zigglgen = .{
-            .url = "git+https://github.com/castholm/zigglgen#0b8261eb00f098ea65e2a1b0a42798a2d1410ccb",
-            .hash = "zigglgen-0.4.0-bmyqLS3sLQC1iF0iqkTqw_bEDhSNK8TQoL_c16DWNbkT",
+            .url = "git+https://github.com/castholm/zigglgen#f19acc6a78aa4429917341f9bacc73346db21b73",
+            .hash = "zigglgen-0.4.0-bmyqLQ3sLQCP7RyluOjtnnbkbL56JCNeIYDu6odBTQCv",
         },
         .vulkan_zig = .{
             .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.323#7bc0b1b3e7dd9ff40c6221064da3ff077d81da1e",
