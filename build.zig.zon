@@ -7,8 +7,8 @@
             .hash = "glfw_zig-1.0.0-NrvYo_DNFwAW1M2qdPIYz39iXzM65EZZ_sHz5xkBExv_",
         },
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL#5c55c894039a15a16bb7c89b2d6438e158e86ef1",
-            .hash = "sdl-0.2.5+3.2.18-7uIn9FwZfwHKOwSubcg5_CiW4fXag5IIsiV_jnLdkpDM",
+            .url = "git+https://github.com/castholm/SDL#0f81c0affb2584b242b2fb5744e7dfebcfd904a5",
+            .hash = "sdl-0.2.6+3.2.20-7uIn9JkjfwGIQ6j3-etow2rCe-Zt16Yj-2gdp9jW7WZ9",
         },
         .toolbox = .{
             .url = "git+https://github.com/tiawl/toolbox?ref=1.12.5#e7382fddb79cea4f9a9842bfe35d59c3460c7cf9",
