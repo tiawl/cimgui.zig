@@ -28,6 +28,7 @@ jobs:
     - name: Install apt packages
       shell: bash
       run: |
+        sudo apt-get update --fix-missing
         sudo apt-get install -y python3-venv mesa-utils
         printf 'ACTIVATE_DIR=bin\n' >> "${GITHUB_ENV}"
 
