@@ -5,6 +5,7 @@
 // dear imgui: Renderer Backend for SDL_GPU
 // Auto-generated forward declarations for C header
 typedef struct ImGui_ImplSDLGPU3_InitInfo_t ImGui_ImplSDLGPU3_InitInfo;
+typedef struct ImGui_ImplSDLGPU3_RenderState_t ImGui_ImplSDLGPU3_RenderState;
 // ImDrawIdx: vertex index. [Compile-time configurable type]
 // - To use 16-bit indices + allow large meshes: backend need to set 'io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset' and handle ImDrawCmd::VtxOffset (recommended).
 // - To use 32-bit indices: override with '#define ImDrawIdx unsigned int' in your imconfig.h file.
@@ -14,7 +15,7 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 // This needs to be used along with the SDL3 Platform Backend
 
 // Implemented features:
-//  [X] Renderer: User texture binding. Use simply cast a reference to your SDL_GPUTextureSamplerBinding to ImTextureID.
+//  [X] Renderer: User texture binding. Use 'SDL_GPUTexture*' as texture identifier. Read the FAQ about ImTextureID/ImTextureRef! **IMPORTANT** Before 2025/08/08, ImTextureID was a reference to a SDL_GPUTextureSamplerBinding struct.
 //  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
 //  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
 
@@ -65,6 +66,16 @@ CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_DestroyDeviceObjects(void);
 
 // (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
 CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_UpdateTexture(ImTextureData* tex);
+
+// [BETA] Selected render state data shared with callbacks.
+// This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplSDLGPU3_RenderDrawData() call.
+// (Please open an issue if you feel you need access to more data)
+struct ImGui_ImplSDLGPU3_RenderState_t
+{
+    SDL_GPUDevice*  Device;
+    SDL_GPUSampler* SamplerDefault;  // Default sampler (bilinear filtering)
+    SDL_GPUSampler* SamplerCurrent;  // Current sampler (may be changed by callback)
+};
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
