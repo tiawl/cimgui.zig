@@ -374,7 +374,7 @@ CIMGUI_API int         cimgui::cImParseFormatPrecision(const char* format, int d
     return ::ImParseFormatPrecision(format, default_value);
 }
 
-CIMGUI_API const char* cimgui::cImTextCharToUtf8(char out_buf[5], unsigned int c)
+CIMGUI_API int         cimgui::cImTextCharToUtf8(char out_buf[5], unsigned int c)
 {
     return ::ImTextCharToUtf8(out_buf, c);
 }
@@ -1533,6 +1533,11 @@ CIMGUI_API void cimgui::ImGui_StartMouseMovingWindowOrNode(cimgui::ImGuiWindow* 
     ::ImGui::StartMouseMovingWindowOrNode(reinterpret_cast<::ImGuiWindow*>(window), reinterpret_cast<::ImGuiDockNode*>(node), undock);
 }
 
+CIMGUI_API void cimgui::ImGui_StopMouseMovingWindow(void)
+{
+    ::ImGui::StopMouseMovingWindow();
+}
+
 CIMGUI_API void cimgui::ImGui_UpdateMouseMovingWindowNewFrame(void)
 {
     ::ImGui::UpdateMouseMovingWindowNewFrame();
@@ -1828,9 +1833,9 @@ CIMGUI_API void   cimgui::ImGui_PushMultiItemsWidths(int components, float width
     ::ImGui::PushMultiItemsWidths(components, width_full);
 }
 
-CIMGUI_API void   cimgui::ImGui_ShrinkWidths(cimgui::ImGuiShrinkWidthItem* items, int count, float width_excess)
+CIMGUI_API void   cimgui::ImGui_ShrinkWidths(cimgui::ImGuiShrinkWidthItem* items, int count, float width_excess, float width_min)
 {
-    ::ImGui::ShrinkWidths(reinterpret_cast<::ImGuiShrinkWidthItem*>(items), count, width_excess);
+    ::ImGui::ShrinkWidths(reinterpret_cast<::ImGuiShrinkWidthItem*>(items), count, width_excess, width_min);
 }
 
 CIMGUI_API const cimgui::ImGuiStyleVarInfo* cimgui::ImGui_GetStyleVarInfo(ImGuiStyleVar idx)

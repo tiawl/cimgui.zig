@@ -2,7 +2,7 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-// dear imgui, v1.92.1
+// dear imgui, v1.92.2
 struct ImVector_ImFontBakedPtr_t { int Size; int Capacity; ImFontBaked** Data; };  // Instantiation of ImVector<ImFontBaked*>
 struct ImVector_ImFontAtlasPtr_t { int Size; int Capacity; ImFontAtlas** Data; };  // Instantiation of ImVector<ImFontAtlas*>
 // (internal structures/api)
@@ -508,7 +508,7 @@ CIMGUI_API const char* cImParseFormatSanitizeForScanning(const char* fmt_in, cha
 CIMGUI_API int         cImParseFormatPrecision(const char* format, int default_value);
 
 // Helpers: UTF-8 <> wchar conversions
-CIMGUI_API const char* cImTextCharToUtf8(char out_buf[5], unsigned int c);                                                     // return out_buf
+CIMGUI_API int         cImTextCharToUtf8(char out_buf[5], unsigned int c);                                                     // return output UTF-8 bytes count
 CIMGUI_API int         cImTextStrToUtf8(char* out_buf, int out_buf_size, const ImWchar* in_text, const ImWchar* in_text_end);  // return output UTF-8 bytes count
 CIMGUI_API int         cImTextCharFromUtf8(unsigned int* out_char, const char* in_text, const char* in_text_end);              // read one character. return input UTF-8 bytes count
 CIMGUI_API int         cImTextStrFromUtf8(ImWchar* out_buf, int out_buf_size, const char* in_text, const char* in_text_end);   // Implied in_remaining = NULL
@@ -2506,8 +2506,8 @@ struct ImGuiContext_t
     float                          NavWindowingTimer;
     float                          NavWindowingHighlightAlpha;
     ImGuiInputSource               NavWindowingInputSource;
-    bool                           NavWindowingToggleLayer;
-    ImGuiKey                       NavWindowingToggleKey;
+    bool                           NavWindowingToggleLayer;             // Set while Alt or GamepadMenu is held, may be cleared by other operations, and processed when releasing the key.
+    ImGuiKey                       NavWindowingToggleKey;               // Keyboard/gamepad key used when toggling to menu layer.
     ImVec2                         NavWindowingAccumDeltaPos;
     ImVec2                         NavWindowingAccumDeltaSize;
 
@@ -2933,7 +2933,7 @@ struct ImGuiTabItem_t
     int               LastFrameSelected;  // This allows us to infer an ordered list of the last activated tabs with little maintenance
     float             Offset;             // Position relative to beginning of tab
     float             Width;              // Width currently displayed
-    float             ContentWidth;       // Width of label, stored during BeginTabItem() call
+    float             ContentWidth;       // Width of label + padding, stored during BeginTabItem() call (misnamed as "Content" would normally imply width of label only)
     float             RequestedWidth;     // Width optionally requested by caller, -1.0f is unused
     ImS32             NameOffset;         // When Window==NULL, offset to name within parent ImGuiTabBar::TabsNames
     ImS16             BeginOrder;         // BeginTabItem() order, used to re-order tabs after toggling ImGuiTabBarFlags_Reorderable
@@ -2954,6 +2954,7 @@ struct ImGuiTabBar_t
     int                   CurrFrameVisible;
     int                   PrevFrameVisible;
     ImRect                BarRect;
+    float                 BarRectPrevWidth;        // Backup of previous width. When width change we enforce keep horizontal scroll on focused tab.
     float                 CurrTabsContentsHeight;
     float                 PrevTabsContentsHeight;  // Record the height of contents submitted below the tab bar
     float                 WidthAllTabs;            // Actual width of all tabs (locked during layout)
@@ -2972,6 +2973,7 @@ struct ImGuiTabBar_t
     bool                  WantLayout;
     bool                  VisibleTabWasSubmitted;
     bool                  TabsAddedNew;            // Set to true when a new tab item or button has been added to the tab bar during last frame
+    bool                  ScrollButtonEnabled;
     ImS16                 TabsActiveCount;         // Number of tabs submitted this frame.
     ImS16                 LastTabItemIdx;          // Index of last BeginTabItem() tab for use by EndTabItem()
     float                 ItemSpacingY;
@@ -3284,7 +3286,7 @@ CIMGUI_API ImGuiWindow* ImGui_FindBottomMostVisibleWindowWithinBeginStack(ImGuiW
 CIMGUI_API void ImGui_SetNextWindowRefreshPolicy(ImGuiWindowRefreshFlags flags);
 
 // Fonts, drawing
-CIMGUI_API void        ImGui_RegisterUserTexture(ImTextureData* tex);                       // Register external texture
+CIMGUI_API void        ImGui_RegisterUserTexture(ImTextureData* tex);                       // Register external texture. EXPERIMENTAL: DO NOT USE YET.
 CIMGUI_API void        ImGui_UnregisterUserTexture(ImTextureData* tex);
 CIMGUI_API void        ImGui_RegisterFontAtlas(ImFontAtlas* atlas);
 CIMGUI_API void        ImGui_UnregisterFontAtlas(ImFontAtlas* atlas);
@@ -3309,6 +3311,7 @@ CIMGUI_API void ImGui_UpdateHoveredWindowAndCaptureFlags(ImVec2 mouse_pos);
 CIMGUI_API void ImGui_FindHoveredWindowEx(ImVec2 pos, bool find_first_and_in_any_viewport, ImGuiWindow** out_hovered_window, ImGuiWindow** out_hovered_window_under_moving_window);
 CIMGUI_API void ImGui_StartMouseMovingWindow(ImGuiWindow* window);
 CIMGUI_API void ImGui_StartMouseMovingWindowOrNode(ImGuiWindow* window, ImGuiDockNode* node, bool undock);
+CIMGUI_API void ImGui_StopMouseMovingWindow(void);
 CIMGUI_API void ImGui_UpdateMouseMovingWindowNewFrame(void);
 CIMGUI_API void ImGui_UpdateMouseMovingWindowEndFrame(void);
 
@@ -3375,11 +3378,11 @@ CIMGUI_API ImGuiID              ImGui_GetIDWithSeedStr(const char* str_id_begin,
 CIMGUI_API ImGuiID              ImGui_GetIDWithSeed(int n, ImGuiID seed);
 
 // Basic Helpers for widget code
-CIMGUI_API void   ImGui_ItemSize(ImVec2 size);                                                             // Implied text_baseline_y = -1.0f
+CIMGUI_API void   ImGui_ItemSize(ImVec2 size);                                                                      // Implied text_baseline_y = -1.0f
 CIMGUI_API void   ImGui_ItemSizeEx(ImVec2 size, float text_baseline_y /* = -1.0f */);
-CIMGUI_API void   ImGui_ItemSizeImRect(ImRect bb);                                                         // Implied text_baseline_y = -1.0f
-CIMGUI_API void   ImGui_ItemSizeImRectEx(ImRect bb, float text_baseline_y /* = -1.0f */);                  // FIXME: This is a misleading API since we expect CursorPos to be bb.Min.
-CIMGUI_API bool   ImGui_ItemAdd(ImRect bb, ImGuiID id);                                                    // Implied nav_bb = NULL, extra_flags = 0
+CIMGUI_API void   ImGui_ItemSizeImRect(ImRect bb);                                                                  // Implied text_baseline_y = -1.0f
+CIMGUI_API void   ImGui_ItemSizeImRectEx(ImRect bb, float text_baseline_y /* = -1.0f */);                           // FIXME: This is a misleading API since we expect CursorPos to be bb.Min.
+CIMGUI_API bool   ImGui_ItemAdd(ImRect bb, ImGuiID id);                                                             // Implied nav_bb = NULL, extra_flags = 0
 CIMGUI_API bool   ImGui_ItemAddEx(ImRect bb, ImGuiID id, const ImRect* nav_bb /* = NULL */, ImGuiItemFlags extra_flags /* = 0 */);
 CIMGUI_API bool   ImGui_ItemHoverable(ImRect bb, ImGuiID id, ImGuiItemFlags item_flags);
 CIMGUI_API bool   ImGui_IsWindowContentHoverable(ImGuiWindow* window, ImGuiHoveredFlags flags /* = 0 */);
@@ -3388,7 +3391,7 @@ CIMGUI_API void   ImGui_SetLastItemData(ImGuiID item_id, ImGuiItemFlags item_fla
 CIMGUI_API ImVec2 ImGui_CalcItemSize(ImVec2 size, float default_w, float default_h);
 CIMGUI_API float  ImGui_CalcWrapWidthForPos(ImVec2 pos, float wrap_pos_x);
 CIMGUI_API void   ImGui_PushMultiItemsWidths(int components, float width_full);
-CIMGUI_API void   ImGui_ShrinkWidths(ImGuiShrinkWidthItem* items, int count, float width_excess);
+CIMGUI_API void   ImGui_ShrinkWidths(ImGuiShrinkWidthItem* items, int count, float width_excess, float width_min);
 
 // Parameter stacks (shared)
 CIMGUI_API const ImGuiStyleVarInfo* ImGui_GetStyleVarInfo(ImGuiStyleVar idx);
