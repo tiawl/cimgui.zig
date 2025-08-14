@@ -116,6 +116,11 @@ CIMGUI_IMPL_API bool cimgui::cImGui_ImplAllegro5_ProcessEvent(cimgui::ALLEGRO_EV
     return ::ImGui_ImplAllegro5_ProcessEvent(reinterpret_cast<::ALLEGRO_EVENT*>(event));
 }
 
+CIMGUI_IMPL_API void cimgui::cImGui_ImplAllegro5_SetDisplay(cimgui::ALLEGRO_DISPLAY* display)
+{
+    ::ImGui_ImplAllegro5_SetDisplay(reinterpret_cast<::ALLEGRO_DISPLAY*>(display));
+}
+
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplAllegro5_CreateDeviceObjects(void)
 {
     return ::ImGui_ImplAllegro5_CreateDeviceObjects();
