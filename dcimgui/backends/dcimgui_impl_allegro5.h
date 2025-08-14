@@ -48,6 +48,7 @@ CIMGUI_IMPL_API void cImGui_ImplAllegro5_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplAllegro5_NewFrame(void);
 CIMGUI_IMPL_API void cImGui_ImplAllegro5_RenderDrawData(ImDrawData* draw_data);
 CIMGUI_IMPL_API bool cImGui_ImplAllegro5_ProcessEvent(ALLEGRO_EVENT* event);
+CIMGUI_IMPL_API void cImGui_ImplAllegro5_SetDisplay(ALLEGRO_DISPLAY* display);
 
 // Use if you want to reset your rendering device without losing Dear ImGui state.
 CIMGUI_IMPL_API bool cImGui_ImplAllegro5_CreateDeviceObjects(void);
