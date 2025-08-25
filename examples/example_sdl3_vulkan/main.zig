@@ -173,18 +173,18 @@ fn vkDestroyDevice(device: c.VkDevice, allocator: [*c]const c.VkAllocationCallba
     func(device, allocator);
 }
 
-fn loader(name: [*c]const u8, instance: ?*anyopaque) callconv(.C) ?*const fn () callconv(.C) void {
+fn loader(name: [*c]const u8, instance: ?*anyopaque) callconv(std.builtin.CallingConvention.c) ?*const fn () callconv(std.builtin.CallingConvention.c) void {
     const vkGetInstanceProcAddr: c.PFN_vkGetInstanceProcAddr = @ptrCast(c.SDL_Vulkan_GetVkGetInstanceProcAddr());
     return vkGetInstanceProcAddr.?(@ptrCast(instance), name);
 }
 
-fn check_vk_result(err: c.VkResult) callconv(.C) void {
+fn check_vk_result(err: c.VkResult) callconv(std.builtin.CallingConvention.c) void {
     if (err == 0) return;
     std.debug.print("[vulkan] Error: VkResult = {d}\n", .{err});
     if (err < 0) std.process.exit(1);
 }
 
-fn debugReport(_: c.VkDebugReportFlagsEXT, objectType: c.VkDebugReportObjectTypeEXT, _: u64, _: usize, _: i32, _: ?*const u8, pMessage: ?[*:0]const u8, _: ?*anyopaque) callconv(.C) c.VkBool32 {
+fn debugReport(_: c.VkDebugReportFlagsEXT, objectType: c.VkDebugReportObjectTypeEXT, _: u64, _: usize, _: i32, _: ?*const u8, pMessage: ?[*:0]const u8, _: ?*anyopaque) callconv(std.builtin.CallingConvention.c) c.VkBool32 {
     std.debug.print("[vulkan] Debug report from ObjectType: {any}\nMessage: {s}\n\n", .{ objectType, pMessage orelse "No message available" });
     return c.VK_FALSE;
 }
@@ -254,7 +254,7 @@ fn SetupVulkan(allocator: std.mem.Allocator, instance_extensions: *std.ArrayList
 
     // Enable required extensions
     if (IsExtensionAvailable(properties[0..properties_count], c.VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME))
-        try instance_extensions.append(c.VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+        try instance_extensions.append(allocator, c.VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
     // Enumerate available layers
     var layers_count: u32 = undefined;
@@ -270,7 +270,7 @@ fn SetupVulkan(allocator: std.mem.Allocator, instance_extensions: *std.ArrayList
     // Enabling validation layers
     create_info.enabledLayerCount = required_layers.len;
     create_info.ppEnabledLayerNames = required_layers[0..].ptr;
-    try instance_extensions.append("VK_EXT_debug_report");
+    try instance_extensions.append(allocator, "VK_EXT_debug_report");
 
     // Create Vulkan Instance
     create_info.enabledExtensionCount = @intCast(instance_extensions.items.len);
@@ -302,8 +302,8 @@ fn SetupVulkan(allocator: std.mem.Allocator, instance_extensions: *std.ArrayList
     }
 
     // Create Logical Device (with 1 queue)
-    var device_extensions = std.ArrayList([*:0]const u8).init(allocator);
-    try device_extensions.append("VK_KHR_swapchain");
+    var device_extensions: std.ArrayList([*:0]const u8) = .empty;
+    try device_extensions.append(allocator, "VK_KHR_swapchain");
 
     // Enumerate physical device extension
     _ = vkEnumerateDeviceExtensionProperties(g_PhysicalDevice, null, &properties_count, null);
@@ -481,10 +481,10 @@ pub fn main() !void {
     if (window == null) return error.SDL_CreateWindowFailure;
     defer c.SDL_DestroyWindow(window);
 
-    var extensions = std.ArrayList([*:0]const u8).init(allocator);
+    var extensions: std.ArrayList([*:0]const u8) = .empty;
     var extensions_count: u32 = 0;
     const sdl_extensions = c.SDL_Vulkan_GetInstanceExtensions(&extensions_count);
-    for (0..extensions_count) |i| try extensions.append(std.mem.span(sdl_extensions[i]));
+    for (0..extensions_count) |i| try extensions.append(allocator, std.mem.span(sdl_extensions[i]));
     try SetupVulkan(allocator, &extensions);
     defer CleanupVulkan();
 
