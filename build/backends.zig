@@ -39,7 +39,7 @@ pub fn backendOptions(toolbox: *Toolbox, builder: *std.Build, lib: *std.Build.St
                         lib.installLibraryHeaders(vulkan_lib);
                     }
                 }
-                try flags.appendAssumeCapacity("-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES");
+                flags.appendAssumeCapacity("-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES");
                 try toolbox.addSource(lib, path.getBackends(), "imgui_impl_vulkan.cpp", flags.items);
                 try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_vulkan.cpp", flags.items);
             },
