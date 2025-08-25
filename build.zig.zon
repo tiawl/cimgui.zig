@@ -11,8 +11,8 @@
             .hash = "sdl-0.2.6+3.2.20-7uIn9NgjfwHH5a6HhyLHat2nHU3OP5B05QHhKJKuxEex",
         },
         .toolbox = .{
-            .url = "git+https://github.com/tiawl/toolbox?ref=1.12.5#e7382fddb79cea4f9a9842bfe35d59c3460c7cf9",
-            .hash = "toolbox-1.12.4-kRAu4NNaAAAegkCN8l5sQBlsisel3yRGMXHq-z14rRLe",
+            .url = "git+https://github.com/tiawl/toolbox?ref=1.12.5#27a3a72581b03bd6aec7b70a45f399c4f4f01982",
+            .hash = "toolbox-1.12.4-kRAu4BJbAACoBAsEnBUPQUHwx-vJdvYVHWXqOdY3oNnd",
         },
         .zigglgen = .{
             .url = "git+https://github.com/castholm/zigglgen#595c65dcc7e4e194e405a6b8c98fe122e94c0b69",
@@ -23,7 +23,7 @@
             .hash = "vulkan_zig-1.0.0-p2wg3mORFgGnecDI2SBcppC1jYAESjNezPPlXXPrZiV6",
         },
     },
-    .minimum_zig_version = "0.14.1",
+    .minimum_zig_version = "0.15.1",
     .fingerprint = 0x4e4978d2929b7bd9,
     .paths = .{
         "build.zig",

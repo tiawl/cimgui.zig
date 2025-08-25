@@ -190,11 +190,13 @@ pub fn build(builder: *std.Build) !void {
 
     if (toolbox.getUpdate()) try update(&toolbox, &path);
 
-    const lib = builder.addStaticLibrary(.{
+    const lib = builder.addLibrary(.{
         .name = "cimgui",
-        .root_source_file = builder.addWriteFiles().add("empty.c", ""),
-        .target = target,
-        .optimize = optimize,
+        .root_module = std.Builder.Module.create(builder, .{
+            .root_source_file = builder.addWriteFiles().add("empty.c", ""),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
 
     var flags = try std.BoundedArray([]const u8, flags_size).init(0);
