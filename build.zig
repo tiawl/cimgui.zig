@@ -190,14 +190,17 @@ pub fn build(builder: *std.Build) !void {
 
     if (toolbox.getUpdate()) try update(&toolbox, &path);
 
-    const lib = builder.addStaticLibrary(.{
+    const lib = builder.addLibrary(.{
         .name = "cimgui",
-        .root_source_file = builder.addWriteFiles().add("empty.c", ""),
-        .target = target,
-        .optimize = optimize,
+        .root_module = std.Build.Module.create(builder, .{
+            .root_source_file = builder.addWriteFiles().add("empty.zig", ""),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
 
-    var flags = try std.BoundedArray([]const u8, flags_size).init(0);
+    var flags_buffer: [flags_size][]const u8 = undefined;
+    var flags = std.ArrayListUnmanaged([]const u8).initBuffer(&flags_buffer);
 
     var root_dir = try builder.build_root.handle.openDir(".", .{
         .iterate = true,
@@ -226,7 +229,7 @@ pub fn build(builder: *std.Build) !void {
     var it = dcimgui_dir.iterate();
     while (try it.next()) |*entry| {
         if ((std.mem.startsWith(u8, entry.name, "imgui") or std.mem.startsWith(u8, entry.name, "dcimgui")) and toolbox_pkg.isCppSource(entry.name) and entry.kind == .file) {
-            try toolbox.addSource(lib, path.getDcimgui(), entry.name, flags.slice());
+            try toolbox.addSource(lib, path.getDcimgui(), entry.name, flags.items);
         }
     }
 

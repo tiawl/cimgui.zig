@@ -9,7 +9,7 @@ const c = @cImport({
     @cInclude("backends/dcimgui_impl_opengl3.h");
 });
 
-fn errorCallback(errn: c_int, str: [*c]const u8) callconv(.C) void {
+fn errorCallback(errn: c_int, str: [*c]const u8) callconv(std.builtin.CallingConvention.c) void {
     std.log.err("GLFW Error '{}'': {s}", .{ errn, str });
 }
 
