@@ -229,7 +229,7 @@ pub fn build(builder: *std.Build) !void {
     var it = dcimgui_dir.iterate();
     while (try it.next()) |*entry| {
         if ((std.mem.startsWith(u8, entry.name, "imgui") or std.mem.startsWith(u8, entry.name, "dcimgui")) and toolbox_pkg.isCppSource(entry.name) and entry.kind == .file) {
-            try toolbox.addSource(lib, path.getDcimgui(), entry.name, flags.slice());
+            try toolbox.addSource(lib, path.getDcimgui(), entry.name, flags.items);
         }
     }
 
