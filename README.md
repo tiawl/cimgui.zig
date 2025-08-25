@@ -64,7 +64,7 @@ The backends are separated in two categories : the platforms (handling windows, 
 
 ## Dependencies
 
-The [Zig][2] part of this package is relying on the latest [Zig][2] release (0.14.1) and will only be updated for the next one (so for the 0.15.0).
+The [Zig][2] part of this package is relying on the latest [Zig][2] release (0.15.1) and will only be updated for the next one.
 
 Here the repositories' version used by this fork:
 * [ocornut/imgui](https://github.com/tiawl/cimgui.zig/blob/trunk/.references/imgui)
