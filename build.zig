@@ -199,7 +199,8 @@ pub fn build(builder: *std.Build) !void {
         }),
     });
 
-    var flags = try std.BoundedArray([]const u8, flags_size).init(0);
+    var flags_buffer: [flags_size][]const u8 = undefined;
+    var flags = std.ArrayListUnmanaged([]const u8).initBuffer(&flags_buffer);
 
     var root_dir = try builder.build_root.handle.openDir(".", .{
         .iterate = true,
