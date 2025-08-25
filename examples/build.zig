@@ -43,7 +43,7 @@ pub fn build(builder: *std.Build) !void {
         {
             exe = builder.addExecutable(.{
                 .name = entry.name,
-                .root_module = std.Builder.Module.create(builder, .{
+                .root_module = std.Build.Module.create(builder, .{
                     .root_source_file = .{
                         .cwd_relative = try builder.build_root.join(builder.allocator, &.{
                             entry.name,
