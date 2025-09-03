@@ -9,17 +9,17 @@ pub const c = @cImport({
     @cInclude("backends/dcimgui_impl_vulkan.h");
 });
 
-var g_Allocator: *c.VkAllocationCallbacks = undefined;
+var g_Allocator: ?*c.VkAllocationCallbacks = null;
 var g_Instance: c.VkInstance = undefined;
 var g_PhysicalDevice: c.VkPhysicalDevice = undefined;
 var g_Device: c.VkDevice = undefined;
 var g_QueueFamily: ?u32 = null;
 var g_Queue: c.VkQueue = undefined;
 var g_DebugReport: c.VkDebugReportCallbackEXT = undefined;
-var g_PipelineCache: c.VkPipelineCache = undefined;
+var g_PipelineCache: c.VkPipelineCache = null;
 var g_DescriptorPool: c.VkDescriptorPool = undefined;
 
-var g_MainWindowData: c.ImGui_ImplVulkanH_Window = undefined;
+var g_MainWindowData: c.ImGui_ImplVulkanH_Window = .{};
 var g_MinImageCount: u32 = 2;
 var g_SwapChainRebuild: bool = false;
 
