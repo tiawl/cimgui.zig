@@ -15,7 +15,6 @@ var g_PhysicalDevice: c.VkPhysicalDevice = undefined;
 var g_Device: c.VkDevice = undefined;
 var g_QueueFamily: ?u32 = null;
 var g_Queue: c.VkQueue = undefined;
-var g_DebugReport: c.VkDebugReportCallbackEXT = undefined;
 var g_PipelineCache: c.VkPipelineCache = null;
 var g_DescriptorPool: c.VkDescriptorPool = undefined;
 
@@ -24,10 +23,6 @@ var g_MinImageCount: u32 = 2;
 var g_SwapChainRebuild: bool = false;
 
 const g_ApiVersion: u32 = c.VK_API_VERSION_1_2;
-
-const required_layers = [_][*:0]const u8{
-    "VK_LAYER_KHRONOS_validation",
-};
 
 fn get_vulkan_instance_func(comptime PFN: type, instance: c.VkInstance, name: [*c]const u8) PFN {
     return @ptrCast(c.glfwGetInstanceProcAddress(instance, name));
@@ -38,34 +33,14 @@ fn get_vulkan_device_func(comptime PFN: type, device: c.VkDevice, name: [*c]cons
     return @ptrCast(vkGetDeviceProcAddr(device, name));
 }
 
-fn vkEnumerateInstanceExtensionProperties(name: [*c]const u8, count: [*c]u32, properties: [*c]c.VkExtensionProperties) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkEnumerateInstanceExtensionProperties, null, "vkEnumerateInstanceExtensionProperties").?;
-    return func(name, count, properties);
-}
-
-fn vkEnumerateInstanceLayerProperties(count: [*c]u32, properties: [*c]c.VkLayerProperties) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkEnumerateInstanceLayerProperties, null, "vkEnumerateInstanceLayerProperties").?;
-    return func(count, properties);
-}
-
 fn vkCreateInstance(info: [*c]const c.VkInstanceCreateInfo, allocator: [*c]const c.VkAllocationCallbacks, instance: [*c]c.VkInstance) c.VkResult {
     const func = get_vulkan_instance_func(c.PFN_vkCreateInstance, null, "vkCreateInstance").?;
     return func(info, allocator, instance);
 }
 
-fn vkEnumerateDeviceExtensionProperties(physical_device: c.VkPhysicalDevice, name: [*c]const u8, count: [*c]u32, properties: [*c]c.VkExtensionProperties) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkEnumerateDeviceExtensionProperties, null, "vkEnumerateDeviceExtensionProperties").?;
-    return func(physical_device, name, count, properties);
-}
-
 fn vkGetPhysicalDeviceSurfaceSupportKHR(physical_device: c.VkPhysicalDevice, index: u32, surface: c.VkSurfaceKHR, supported: [*c]c.VkBool32) c.VkResult {
     const func = get_vulkan_instance_func(c.PFN_vkGetPhysicalDeviceSurfaceSupportKHR, g_Instance, "vkGetPhysicalDeviceSurfaceSupportKHR").?;
     return func(physical_device, index, surface, supported);
-}
-
-fn vkCreateDebugReportCallbackEXT(instance: c.VkInstance, debug_report_ci: [*c]const c.VkDebugReportCallbackCreateInfoEXT, allocator: [*c]const c.VkAllocationCallbacks, debug_report: [*c]c.VkDebugReportCallbackEXT) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkCreateDebugReportCallbackEXT, instance, "vkCreateDebugReportCallbackEXT").?;
-    return func(instance, debug_report_ci, allocator, debug_report);
 }
 
 fn vkGetPhysicalDeviceProperties(physical_device: c.VkPhysicalDevice, properties: [*c]c.VkPhysicalDeviceProperties) void {
@@ -163,11 +138,6 @@ fn vkDestroyDescriptorPool(device: c.VkDevice, descriptor_pool: c.VkDescriptorPo
     func(device, descriptor_pool, allocator);
 }
 
-fn vkDestroyDebugReportCallbackEXT(instance: c.VkInstance, debug_report: c.VkDebugReportCallbackEXT, allocator: [*c]const c.VkAllocationCallbacks) void {
-    const func = get_vulkan_instance_func(c.PFN_vkDestroyDebugReportCallbackEXT, instance, "vkDestroyDebugReportCallbackEXT").?;
-    func(instance, debug_report, allocator);
-}
-
 fn vkDestroyDevice(device: c.VkDevice, allocator: [*c]const c.VkAllocationCallbacks) void {
     const func = get_vulkan_device_func(c.PFN_vkDestroyDevice, device, "vkDestroyDevice").?;
     func(device, allocator);
@@ -185,24 +155,6 @@ fn check_vk_result(err: c.VkResult) callconv(std.builtin.CallingConvention.c) vo
     if (err == 0) return;
     std.debug.print("[vulkan] Error: VkResult = {d}\n", .{err});
     if (err < 0) std.process.exit(1);
-}
-
-fn debugReport(_: c.VkDebugReportFlagsEXT, objectType: c.VkDebugReportObjectTypeEXT, _: u64, _: usize, _: i32, _: ?*const u8, pMessage: ?[*:0]const u8, _: ?*anyopaque) callconv(std.builtin.CallingConvention.c) c.VkBool32 {
-    std.debug.print("[vulkan] Debug report from ObjectType: {any}\nMessage: {s}\n\n", .{ objectType, pMessage orelse "No message available" });
-    return c.VK_FALSE;
-}
-
-fn IsExtensionAvailable(properties: []const c.VkExtensionProperties, extension: []const u8) bool {
-    for (0..properties.len) |i| {
-        if (std.mem.eql(u8, &properties[i].extensionName, extension)) return true;
-    } else return false;
-}
-
-fn IsLayerAvailable(layers: []const c.VkLayerProperties, layer: [*:0]const u8) bool {
-    const span = std.mem.span(layer);
-    for (0..layers.len) |i| {
-        if (std.mem.eql(u8, layers[i].layerName[0..span.len], span)) return true;
-    } else return false;
 }
 
 fn SetupVulkan_SelectPhysicalDevice(allocator: std.mem.Allocator) !c.VkPhysicalDevice {
@@ -235,53 +187,15 @@ fn SetupVulkan(allocator: std.mem.Allocator, instance_extensions: *std.ArrayList
     app_info.engineVersion = g_ApiVersion;
     app_info.apiVersion = g_ApiVersion;
 
-    // Setup the debug report callback
-    var debug_report_ci = c.VkDebugReportCallbackCreateInfoEXT{};
-    debug_report_ci.sType = c.VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-    debug_report_ci.flags = c.VK_DEBUG_REPORT_ERROR_BIT_EXT | c.VK_DEBUG_REPORT_WARNING_BIT_EXT | c.VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
-    debug_report_ci.pfnCallback = debugReport;
-    debug_report_ci.pUserData = null;
-
     // Create Vulkan Instance
     var create_info = c.VkInstanceCreateInfo{};
     create_info.sType = c.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     create_info.pApplicationInfo = &app_info;
-    create_info.pNext = &debug_report_ci;
-
-    // Enumerate available extensions
-    var properties_count: u32 = undefined;
-    _ = vkEnumerateInstanceExtensionProperties(null, &properties_count, null);
-    const properties = try allocator.alloc(c.VkExtensionProperties, properties_count);
-    err = vkEnumerateInstanceExtensionProperties(null, &properties_count, properties.ptr);
-    check_vk_result(err);
-
-    // Enable required extensions
-    if (IsExtensionAvailable(properties[0..properties_count], c.VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME))
-        try instance_extensions.append(allocator, c.VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-
-    // Enumerate available layers
-    var layers_count: u32 = undefined;
-    _ = vkEnumerateInstanceLayerProperties(&layers_count, null);
-    const layers = try allocator.alloc(c.VkLayerProperties, layers_count);
-    err = vkEnumerateInstanceLayerProperties(&layers_count, layers.ptr);
-    check_vk_result(err);
-
-    // Enable required layers
-    if (!IsLayerAvailable(layers[0..layers_count], required_layers[0]))
-        return error.RequiredLayerNotAvailable;
-
-    // Enabling validation layers
-    create_info.enabledLayerCount = required_layers.len;
-    create_info.ppEnabledLayerNames = required_layers[0..].ptr;
-    try instance_extensions.append(allocator, "VK_EXT_debug_report");
 
     // Create Vulkan Instance
     create_info.enabledExtensionCount = @intCast(instance_extensions.items.len);
     create_info.ppEnabledExtensionNames = instance_extensions.items.ptr;
     err = vkCreateInstance(&create_info, g_Allocator, &g_Instance);
-    check_vk_result(err);
-
-    err = vkCreateDebugReportCallbackEXT(g_Instance, &debug_report_ci, g_Allocator, &g_DebugReport);
     check_vk_result(err);
 
     // Select Physical Device (GPU)
@@ -306,11 +220,6 @@ fn SetupVulkan(allocator: std.mem.Allocator, instance_extensions: *std.ArrayList
     var device_extensions: std.ArrayList([*:0]const u8) = .empty;
     try device_extensions.append(allocator, "VK_KHR_swapchain");
 
-    // Enumerate physical device extension
-    _ = vkEnumerateDeviceExtensionProperties(g_PhysicalDevice, null, &properties_count, null);
-    const properties2 = try allocator.alloc(c.VkExtensionProperties, properties_count);
-    _ = vkEnumerateDeviceExtensionProperties(g_PhysicalDevice, null, &properties_count, properties2.ptr);
-
     const queue_priority = [_]f32{1.0};
     var queue_info = [1]c.VkDeviceQueueCreateInfo{.{}};
     queue_info[0].sType = c.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -321,8 +230,6 @@ fn SetupVulkan(allocator: std.mem.Allocator, instance_extensions: *std.ArrayList
     device_create_info.sType = c.VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     device_create_info.queueCreateInfoCount = queue_info.len;
     device_create_info.pQueueCreateInfos = &queue_info;
-    device_create_info.enabledLayerCount = required_layers.len;
-    device_create_info.ppEnabledLayerNames = required_layers[0..].ptr;
     device_create_info.enabledExtensionCount = @intCast(device_extensions.items.len);
     device_create_info.ppEnabledExtensionNames = device_extensions.items.ptr;
     err = vkCreateDevice(g_PhysicalDevice, &device_create_info, g_Allocator, &g_Device);
@@ -374,9 +281,6 @@ fn SetupVulkanWindow(wd: *c.ImGui_ImplVulkanH_Window, surface: c.VkSurfaceKHR, w
 
 fn CleanupVulkan() void {
     vkDestroyDescriptorPool(g_Device, g_DescriptorPool, g_Allocator);
-
-    // Remove the debug report callback
-    vkDestroyDebugReportCallbackEXT(g_Instance, g_DebugReport, g_Allocator);
 
     vkDestroyDevice(g_Device, g_Allocator);
     vkDestroyInstance(g_Instance, g_Allocator);
