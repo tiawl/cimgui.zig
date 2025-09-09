@@ -8,198 +8,173 @@ const c = @cImport({
     @cInclude("backends/dcimgui_impl_vulkan.h");
 });
 
-var g_Allocator: *c.VkAllocationCallbacks = undefined;
+var g_Allocator: ?*c.VkAllocationCallbacks = null;
+var g_Loader: Loader = undefined;
 var g_Instance: c.VkInstance = undefined;
 var g_PhysicalDevice: c.VkPhysicalDevice = undefined;
 var g_Device: c.VkDevice = undefined;
 var g_QueueFamily: ?u32 = null;
 var g_Queue: c.VkQueue = undefined;
-var g_DebugReport: c.VkDebugReportCallbackEXT = undefined;
-var g_PipelineCache: c.VkPipelineCache = undefined;
+var g_PipelineCache: c.VkPipelineCache = null;
 var g_DescriptorPool: c.VkDescriptorPool = undefined;
 
-var g_MainWindowData: c.ImGui_ImplVulkanH_Window = undefined;
+var g_MainWindowData: c.ImGui_ImplVulkanH_Window = .{};
 var g_MinImageCount: u32 = 2;
 var g_SwapChainRebuild: bool = false;
 
 const g_ApiVersion: u32 = c.VK_API_VERSION_1_2;
 
-const required_layers = [_][*:0]const u8{
-    "VK_LAYER_KHRONOS_validation",
-};
-
-fn get_vulkan_instance_func(comptime PFN: type, instance: c.VkInstance, name: [*c]const u8) PFN {
-    const vkGetInstanceProcAddr: c.PFN_vkGetInstanceProcAddr = @ptrCast(c.SDL_Vulkan_GetVkGetInstanceProcAddr());
-    return @ptrCast(vkGetInstanceProcAddr.?(instance, name));
-}
-
-fn get_vulkan_device_func(comptime PFN: type, device: c.VkDevice, name: [*c]const u8) PFN {
-    const vkGetDeviceProcAddr = get_vulkan_instance_func(c.PFN_vkGetDeviceProcAddr, g_Instance, "vkGetDeviceProcAddr").?;
-    return @ptrCast(vkGetDeviceProcAddr(device, name));
-}
-
-fn vkEnumerateInstanceExtensionProperties(name: [*c]const u8, count: [*c]u32, properties: [*c]c.VkExtensionProperties) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkEnumerateInstanceExtensionProperties, null, "vkEnumerateInstanceExtensionProperties").?;
-    return func(name, count, properties);
-}
-
-fn vkEnumerateInstanceLayerProperties(count: [*c]u32, properties: [*c]c.VkLayerProperties) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkEnumerateInstanceLayerProperties, null, "vkEnumerateInstanceLayerProperties").?;
-    return func(count, properties);
-}
-
 fn vkCreateInstance(info: [*c]const c.VkInstanceCreateInfo, allocator: [*c]const c.VkAllocationCallbacks, instance: [*c]c.VkInstance) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkCreateInstance, null, "vkCreateInstance").?;
-    return func(info, allocator, instance);
-}
-
-fn vkEnumerateDeviceExtensionProperties(physical_device: c.VkPhysicalDevice, name: [*c]const u8, count: [*c]u32, properties: [*c]c.VkExtensionProperties) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkEnumerateDeviceExtensionProperties, null, "vkEnumerateDeviceExtensionProperties").?;
-    return func(physical_device, name, count, properties);
+    const func: c.PFN_vkCreateInstance = @ptrCast(g_Loader.loadGlobal("vkCreateInstance").?);
+    return func.?(info, allocator, instance);
 }
 
 fn vkGetPhysicalDeviceSurfaceSupportKHR(physical_device: c.VkPhysicalDevice, index: u32, surface: c.VkSurfaceKHR, supported: [*c]c.VkBool32) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkGetPhysicalDeviceSurfaceSupportKHR, g_Instance, "vkGetPhysicalDeviceSurfaceSupportKHR").?;
-    return func(physical_device, index, surface, supported);
-}
-
-fn vkCreateDebugReportCallbackEXT(instance: c.VkInstance, debug_report_ci: [*c]const c.VkDebugReportCallbackCreateInfoEXT, allocator: [*c]const c.VkAllocationCallbacks, debug_report: [*c]c.VkDebugReportCallbackEXT) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkCreateDebugReportCallbackEXT, instance, "vkCreateDebugReportCallbackEXT").?;
-    return func(instance, debug_report_ci, allocator, debug_report);
+    const func: c.PFN_vkGetPhysicalDeviceSurfaceSupportKHR = @ptrCast(g_Loader.loadInstance("vkGetPhysicalDeviceSurfaceSupportKHR").?);
+    return func.?(physical_device, index, surface, supported);
 }
 
 fn vkGetPhysicalDeviceProperties(physical_device: c.VkPhysicalDevice, properties: [*c]c.VkPhysicalDeviceProperties) void {
-    const func = get_vulkan_instance_func(c.PFN_vkGetPhysicalDeviceProperties, g_Instance, "vkGetPhysicalDeviceProperties").?;
-    func(physical_device, properties);
+    const func: c.PFN_vkGetPhysicalDeviceProperties = @ptrCast(g_Loader.loadInstance("vkGetPhysicalDeviceProperties").?);
+    func.?(physical_device, properties);
 }
 
 fn vkEnumeratePhysicalDevices(instance: c.VkInstance, count: [*c]u32, physical_devices: [*c]c.VkPhysicalDevice) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkEnumeratePhysicalDevices, instance, "vkEnumeratePhysicalDevices").?;
-    return func(instance, count, physical_devices);
+    const func: c.PFN_vkEnumeratePhysicalDevices = @ptrCast(g_Loader.loadInstance("vkEnumeratePhysicalDevices").?);
+    return func.?(instance, count, physical_devices);
 }
 
 fn vkGetPhysicalDeviceQueueFamilyProperties(physical_device: c.VkPhysicalDevice, count: [*c]u32, properties: [*c]c.VkQueueFamilyProperties) void {
-    const func = get_vulkan_instance_func(c.PFN_vkGetPhysicalDeviceQueueFamilyProperties, g_Instance, "vkGetPhysicalDeviceQueueFamilyProperties").?;
-    func(physical_device, count, properties);
+    const func: c.PFN_vkGetPhysicalDeviceQueueFamilyProperties = @ptrCast(g_Loader.loadInstance("vkGetPhysicalDeviceQueueFamilyProperties").?);
+    func.?(physical_device, count, properties);
 }
 
 fn vkCreateDevice(physical_device: c.VkPhysicalDevice, info: [*c]const c.VkDeviceCreateInfo, allocator: [*c]const c.VkAllocationCallbacks, device: [*c]c.VkDevice) c.VkResult {
-    const func = get_vulkan_instance_func(c.PFN_vkCreateDevice, g_Instance, "vkCreateDevice").?;
-    return func(physical_device, info, allocator, device);
+    const func: c.PFN_vkCreateDevice = @ptrCast(g_Loader.loadInstance("vkCreateDevice").?);
+    return func.?(physical_device, info, allocator, device);
 }
 
 fn vkDestroyInstance(instance: c.VkInstance, allocator: [*c]const c.VkAllocationCallbacks) void {
-    const func = get_vulkan_instance_func(c.PFN_vkDestroyInstance, instance, "vkDestroyInstance").?;
-    func(instance, allocator);
+    const func: c.PFN_vkDestroyInstance = @ptrCast(g_Loader.loadInstance("vkDestroyInstance").?);
+    func.?(instance, allocator);
 }
 
 fn vkAcquireNextImageKHR(device: c.VkDevice, swapchain: c.VkSwapchainKHR, timeout: u64, semaphore: c.VkSemaphore, fence: c.VkFence, index: [*c]u32) c.VkResult {
-    const func = get_vulkan_device_func(c.PFN_vkAcquireNextImageKHR, device, "vkAcquireNextImageKHR").?;
-    return func(device, swapchain, timeout, semaphore, fence, index);
+    const func: c.PFN_vkAcquireNextImageKHR = @ptrCast(g_Loader.loadDevice("vkAcquireNextImageKHR").?);
+    return func.?(device, swapchain, timeout, semaphore, fence, index);
 }
 
 fn vkWaitForFences(device: c.VkDevice, count: u32, fences: [*c]const c.VkFence, wait: c.VkBool32, timeout: u64) c.VkResult {
-    const func = get_vulkan_device_func(c.PFN_vkWaitForFences, device, "vkWaitForFences").?;
-    return func(device, count, fences, wait, timeout);
+    const func: c.PFN_vkWaitForFences = @ptrCast(g_Loader.loadDevice("vkWaitForFences").?);
+    return func.?(device, count, fences, wait, timeout);
 }
 
 fn vkResetFences(device: c.VkDevice, count: u32, fences: [*c]const c.VkFence) c.VkResult {
-    const func = get_vulkan_device_func(c.PFN_vkResetFences, device, "vkResetFences").?;
-    return func(device, count, fences);
+    const func: c.PFN_vkResetFences = @ptrCast(g_Loader.loadDevice("vkResetFences").?);
+    return func.?(device, count, fences);
 }
 
 fn vkGetDeviceQueue(device: c.VkDevice, family: u32, index: u32, queue: [*c]c.VkQueue) void {
-    const func = get_vulkan_device_func(c.PFN_vkGetDeviceQueue, device, "vkGetDeviceQueue").?;
-    func(device, family, index, queue);
+    const func: c.PFN_vkGetDeviceQueue = @ptrCast(g_Loader.loadDevice("vkGetDeviceQueue").?);
+    func.?(device, family, index, queue);
 }
 
 fn vkCreateDescriptorPool(device: c.VkDevice, info: [*c]const c.VkDescriptorPoolCreateInfo, allocator: [*c]const c.VkAllocationCallbacks, descriptor_pool: [*c]c.VkDescriptorPool) c.VkResult {
-    const func = get_vulkan_device_func(c.PFN_vkCreateDescriptorPool, device, "vkCreateDescriptorPool").?;
-    return func(device, info, allocator, descriptor_pool);
+    const func: c.PFN_vkCreateDescriptorPool = @ptrCast(g_Loader.loadDevice("vkCreateDescriptorPool").?);
+    return func.?(device, info, allocator, descriptor_pool);
 }
 
 fn vkCmdBeginRenderPass(command_buffer: c.VkCommandBuffer, info: [*c]const c.VkRenderPassBeginInfo, contents: c.VkSubpassContents) void {
-    const func = get_vulkan_device_func(c.PFN_vkCmdBeginRenderPass, g_Device, "vkCmdBeginRenderPass").?;
-    func(command_buffer, info, contents);
+    const func: c.PFN_vkCmdBeginRenderPass = @ptrCast(g_Loader.loadDevice("vkCmdBeginRenderPass").?);
+    func.?(command_buffer, info, contents);
 }
 
 fn vkCmdEndRenderPass(command_buffer: c.VkCommandBuffer) void {
-    const func = get_vulkan_device_func(c.PFN_vkCmdEndRenderPass, g_Device, "vkCmdEndRenderPass").?;
-    func(command_buffer);
+    const func: c.PFN_vkCmdEndRenderPass = @ptrCast(g_Loader.loadDevice("vkCmdEndRenderPass").?);
+    func.?(command_buffer);
 }
 
 fn vkEndCommandBuffer(command_buffer: c.VkCommandBuffer) c.VkResult {
-    const func = get_vulkan_device_func(c.PFN_vkEndCommandBuffer, g_Device, "vkEndCommandBuffer").?;
-    return func(command_buffer);
+    const func: c.PFN_vkEndCommandBuffer = @ptrCast(g_Loader.loadDevice("vkEndCommandBuffer").?);
+    return func.?(command_buffer);
 }
 
 fn vkQueueSubmit(queue: c.VkQueue, count: u32, info: [*c]const c.VkSubmitInfo, fence: c.VkFence) c.VkResult {
-    const func = get_vulkan_device_func(c.PFN_vkQueueSubmit, g_Device, "vkQueueSubmit").?;
-    return func(queue, count, info, fence);
+    const func: c.PFN_vkQueueSubmit = @ptrCast(g_Loader.loadDevice("vkQueueSubmit").?);
+    return func.?(queue, count, info, fence);
 }
 
 fn vkResetCommandPool(device: c.VkDevice, command_pool: c.VkCommandPool, flags: c.VkCommandPoolResetFlags) c.VkResult {
-    const func = get_vulkan_device_func(c.PFN_vkResetCommandPool, device, "vkResetCommandPool").?;
-    return func(device, command_pool, flags);
+    const func: c.PFN_vkResetCommandPool = @ptrCast(g_Loader.loadDevice("vkResetCommandPool").?);
+    return func.?(device, command_pool, flags);
 }
 
 fn vkBeginCommandBuffer(command_buffer: c.VkCommandBuffer, info: [*c]const c.VkCommandBufferBeginInfo) c.VkResult {
-    const func = get_vulkan_device_func(c.PFN_vkBeginCommandBuffer, g_Device, "vkBeginCommandBuffer").?;
-    return func(command_buffer, info);
+    const func: c.PFN_vkBeginCommandBuffer = @ptrCast(g_Loader.loadDevice("vkBeginCommandBuffer").?);
+    return func.?(command_buffer, info);
 }
 
 fn vkQueuePresentKHR(queue: c.VkQueue, info: [*c]const c.VkPresentInfoKHR) c.VkResult {
-    const func = get_vulkan_device_func(c.PFN_vkQueuePresentKHR, g_Device, "vkQueuePresentKHR").?;
-    return func(queue, info);
+    const func: c.PFN_vkQueuePresentKHR = @ptrCast(g_Loader.loadDevice("vkQueuePresentKHR").?);
+    return func.?(queue, info);
 }
 
 fn vkDeviceWaitIdle(device: c.VkDevice) c.VkResult {
-    const func = get_vulkan_device_func(c.PFN_vkDeviceWaitIdle, device, "vkDeviceWaitIdle").?;
-    return func(device);
+    const func: c.PFN_vkDeviceWaitIdle = @ptrCast(g_Loader.loadDevice("vkDeviceWaitIdle").?);
+    return func.?(device);
 }
 
 fn vkDestroyDescriptorPool(device: c.VkDevice, descriptor_pool: c.VkDescriptorPool, allocator: [*c]const c.VkAllocationCallbacks) void {
-    const func = get_vulkan_device_func(c.PFN_vkDestroyDescriptorPool, device, "vkDestroyDescriptorPool").?;
-    func(device, descriptor_pool, allocator);
-}
-
-fn vkDestroyDebugReportCallbackEXT(instance: c.VkInstance, debug_report: c.VkDebugReportCallbackEXT, allocator: [*c]const c.VkAllocationCallbacks) void {
-    const func = get_vulkan_instance_func(c.PFN_vkDestroyDebugReportCallbackEXT, instance, "vkDestroyDebugReportCallbackEXT").?;
-    func(instance, debug_report, allocator);
+    const func: c.PFN_vkDestroyDescriptorPool = @ptrCast(g_Loader.loadDevice("vkDestroyDescriptorPool").?);
+    func.?(device, descriptor_pool, allocator);
 }
 
 fn vkDestroyDevice(device: c.VkDevice, allocator: [*c]const c.VkAllocationCallbacks) void {
-    const func = get_vulkan_device_func(c.PFN_vkDestroyDevice, device, "vkDestroyDevice").?;
-    func(device, allocator);
+    const func: c.PFN_vkDestroyDevice = @ptrCast(g_Loader.loadDevice("vkDestroyDevice").?);
+    func.?(device, allocator);
 }
 
-fn loader(name: [*c]const u8, instance: ?*anyopaque) callconv(std.builtin.CallingConvention.c) ?*const fn () callconv(std.builtin.CallingConvention.c) void {
-    const vkGetInstanceProcAddr: c.PFN_vkGetInstanceProcAddr = @ptrCast(c.SDL_Vulkan_GetVkGetInstanceProcAddr());
-    return vkGetInstanceProcAddr.?(@ptrCast(instance), name);
-}
+const Loader = struct {
+    vkGetInstanceProcAddr: c.PFN_vkGetInstanceProcAddr,
+    vkGetDeviceProcAddr: c.PFN_vkGetDeviceProcAddr,
+
+    pub fn init() @This() {
+        return .{
+            .vkGetInstanceProcAddr = @ptrCast(c.SDL_Vulkan_GetVkGetInstanceProcAddr()),
+            .vkGetDeviceProcAddr = null,
+        };
+    }
+
+    fn loadGlobal(self: *const @This(), name: [*c]const u8) c.PFN_vkVoidFunction {
+        return self.vkGetInstanceProcAddr.?(null, name);
+    }
+
+    fn loadInstance(self: *const @This(), name: [*c]const u8) c.PFN_vkVoidFunction {
+        return @ptrCast(self.vkGetInstanceProcAddr.?(g_Instance, name));
+    }
+
+    fn loadDevice(self: *@This(), name: [*c]const u8) c.PFN_vkVoidFunction {
+        if (self.vkGetDeviceProcAddr == null) {
+            self.vkGetDeviceProcAddr = @ptrCast(self.loadInstance("vkGetDeviceProcAddr"));
+        }
+        return @ptrCast(self.vkGetDeviceProcAddr.?(g_Device, name));
+    }
+
+    // Unified callback for ImGui (matches PFN_vkVoidFunction (*)(const char*, void*))
+    pub fn load(function_name: [*c]const u8, user_data: ?*anyopaque) callconv(std.builtin.CallingConvention.c) c.PFN_vkVoidFunction {
+        var self: *@This() = @ptrCast(@alignCast(user_data));
+        // Heuristic: Try device first (most functions), then instance, then global
+        if (self.loadDevice(function_name)) |func| return func;
+        if (self.loadInstance(function_name)) |func| return func;
+        if (self.loadGlobal(function_name)) |func| return func;
+        return null;
+    }
+};
 
 fn check_vk_result(err: c.VkResult) callconv(std.builtin.CallingConvention.c) void {
     if (err == 0) return;
     std.debug.print("[vulkan] Error: VkResult = {d}\n", .{err});
     if (err < 0) std.process.exit(1);
-}
-
-fn debugReport(_: c.VkDebugReportFlagsEXT, objectType: c.VkDebugReportObjectTypeEXT, _: u64, _: usize, _: i32, _: ?*const u8, pMessage: ?[*:0]const u8, _: ?*anyopaque) callconv(std.builtin.CallingConvention.c) c.VkBool32 {
-    std.debug.print("[vulkan] Debug report from ObjectType: {any}\nMessage: {s}\n\n", .{ objectType, pMessage orelse "No message available" });
-    return c.VK_FALSE;
-}
-
-fn IsExtensionAvailable(properties: []const c.VkExtensionProperties, extension: []const u8) bool {
-    for (0..properties.len) |i| {
-        if (std.mem.eql(u8, &properties[i].extensionName, extension)) return true;
-    } else return false;
-}
-
-fn IsLayerAvailable(layers: []const c.VkLayerProperties, layer: [*:0]const u8) bool {
-    const span = std.mem.span(layer);
-    for (0..layers.len) |i| {
-        if (std.mem.eql(u8, layers[i].layerName[0..span.len], span)) return true;
-    } else return false;
 }
 
 fn SetupVulkan_SelectPhysicalDevice(allocator: std.mem.Allocator) !c.VkPhysicalDevice {
@@ -232,45 +207,10 @@ fn SetupVulkan(allocator: std.mem.Allocator, instance_extensions: *std.ArrayList
     app_info.engineVersion = g_ApiVersion;
     app_info.apiVersion = g_ApiVersion;
 
-    // Setup the debug report callback
-    var debug_report_ci = c.VkDebugReportCallbackCreateInfoEXT{};
-    debug_report_ci.sType = c.VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-    debug_report_ci.flags = c.VK_DEBUG_REPORT_ERROR_BIT_EXT | c.VK_DEBUG_REPORT_WARNING_BIT_EXT | c.VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
-    debug_report_ci.pfnCallback = debugReport;
-    debug_report_ci.pUserData = null;
-
     // Create Vulkan Instance
     var create_info = c.VkInstanceCreateInfo{};
     create_info.sType = c.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     create_info.pApplicationInfo = &app_info;
-    create_info.pNext = &debug_report_ci;
-
-    // Enumerate available extensions
-    var properties_count: u32 = undefined;
-    _ = vkEnumerateInstanceExtensionProperties(null, &properties_count, null);
-    const properties = try allocator.alloc(c.VkExtensionProperties, properties_count);
-    err = vkEnumerateInstanceExtensionProperties(null, &properties_count, properties.ptr);
-    check_vk_result(err);
-
-    // Enable required extensions
-    if (IsExtensionAvailable(properties[0..properties_count], c.VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME))
-        try instance_extensions.append(allocator, c.VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-
-    // Enumerate available layers
-    var layers_count: u32 = undefined;
-    _ = vkEnumerateInstanceLayerProperties(&layers_count, null);
-    const layers = try allocator.alloc(c.VkLayerProperties, layers_count);
-    err = vkEnumerateInstanceLayerProperties(&layers_count, layers.ptr);
-    check_vk_result(err);
-
-    // Enable required layers
-    if (!IsLayerAvailable(layers[0..layers_count], required_layers[0]))
-        return error.RequiredLayerNotAvailable;
-
-    // Enabling validation layers
-    create_info.enabledLayerCount = required_layers.len;
-    create_info.ppEnabledLayerNames = required_layers[0..].ptr;
-    try instance_extensions.append(allocator, "VK_EXT_debug_report");
 
     // Create Vulkan Instance
     create_info.enabledExtensionCount = @intCast(instance_extensions.items.len);
@@ -278,15 +218,10 @@ fn SetupVulkan(allocator: std.mem.Allocator, instance_extensions: *std.ArrayList
     err = vkCreateInstance(&create_info, g_Allocator, &g_Instance);
     check_vk_result(err);
 
-    err = vkCreateDebugReportCallbackEXT(g_Instance, &debug_report_ci, g_Allocator, &g_DebugReport);
-    check_vk_result(err);
-
     // Select Physical Device (GPU)
-    //g_PhysicalDevice = c.cImGui_ImplVulkanH_SelectPhysicalDevice(g_Instance);
     g_PhysicalDevice = try SetupVulkan_SelectPhysicalDevice(allocator);
 
     // Select graphics queue family
-    //g_QueueFamily = c.cImGui_ImplVulkanH_SelectQueueFamilyIndex(g_PhysicalDevice);
     var count: u32 = undefined;
     vkGetPhysicalDeviceQueueFamilyProperties(g_PhysicalDevice, &count, null);
     const queues = try allocator.alloc(c.VkQueueFamilyProperties, count);
@@ -305,11 +240,6 @@ fn SetupVulkan(allocator: std.mem.Allocator, instance_extensions: *std.ArrayList
     var device_extensions: std.ArrayList([*:0]const u8) = .empty;
     try device_extensions.append(allocator, "VK_KHR_swapchain");
 
-    // Enumerate physical device extension
-    _ = vkEnumerateDeviceExtensionProperties(g_PhysicalDevice, null, &properties_count, null);
-    const properties2 = try allocator.alloc(c.VkExtensionProperties, properties_count);
-    _ = vkEnumerateDeviceExtensionProperties(g_PhysicalDevice, null, &properties_count, properties2.ptr);
-
     const queue_priority = [_]f32{1.0};
     var queue_info = [1]c.VkDeviceQueueCreateInfo{.{}};
     queue_info[0].sType = c.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -320,8 +250,6 @@ fn SetupVulkan(allocator: std.mem.Allocator, instance_extensions: *std.ArrayList
     device_create_info.sType = c.VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     device_create_info.queueCreateInfoCount = queue_info.len;
     device_create_info.pQueueCreateInfos = &queue_info;
-    device_create_info.enabledLayerCount = required_layers.len;
-    device_create_info.ppEnabledLayerNames = required_layers[0..].ptr;
     device_create_info.enabledExtensionCount = @intCast(device_extensions.items.len);
     device_create_info.ppEnabledExtensionNames = device_extensions.items.ptr;
     err = vkCreateDevice(g_PhysicalDevice, &device_create_info, g_Allocator, &g_Device);
@@ -373,9 +301,6 @@ fn SetupVulkanWindow(wd: *c.ImGui_ImplVulkanH_Window, surface: c.VkSurfaceKHR, w
 
 fn CleanupVulkan() void {
     vkDestroyDescriptorPool(g_Device, g_DescriptorPool, g_Allocator);
-
-    // Remove the debug report callback
-    vkDestroyDebugReportCallbackEXT(g_Instance, g_DebugReport, g_Allocator);
 
     vkDestroyDevice(g_Device, g_Allocator);
     vkDestroyInstance(g_Instance, g_Allocator);
@@ -485,15 +410,17 @@ pub fn main() !void {
     var extensions_count: u32 = 0;
     const sdl_extensions = c.SDL_Vulkan_GetInstanceExtensions(&extensions_count);
     for (0..extensions_count) |i| try extensions.append(allocator, std.mem.span(sdl_extensions[i]));
+    g_Loader = Loader.init();
     try SetupVulkan(allocator, &extensions);
     defer CleanupVulkan();
+
+    if (!c.cImGui_ImplVulkan_LoadFunctionsEx(g_ApiVersion, Loader.load, &g_Loader)) return error.ImGuiVulkanLoadFailed;
 
     // Create Window Surface
     var surface: c.VkSurfaceKHR = undefined;
     if (!c.SDL_Vulkan_CreateSurface(window, g_Instance, g_Allocator, &surface))
         return error.SDL_Vulkan_CreateSurfaceFailure;
-    defer c.SDL_Vulkan_DestroySurface(g_Instance, surface, g_Allocator);
-    if (!c.cImGui_ImplVulkan_LoadFunctions(g_ApiVersion, loader)) return error.ImGuiVulkanLoadFailure;
+    errdefer c.SDL_Vulkan_DestroySurface(g_Instance, surface, g_Allocator);
 
     // Create Framebuffers
     var w: i32 = undefined;
@@ -555,7 +482,7 @@ pub fn main() !void {
         // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
         var event: c.SDL_Event = undefined;
         while (c.SDL_PollEvent(&event)) {
-            if (!c.cImGui_ImplSDL3_ProcessEvent(&event)) return error.cImGui_ImplSDL3_ProcessEventFailure;
+            _ = c.cImGui_ImplSDL3_ProcessEvent(&event);
             if (event.type == c.SDL_EVENT_QUIT)
                 done = true;
             if (event.type == c.SDL_EVENT_WINDOW_CLOSE_REQUESTED and event.window.windowID == c.SDL_GetWindowID(window))
