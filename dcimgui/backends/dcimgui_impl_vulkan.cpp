@@ -121,6 +121,11 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_SetMinImageCount(uint32_t min_ima
     ::ImGui_ImplVulkan_SetMinImageCount(min_image_count);
 }
 
+CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_CreateMainPipeline(cimgui::ImGui_ImplVulkan_MainPipelineCreateInfo info)
+{
+    ::ImGui_ImplVulkan_CreateMainPipeline(reinterpret_cast<const ::ImGui_ImplVulkan_MainPipelineCreateInfo&>(info));
+}
+
 CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_UpdateTexture(cimgui::ImTextureData* tex)
 {
     ::ImGui_ImplVulkan_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
