@@ -4033,9 +4033,9 @@ CIMGUI_API cimgui::ImVec2 cimgui::ImFont_CalcTextSizeA(cimgui::ImFont* self, flo
     return ConvertFromCPP_ImVec2(reinterpret_cast<::ImFont*>(self)->CalcTextSizeA(size, max_width, wrap_width, text_begin));
 }
 
-CIMGUI_API cimgui::ImVec2 cimgui::ImFont_CalcTextSizeAEx(cimgui::ImFont* self, float size, float max_width, float wrap_width, const char* text_begin, const char* text_end, const char** remaining)
+CIMGUI_API cimgui::ImVec2 cimgui::ImFont_CalcTextSizeAEx(cimgui::ImFont* self, float size, float max_width, float wrap_width, const char* text_begin, const char* text_end, const char** out_remaining)
 {
-    return ConvertFromCPP_ImVec2(reinterpret_cast<::ImFont*>(self)->CalcTextSizeA(size, max_width, wrap_width, text_begin, text_end, remaining));
+    return ConvertFromCPP_ImVec2(reinterpret_cast<::ImFont*>(self)->CalcTextSizeA(size, max_width, wrap_width, text_begin, text_end, out_remaining));
 }
 
 CIMGUI_API const char*  cimgui::ImFont_CalcWordWrapPosition(cimgui::ImFont* self, float size, const char* text, const char* text_end, float wrap_width)
@@ -4053,9 +4053,9 @@ CIMGUI_API void         cimgui::ImFont_RenderCharEx(cimgui::ImFont* self, cimgui
     reinterpret_cast<::ImFont*>(self)->RenderChar(reinterpret_cast<::ImDrawList*>(draw_list), size, ConvertToCPP_ImVec2(pos), col, c, reinterpret_cast<const ::ImVec4*>(cpu_fine_clip));
 }
 
-CIMGUI_API void         cimgui::ImFont_RenderText(cimgui::ImFont* self, cimgui::ImDrawList* draw_list, float size, cimgui::ImVec2 pos, ImU32 col, cimgui::ImVec4 clip_rect, const char* text_begin, const char* text_end, float wrap_width, bool cpu_fine_clip)
+CIMGUI_API void         cimgui::ImFont_RenderText(cimgui::ImFont* self, cimgui::ImDrawList* draw_list, float size, cimgui::ImVec2 pos, ImU32 col, cimgui::ImVec4 clip_rect, const char* text_begin, const char* text_end, float wrap_width, ImDrawTextFlags flags)
 {
-    reinterpret_cast<::ImFont*>(self)->RenderText(reinterpret_cast<::ImDrawList*>(draw_list), size, ConvertToCPP_ImVec2(pos), col, ConvertToCPP_ImVec4(clip_rect), text_begin, text_end, wrap_width, cpu_fine_clip);
+    reinterpret_cast<::ImFont*>(self)->RenderText(reinterpret_cast<::ImDrawList*>(draw_list), size, ConvertToCPP_ImVec2(pos), col, ConvertToCPP_ImVec4(clip_rect), text_begin, text_end, wrap_width, flags);
 }
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
