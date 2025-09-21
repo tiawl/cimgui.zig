@@ -68,6 +68,12 @@ pub fn backendOptions(toolbox: *Toolbox, builder: *std.Build, lib: *std.Build.St
                 });
 
                 const glfw_lib = glfw_dep.artifact("glfw");
+                for (glfw_lib.root_module.include_dirs.items) |*included| {
+                    switch (included.*) {
+                        .path => lib.addIncludePath(included.path),
+                        else => {},
+                    }
+                }
 
                 lib.linkLibrary(glfw_lib);
                 lib.installLibraryHeaders(glfw_lib);
