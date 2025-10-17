@@ -2,7 +2,7 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-// dear imgui, v1.92.3
+// dear imgui, v1.92.4
 // (headers)
 
 // Help:
@@ -32,8 +32,8 @@
 
 // Library Version
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if IMGUI_VERSION_NUM >= 12345')
-#define IMGUI_VERSION       "1.92.3"
-#define IMGUI_VERSION_NUM   19230
+#define IMGUI_VERSION       "1.92.4"
+#define IMGUI_VERSION_NUM   19240
 #define IMGUI_HAS_TABLE              // Added BeginTable() - from IMGUI_VERSION_NUM >= 18000
 #define IMGUI_HAS_TEXTURES           // Added ImGuiBackendFlags_RendererHasTextures - from IMGUI_VERSION_NUM >= 19198
 
@@ -1396,7 +1396,7 @@ typedef enum
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
     ImGuiTreeNodeFlags_NavLeftJumpsBackHere = ImGuiTreeNodeFlags_NavLeftJumpsToParent,  // Renamed in 1.92.0
     ImGuiTreeNodeFlags_SpanTextWidth        = ImGuiTreeNodeFlags_SpanLabelWidth,        // Renamed in 1.90.7
-    ImGuiTreeNodeFlags_AllowItemOverlap     = ImGuiTreeNodeFlags_AllowOverlap,          // Renamed in 1.89.7
+    //ImGuiTreeNodeFlags_AllowItemOverlap   = ImGuiTreeNodeFlags_AllowOverlap,          // Renamed in 1.89.7
 #endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 } ImGuiTreeNodeFlags_;
 
@@ -1439,7 +1439,7 @@ typedef enum
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
     ImGuiSelectableFlags_DontClosePopups   = ImGuiSelectableFlags_NoAutoClosePopups,  // Renamed in 1.91.0
-    ImGuiSelectableFlags_AllowItemOverlap  = ImGuiSelectableFlags_AllowOverlap,       // Renamed in 1.89.7
+    //ImGuiSelectableFlags_AllowItemOverlap = ImGuiSelectableFlags_AllowOverlap,        // Renamed in 1.89.7
 #endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 } ImGuiSelectableFlags_;
 
@@ -1937,6 +1937,7 @@ typedef enum
     ImGuiCol_TextSelectedBg,                                          // Selected text inside an InputText
     ImGuiCol_TreeLines,                                               // Tree node hierarchy outlines when using ImGuiTreeNodeFlags_DrawLines
     ImGuiCol_DragDropTarget,                                          // Rectangle highlighting a drop target
+    ImGuiCol_UnsavedMarker,                                           // Unsaved Document marker (in window title and tabs)
     ImGuiCol_NavCursor,                                               // Color of keyboard/gamepad navigation cursor/rectangle, when visible
     ImGuiCol_NavWindowingHighlight,                                   // Highlight window when using CTRL+TAB
     ImGuiCol_NavWindowingDimBg,                                       // Darken/colorize entire screen behind the CTRL+TAB window list, when active
@@ -2929,9 +2930,6 @@ CIMGUI_API void ImGuiListClipper_IncludeItemsByIndex(ImGuiListClipper* self, int
 // - The only reason to call this is: you can use ImGuiListClipper::Begin(INT_MAX) if you don't know item count ahead of time.
 // - In this case, after all steps are done, you'll want to call SeekCursorForItem(item_count).
 CIMGUI_API void ImGuiListClipper_SeekCursorForItem(ImGuiListClipper* self, int item_index);
-#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-CIMGUI_API void ImGuiListClipper_IncludeRangeByIndices(ImGuiListClipper* self, int item_begin, int item_end);  // [renamed in 1.89.9]
-#endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
 // Helpers: ImVec2/ImVec4 operators
 // - It is important that we are keeping those disabled by default so they don't leak in user space.
@@ -3497,8 +3495,10 @@ CIMGUI_API int          ImTextureData_GetPitch(const ImTextureData* self);
 CIMGUI_API ImTextureRef ImTextureData_GetTexRef(ImTextureData* self);
 CIMGUI_API ImTextureID  ImTextureData_GetTexID(const ImTextureData* self);
 // Called by Renderer backend
-CIMGUI_API void         ImTextureData_SetTexID(ImTextureData* self, ImTextureID tex_id);       // Call after creating or destroying the texture. Never modify TexID directly!
-CIMGUI_API void         ImTextureData_SetStatus(ImTextureData* self, ImTextureStatus status);  // Call after honoring a request. Never modify Status directly!
+// - Call SetTexID() and SetStatus() after honoring texture requests. Never modify TexID and Status directly!
+// - A backend may decide to destroy a texture that we did not request to destroy, which is fine (e.g. freeing resources), but we immediately set the texture back in _WantCreate mode.
+CIMGUI_API void         ImTextureData_SetTexID(ImTextureData* self, ImTextureID tex_id);
+CIMGUI_API void         ImTextureData_SetStatus(ImTextureData* self, ImTextureStatus status);
 
 //-----------------------------------------------------------------------------
 // [SECTION] Font API (ImFontConfig, ImFontGlyph, ImFontAtlasFlags, ImFontAtlas, ImFontGlyphRangesBuilder, ImFont)
@@ -3937,7 +3937,13 @@ struct ImGuiPlatformIO_t
     // Textures list (the list is updated by calling ImGui::EndFrame or ImGui::Render)
     // The ImGui_ImplXXXX_RenderDrawData() function of each backend generally access this via ImDrawData::Textures which points to this. The array is available here mostly because backends will want to destroy textures on shutdown.
     ImVector_ImTextureDataPtr Textures;                     // List of textures used by Dear ImGui (most often 1) + contents of external texture list is automatically appended into this.
+
+    //------------------------------------------------------------------
+    // Functions
+    //------------------------------------------------------------------
 };
+CIMGUI_API void ImGuiPlatformIO_ClearPlatformHandlers(ImGuiPlatformIO* self);  // Clear all Platform_XXX fields. Typically called on Platform Backend shutdown.
+CIMGUI_API void ImGuiPlatformIO_ClearRendererHandlers(ImGuiPlatformIO* self);  // Clear all Renderer_XXX fields. Typically called on Renderer Backend shutdown.
 
 // (Optional) Support for IME (Input Method Editor) via the platform_io.Platform_SetImeDataFn() function. Handler is called during EndFrame().
 struct ImGuiPlatformImeData_t
