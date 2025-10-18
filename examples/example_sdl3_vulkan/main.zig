@@ -21,6 +21,7 @@ var g_DescriptorPool: c.VkDescriptorPool = undefined;
 var g_MainWindowData: c.ImGui_ImplVulkanH_Window = .{};
 var g_MinImageCount: u32 = 2;
 var g_SwapChainRebuild: bool = false;
+var g_SwapChainImageUsage: u32 = c.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 const g_ApiVersion: u32 = c.VK_API_VERSION_1_2;
 
@@ -296,7 +297,7 @@ fn SetupVulkanWindow(wd: *c.ImGui_ImplVulkanH_Window, surface: c.VkSurfaceKHR, w
     wd.PresentMode = c.cImGui_ImplVulkanH_SelectPresentMode(g_PhysicalDevice, wd.Surface, &present_modes[0], present_modes.len);
 
     // Create SwapChain, RenderPass, Framebuffer, etc.
-    c.cImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice, g_Device, wd, g_QueueFamily.?, g_Allocator, width, height, g_MinImageCount);
+    c.cImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice, g_Device, wd, g_QueueFamily.?, g_Allocator, width, height, g_MinImageCount, g_SwapChainImageUsage);
 }
 
 fn CleanupVulkan() void {
@@ -453,11 +454,11 @@ pub fn main() !void {
     init_info.Queue = g_Queue;
     init_info.PipelineCache = g_PipelineCache;
     init_info.DescriptorPool = g_DescriptorPool;
-    init_info.RenderPass = wd.RenderPass;
-    init_info.Subpass = 0;
     init_info.MinImageCount = g_MinImageCount;
     init_info.ImageCount = wd.ImageCount;
-    init_info.MSAASamples = c.VK_SAMPLE_COUNT_1_BIT;
+    init_info.PipelineInfoMain.RenderPass = wd.RenderPass;
+    init_info.PipelineInfoMain.Subpass = 0;
+    init_info.PipelineInfoMain.MSAASamples = c.VK_SAMPLE_COUNT_1_BIT;
     init_info.Allocator = g_Allocator;
     init_info.CheckVkResultFn = check_vk_result;
     if (!c.cImGui_ImplVulkan_Init(&init_info)) return error.ImGuiVulkanInitFailure;
@@ -499,7 +500,7 @@ pub fn main() !void {
         if (!c.SDL_GetWindowSize(window, &fb_width, &fb_height)) return error.SDL_GetWindowSizeFailure;
         if (fb_width > 0 and fb_height > 0 and (g_SwapChainRebuild or g_MainWindowData.Width != fb_width or g_MainWindowData.Height != fb_height)) {
             c.cImGui_ImplVulkan_SetMinImageCount(g_MinImageCount);
-            c.cImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice, g_Device, &g_MainWindowData, g_QueueFamily.?, g_Allocator, fb_width, fb_height, g_MinImageCount);
+            c.cImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice, g_Device, &g_MainWindowData, g_QueueFamily.?, g_Allocator, fb_width, fb_height, g_MinImageCount, g_SwapChainImageUsage);
             g_MainWindowData.FrameIndex = 0;
             g_SwapChainRebuild = false;
         }

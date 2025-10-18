@@ -50,7 +50,7 @@ extern "C"
 typedef struct ImGui_ImplWGPU_InitInfo_ImDrawData_t ImGui_ImplWGPU_InitInfo_ImDrawData;
 struct ImGui_ImplWGPU_InitInfo_t
 {
-    WGPUDevice           Device;
+    WGPUDevice           Device /* = nullptr */;
     int                  NumFramesInFlight /* = 3 */;
     WGPUTextureFormat    RenderTargetFormat /* = WGPUTextureFormat_Undefined */;
     WGPUTextureFormat    DepthStencilFormat /* = WGPUTextureFormat_Undefined */;

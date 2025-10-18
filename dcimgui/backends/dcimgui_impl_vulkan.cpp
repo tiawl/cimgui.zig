@@ -121,9 +121,9 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_SetMinImageCount(uint32_t min_ima
     ::ImGui_ImplVulkan_SetMinImageCount(min_image_count);
 }
 
-CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_CreateMainPipeline(cimgui::ImGui_ImplVulkan_MainPipelineCreateInfo info)
+CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_CreateMainPipeline(const cimgui::ImGui_ImplVulkan_PipelineInfo* info)
 {
-    ::ImGui_ImplVulkan_CreateMainPipeline(reinterpret_cast<const ::ImGui_ImplVulkan_MainPipelineCreateInfo&>(info));
+    ::ImGui_ImplVulkan_CreateMainPipeline(reinterpret_cast<const ::ImGui_ImplVulkan_PipelineInfo*>(info));
 }
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_UpdateTexture(cimgui::ImTextureData* tex)
@@ -151,39 +151,44 @@ CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_LoadFunctionsEx(uint32_t api_vers
     return ::ImGui_ImplVulkan_LoadFunctions(api_version, loader_func, user_data);
 }
 
-CIMGUI_IMPL_API void          cimgui::cImGui_ImplVulkanH_CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, cimgui::ImGui_ImplVulkanH_Window* wd, uint32_t queue_family, const VkAllocationCallbacks* allocator, int w, int h, uint32_t min_image_count)
+CIMGUI_IMPL_API void                 cimgui::cImGui_ImplVulkanH_CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, cimgui::ImGui_ImplVulkanH_Window* wd, uint32_t queue_family, const VkAllocationCallbacks* allocator, int w, int h, uint32_t min_image_count, VkImageUsageFlags image_usage)
 {
-    ::ImGui_ImplVulkanH_CreateOrResizeWindow(instance, physical_device, device, reinterpret_cast<::ImGui_ImplVulkanH_Window*>(wd), queue_family, allocator, w, h, min_image_count);
+    ::ImGui_ImplVulkanH_CreateOrResizeWindow(instance, physical_device, device, reinterpret_cast<::ImGui_ImplVulkanH_Window*>(wd), queue_family, allocator, w, h, min_image_count, image_usage);
 }
 
-CIMGUI_IMPL_API void          cimgui::cImGui_ImplVulkanH_DestroyWindow(VkInstance instance, VkDevice device, cimgui::ImGui_ImplVulkanH_Window* wd, const VkAllocationCallbacks* allocator)
+CIMGUI_IMPL_API void                 cimgui::cImGui_ImplVulkanH_DestroyWindow(VkInstance instance, VkDevice device, cimgui::ImGui_ImplVulkanH_Window* wd, const VkAllocationCallbacks* allocator)
 {
     ::ImGui_ImplVulkanH_DestroyWindow(instance, device, reinterpret_cast<::ImGui_ImplVulkanH_Window*>(wd), allocator);
 }
 
-CIMGUI_IMPL_API VkSurfaceFormatKHR cimgui::cImGui_ImplVulkanH_SelectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkFormat* request_formats, int request_formats_count, VkColorSpaceKHR request_color_space)
+CIMGUI_IMPL_API VkSurfaceFormatKHR   cimgui::cImGui_ImplVulkanH_SelectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkFormat* request_formats, int request_formats_count, VkColorSpaceKHR request_color_space)
 {
     return ::ImGui_ImplVulkanH_SelectSurfaceFormat(physical_device, surface, request_formats, request_formats_count, request_color_space);
 }
 
-CIMGUI_IMPL_API VkPresentModeKHR cimgui::cImGui_ImplVulkanH_SelectPresentMode(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkPresentModeKHR* request_modes, int request_modes_count)
+CIMGUI_IMPL_API VkPresentModeKHR     cimgui::cImGui_ImplVulkanH_SelectPresentMode(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkPresentModeKHR* request_modes, int request_modes_count)
 {
     return ::ImGui_ImplVulkanH_SelectPresentMode(physical_device, surface, request_modes, request_modes_count);
 }
 
-CIMGUI_IMPL_API VkPhysicalDevice cimgui::cImGui_ImplVulkanH_SelectPhysicalDevice(VkInstance instance)
+CIMGUI_IMPL_API VkPhysicalDevice     cimgui::cImGui_ImplVulkanH_SelectPhysicalDevice(VkInstance instance)
 {
     return ::ImGui_ImplVulkanH_SelectPhysicalDevice(instance);
 }
 
-CIMGUI_IMPL_API uint32_t      cimgui::cImGui_ImplVulkanH_SelectQueueFamilyIndex(VkPhysicalDevice physical_device)
+CIMGUI_IMPL_API uint32_t             cimgui::cImGui_ImplVulkanH_SelectQueueFamilyIndex(VkPhysicalDevice physical_device)
 {
     return ::ImGui_ImplVulkanH_SelectQueueFamilyIndex(physical_device);
 }
 
-CIMGUI_IMPL_API int           cimgui::cImGui_ImplVulkanH_GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode)
+CIMGUI_IMPL_API int                  cimgui::cImGui_ImplVulkanH_GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode)
 {
     return ::ImGui_ImplVulkanH_GetMinImageCountFromPresentMode(present_mode);
+}
+
+CIMGUI_IMPL_API cimgui::ImGui_ImplVulkanH_Window* cimgui::cImGui_ImplVulkanH_GetWindowDataFromViewport(cimgui::ImGuiViewport* viewport)
+{
+    return reinterpret_cast<::cimgui::ImGui_ImplVulkanH_Window*>(::ImGui_ImplVulkanH_GetWindowDataFromViewport(reinterpret_cast<::ImGuiViewport*>(viewport)));
 }
 
 #endif // #ifndef IMGUI_DISABLE

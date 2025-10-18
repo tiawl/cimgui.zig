@@ -3158,15 +3158,6 @@ CIMGUI_API void cimgui::ImGuiListClipper_SeekCursorForItem(cimgui::ImGuiListClip
     reinterpret_cast<::ImGuiListClipper*>(self)->SeekCursorForItem(item_index);
 }
 
-#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-
-CIMGUI_API void cimgui::ImGuiListClipper_IncludeRangeByIndices(cimgui::ImGuiListClipper* self, int item_begin, int item_end)
-{
-    reinterpret_cast<::ImGuiListClipper*>(self)->IncludeRangeByIndices(item_begin, item_end);
-}
-
-#endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-
 CIMGUI_API void    cimgui::ImColor_SetHSV(cimgui::ImColor* self, float h, float s, float v, float a)
 {
     reinterpret_cast<::ImColor*>(self)->SetHSV(h, s, v, a);
@@ -4090,6 +4081,16 @@ CIMGUI_API cimgui::ImVec2 cimgui::ImGuiViewport_GetCenter(const cimgui::ImGuiVie
 CIMGUI_API cimgui::ImVec2 cimgui::ImGuiViewport_GetWorkCenter(const cimgui::ImGuiViewport* self)
 {
     return ConvertFromCPP_ImVec2(reinterpret_cast<const ::ImGuiViewport*>(self)->GetWorkCenter());
+}
+
+CIMGUI_API void cimgui::ImGuiPlatformIO_ClearPlatformHandlers(cimgui::ImGuiPlatformIO* self)
+{
+    reinterpret_cast<::ImGuiPlatformIO*>(self)->ClearPlatformHandlers();
+}
+
+CIMGUI_API void cimgui::ImGuiPlatformIO_ClearRendererHandlers(cimgui::ImGuiPlatformIO* self)
+{
+    reinterpret_cast<::ImGuiPlatformIO*>(self)->ClearRendererHandlers();
 }
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
