@@ -38,9 +38,16 @@ pub fn build(b: *std.Build) void {
 +        .platform = cimgui.Platform.GLFW,
 +        .renderer = cimgui.Renderer.Vulkan,
 +    });
++
++    const cimgui_lib = cimgui_dep.artifact("cimgui");
+
+    // The following conditional is only necessary for OpenGL backends:
++    if (cimgui_lib.root_module.import_table.get("gl")) |gl_module| {
++        exe.root_module.addImport("gl", gl_module);
++    }
 
     // Where `exe` represents your executable/library to link to
-+    exe.linkLibrary(cimgui_dep.artifact("cimgui"));
++    exe.linkLibrary(cimgui_lib);
 
     // -- snip --
 }
