@@ -126,4 +126,62 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplWGPU_UpdateTexture(cimgui::ImTextureData
     ::ImGui_ImplWGPU_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
 }
 
+CIMGUI_IMPL_API bool cimgui::cImGui_ImplWGPU_IsSurfaceStatusError(WGPUSurfaceGetCurrentTextureStatus status)
+{
+    return ::ImGui_ImplWGPU_IsSurfaceStatusError(status);
+}
+
+CIMGUI_IMPL_API bool cimgui::cImGui_ImplWGPU_IsSurfaceStatusSubOptimal(WGPUSurfaceGetCurrentTextureStatus status)
+{
+    return ::ImGui_ImplWGPU_IsSurfaceStatusSubOptimal(status);
+}
+
+CIMGUI_IMPL_API void   cimgui::cImGui_ImplWGPU_DebugPrintAdapterInfo(WGPUAdapter adapter)
+{
+    ::ImGui_ImplWGPU_DebugPrintAdapterInfo(reinterpret_cast<const ::WGPUAdapter&>(adapter));
+}
+
+CIMGUI_IMPL_API const char* cimgui::cImGui_ImplWGPU_GetBackendTypeName(WGPUBackendType type)
+{
+    return ::ImGui_ImplWGPU_GetBackendTypeName(type);
+}
+
+CIMGUI_IMPL_API const char* cimgui::cImGui_ImplWGPU_GetAdapterTypeName(WGPUAdapterType type)
+{
+    return ::ImGui_ImplWGPU_GetAdapterTypeName(type);
+}
+
+#if defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN)
+
+CIMGUI_IMPL_API const char* cimgui::cImGui_ImplWGPU_GetDeviceLostReasonName(WGPUDeviceLostReason type)
+{
+    return ::ImGui_ImplWGPU_GetDeviceLostReasonName(type);
+}
+
+CIMGUI_IMPL_API const char* cimgui::cImGui_ImplWGPU_GetErrorTypeName(WGPUErrorType type)
+{
+    return ::ImGui_ImplWGPU_GetErrorTypeName(type);
+}
+
+#endif // #if defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN)
+
+#if !(defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN))
+#if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)&&!defined(__EMSCRIPTEN__)
+
+CIMGUI_IMPL_API const char* cimgui::cImGui_ImplWGPU_GetLogLevelName(WGPULogLevel level)
+{
+    return ::ImGui_ImplWGPU_GetLogLevelName(level);
+}
+
+#endif // #if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)&&!defined(__EMSCRIPTEN__)
+#endif // #if !(defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN))
+
+#ifndef __EMSCRIPTEN__
+
+CIMGUI_IMPL_API WGPUSurface cimgui::cImGui_ImplWGPU_CreateWGPUSurfaceHelper(cimgui::ImGui_ImplWGPU_CreateSurfaceInfo* info)
+{
+    return ::ImGui_ImplWGPU_CreateWGPUSurfaceHelper(reinterpret_cast<::ImGui_ImplWGPU_CreateSurfaceInfo*>(info));
+}
+
+#endif // #ifndef __EMSCRIPTEN__
 #endif // #ifndef IMGUI_DISABLE
