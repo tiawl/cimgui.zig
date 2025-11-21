@@ -2806,9 +2806,9 @@ CIMGUI_API void           cimgui::ImGui_DestroyPlatformWindows(void)
     ::ImGui::DestroyPlatformWindows();
 }
 
-CIMGUI_API cimgui::ImGuiViewport* cimgui::ImGui_FindViewportByID(ImGuiID id)
+CIMGUI_API cimgui::ImGuiViewport* cimgui::ImGui_FindViewportByID(ImGuiID viewport_id)
 {
-    return reinterpret_cast<::cimgui::ImGuiViewport*>(::ImGui::FindViewportByID(id));
+    return reinterpret_cast<::cimgui::ImGuiViewport*>(::ImGui::FindViewportByID(viewport_id));
 }
 
 CIMGUI_API cimgui::ImGuiViewport* cimgui::ImGui_FindViewportByPlatformHandle(void* platform_handle)
@@ -2905,15 +2905,6 @@ CIMGUI_API void cimgui::ImGuiIO_ClearInputMouse(cimgui::ImGuiIO* self)
 {
     reinterpret_cast<::ImGuiIO*>(self)->ClearInputMouse();
 }
-
-#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-
-CIMGUI_API void cimgui::ImGuiIO_ClearInputCharacters(cimgui::ImGuiIO* self)
-{
-    reinterpret_cast<::ImGuiIO*>(self)->ClearInputCharacters();
-}
-
-#endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
 CIMGUI_API void cimgui::ImGuiInputTextCallbackData_DeleteChars(cimgui::ImGuiInputTextCallbackData* self, int pos, int bytes_count)
 {
@@ -4183,11 +4174,6 @@ CIMGUI_API bool   cimgui::ImGui_ListBoxObsolete(const char* label, int* current_
 CIMGUI_API bool   cimgui::ImGui_ListBoxObsoleteEx(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count, int height_in_items)
 {
     return ::ImGui::ListBox(label, current_item, old_callback, user_data, items_count, height_in_items);
-}
-
-CIMGUI_API void   cimgui::ImGui_SetItemAllowOverlap(void)
-{
-    ::ImGui::SetItemAllowOverlap();
 }
 
 #endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
