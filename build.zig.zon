@@ -3,8 +3,8 @@
     .version = "1.0.0",
     .dependencies = .{
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=vulkan.zig-v1.4.333#39f2bb2cee9afd3446a6a5ccf83d267c73f0c9c5",
-            .hash = "glfw_zig-1.0.0-NrvYo77XGQA9NU8VB0GNwNWTpnn70DboOGXKPmFNJjme",
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=vulkan.zig-v1.4.334#81b27c9bda047d3e49e3fe7a75e39bab905d3f71",
+            .hash = "glfw_zig-1.0.0-NrvYo77XGQBu82Ci1_JScpMDwF1nxXUMHpcvEq7MfRqz",
         },
         .sdl = .{
             .url = "git+https://github.com/castholm/SDL#f103a1439670c35be756d4491b296a6e3ccffaed",
