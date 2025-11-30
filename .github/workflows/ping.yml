@@ -16,7 +16,7 @@ jobs:
           - spaceporn
     runs-on: ubuntu-latest
     steps:
-    - uses: mlugg/setup-zig@v2
+    - uses: mlugg/setup-zig@v2.0.5
     - name: Notify ${{ matrix.repo }}
       env:
         ENDPOINT: "/repos/${{ github.repository_owner }}/${{ matrix.repo }}/dispatches"
