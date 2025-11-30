@@ -24,7 +24,7 @@ jobs:
         ref: "${{ matrix.branch }}"
 
     - name: Setup Zig
-      uses: mlugg/setup-zig@v2
+      uses: mlugg/setup-zig@v2.0.5
     - name: Install apt packages
       shell: bash
       run: |
