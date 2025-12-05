@@ -1,0 +1,45 @@
+name: new-tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      new-tag:
+        description: 'New tag'
+        required: true
+
+jobs:
+  new-tag:
+    strategy:
+      matrix:
+        branch:
+          - trunk
+          - docking
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: "${{ github.repository }}"
+        ref: "${{ matrix.branch }}"
+
+    - name: Setup git user information, create and push new tag
+      env:
+        NAME: "GitHub Actions[bot]"
+        EMAIL: "<>"
+        BRANCH: "${{ matrix.branch }}"
+        NEW_TAG: "${{ github.event.inputs.new-tag }}"
+        GH_TOKEN: "${{ github.token }}"
+      shell: bash
+      run: |
+        git config user.name "${NAME}"
+        git config user.email "${EMAIL}"
+        git checkout "${BRANCH}"
+        case "${BRANCH}" in
+        ( 'trunk' ) git tag "${NEW_TAG}" ;;
+        ( 'docking' ) git tag "${NEW_TAG}-docking" ;;
+        ( * ) printf 'Unknown branch name: %s\n' "${BRANCH}" >&2; exit 1 ;;
+        esac
+        git push --tags
