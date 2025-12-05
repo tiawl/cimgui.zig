@@ -1,4 +1,4 @@
-name: bot
+name: new-tag
 
 on:
   workflow_dispatch:
