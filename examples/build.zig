@@ -21,6 +21,8 @@ fn renderers(dir_name: []const u8) ![]const Renderer {
         .OpenGL3,
     } else if (std.mem.endsWith(u8, dir_name, "_vulkan+opengl3")) &.{
         .Vulkan, .OpenGL3,
+    } else if (std.mem.indexOf(u8, dir_name, "_metal") != null) &.{
+        .Metal,
     } else error.UnknownRendererBackend;
 }
 

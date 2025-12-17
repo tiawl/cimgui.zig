@@ -404,7 +404,10 @@ pub fn main() !void {
 
     // Create window with Vulkan graphics context
     const window = c.SDL_CreateWindow("example_sdl3_vulkan", 800, 600, c.SDL_WINDOW_VULKAN | c.SDL_WINDOW_RESIZABLE | c.SDL_WINDOW_HIGH_PIXEL_DENSITY);
-    if (window == null) return error.SDL_CreateWindowFailure;
+    if (window == null) {
+        std.log.err("SDL create window failed : {s}", .{c.SDL_GetError()});
+        return error.SDL_CreateWindowFailure;
+    }
     defer c.SDL_DestroyWindow(window);
 
     var extensions: std.ArrayList([*:0]const u8) = .empty;

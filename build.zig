@@ -85,6 +85,7 @@ fn update(toolbox: *Toolbox, path: *const Paths) !void {
 
     var backend_h: []const u8 = undefined;
     var backend_cpp: []const u8 = undefined;
+    var backend_mm: []const u8 = undefined;
     var out: []const u8 = undefined;
     it = backends_dir.iterate();
     while (try it.next()) |*entry| {
@@ -106,7 +107,13 @@ fn update(toolbox: *Toolbox, path: *const Paths) !void {
                         stem,
                     }),
                 });
-                if (toolbox_pkg.isCHeader(entry.name) and toolbox_pkg.exists(backend_cpp) and std.mem.startsWith(u8, entry.name, "imgui") and !std.meta.isError(std.fs.accessAbsolute(cpp_template, .{})) and !std.meta.isError(std.fs.accessAbsolute(h_template, .{}))) {
+                backend_mm = toolbox.pathJoin(&.{
+                    path.getBackends(), toolbox.fmt("{s}.mm", .{
+                        stem,
+                    }),
+                });
+                const has_impl = toolbox_pkg.exists(backend_cpp) or toolbox_pkg.exists(backend_mm);
+                if (toolbox_pkg.isCHeader(entry.name) and has_impl and std.mem.startsWith(u8, entry.name, "imgui") and !std.meta.isError(std.fs.accessAbsolute(cpp_template, .{})) and !std.meta.isError(std.fs.accessAbsolute(h_template, .{}))) {
                     backend_h = toolbox.pathJoin(&.{
                         path.getBackends(), entry.name,
                     });
