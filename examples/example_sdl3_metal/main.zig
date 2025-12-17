@@ -16,28 +16,28 @@ extern "C" fn objc_getClass(name: [*c]const u8) ?*anyopaque;
 // Simple Objective-C message send helpers
 fn msgSend0(obj: ?*anyopaque, sel_name: [*c]const u8) ?*anyopaque {
     const sel = sel_registerName(sel_name);
-    const SendFn = *const fn (?*anyopaque, ?*anyopaque) callconv(std.builtin.CallingConvention.c) ?*anyopaque;
+    const SendFn = *const fn (?*anyopaque, ?*anyopaque) callconv(.c) ?*anyopaque;
     const func: SendFn = @ptrCast(&objc_msgSend);
     return func(obj, sel);
 }
 
 fn msgSend1(obj: ?*anyopaque, sel_name: [*c]const u8, arg: anytype) ?*anyopaque {
     const sel = sel_registerName(sel_name);
-    const SendFn = *const fn (?*anyopaque, ?*anyopaque, @TypeOf(arg)) callconv(std.builtin.CallingConvention.c) ?*anyopaque;
+    const SendFn = *const fn (?*anyopaque, ?*anyopaque, @TypeOf(arg)) callconv(.c) ?*anyopaque;
     const func: SendFn = @ptrCast(&objc_msgSend);
     return func(obj, sel, arg);
 }
 
 fn msgSendVoid1(obj: ?*anyopaque, sel_name: [*c]const u8, arg: anytype) void {
     const sel = sel_registerName(sel_name);
-    const SendFn = *const fn (?*anyopaque, ?*anyopaque, @TypeOf(arg)) callconv(std.builtin.CallingConvention.c) void;
+    const SendFn = *const fn (?*anyopaque, ?*anyopaque, @TypeOf(arg)) callconv(.c) void;
     const func: SendFn = @ptrCast(&objc_msgSend);
     func(obj, sel, arg);
 }
 
 fn msgSendVoid0(obj: ?*anyopaque, sel_name: [*c]const u8) void {
     const sel = sel_registerName(sel_name);
-    const SendFn = *const fn (?*anyopaque, ?*anyopaque) callconv(std.builtin.CallingConvention.c) void;
+    const SendFn = *const fn (?*anyopaque, ?*anyopaque) callconv(.c) void;
     const func: SendFn = @ptrCast(&objc_msgSend);
     func(obj, sel);
 }
@@ -69,12 +69,16 @@ pub fn main() !void {
         return;
     }
 
-    // Get Metal device from layer (CAMetalLayer.device property)
-    const metal_device = msgSend0(metal_layer, "device");
+    // Create system default Metal device
+    const MTLCreateSystemDefaultDevice = @extern(*const fn () callconv(.c) ?*anyopaque, .{ .name = "MTLCreateSystemDefaultDevice" });
+    const metal_device = MTLCreateSystemDefaultDevice();
     if (metal_device == null) {
-        std.log.err("Failed to get Metal device from layer", .{});
+        std.log.err("Failed to create Metal device", .{});
         return;
     }
+
+    // Set device on the layer
+    msgSendVoid1(metal_layer, "setDevice:", metal_device);
 
     // Create command queue
     const command_queue = msgSend0(metal_device, "newCommandQueue");
@@ -94,7 +98,7 @@ pub fn main() !void {
 
     _ = c.cImGui_ImplSDL3_InitForMetal(window.?);
     defer c.cImGui_ImplSDL3_Shutdown();
-    
+
     _ = c.cImGui_ImplMetal_Init(metal_device);
     defer c.cImGui_ImplMetal_Shutdown();
 
@@ -120,11 +124,11 @@ pub fn main() !void {
         // Create render pass descriptor
         const MTLRenderPassDescriptor = objc_getClass("MTLRenderPassDescriptor");
         const render_pass_descriptor = msgSend0(MTLRenderPassDescriptor, "renderPassDescriptor");
-        
+
         // Configure color attachment
         const colorAttachments = msgSend0(render_pass_descriptor, "colorAttachments");
         const colorAttachment = msgSend1(colorAttachments, "objectAtIndexedSubscript:", @as(c_ulong, 0));
-        
+
         msgSendVoid1(colorAttachment, "setTexture:", texture);
         msgSendVoid1(colorAttachment, "setLoadAction:", @as(c_ulong, 2)); // MTLLoadActionClear = 2
         msgSendVoid1(colorAttachment, "setStoreAction:", @as(c_ulong, 1)); // MTLStoreActionStore = 1
@@ -139,7 +143,7 @@ pub fn main() !void {
 
         // Create command buffer
         const command_buffer = msgSend0(command_queue, "commandBuffer");
-        
+
         // Create render command encoder
         const command_encoder = msgSend1(command_buffer, "renderCommandEncoderWithDescriptor:", render_pass_descriptor);
 
