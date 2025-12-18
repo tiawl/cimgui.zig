@@ -42,6 +42,11 @@ fn msgSendVoid0(obj: ?*anyopaque, sel_name: [*c]const u8) void {
     func(obj, sel);
 }
 
+// Helper to release Objective-C objects
+fn release(obj: ?*anyopaque) void {
+    if (obj) |o| msgSendVoid0(o, "release");
+}
+
 pub fn main() !void {
     if (!c.SDL_Init(c.SDL_INIT_VIDEO | c.SDL_INIT_GAMEPAD)) {
         std.log.err("SDL Init failed : {s}", .{c.SDL_GetError()});
@@ -86,6 +91,7 @@ pub fn main() !void {
         std.log.err("Failed to create Metal command queue", .{});
         return;
     }
+    defer release(command_queue);
 
     _ = c.CIMGUI_CHECKVERSION();
     _ = c.ImGui_CreateContext(null);
@@ -124,6 +130,7 @@ pub fn main() !void {
         // Create render pass descriptor
         const MTLRenderPassDescriptor = objc_getClass("MTLRenderPassDescriptor");
         const render_pass_descriptor = msgSend0(MTLRenderPassDescriptor, "renderPassDescriptor");
+        defer release(render_pass_descriptor);
 
         // Configure color attachment
         const colorAttachments = msgSend0(render_pass_descriptor, "colorAttachments");
@@ -158,5 +165,8 @@ pub fn main() !void {
 
         // Commit command buffer
         msgSendVoid0(command_buffer, "commit");
+
+        // Release command encoder (command_buffer and drawable are autoreleased)
+        release(command_encoder);
     }
 }
