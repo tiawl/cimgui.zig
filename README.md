@@ -35,8 +35,8 @@ pub fn build(b: *std.Build) void {
 +    const cimgui_dep = b.dependency("cimgui_zig", .{
 +        .target = target,
 +        .optimize = optimize,
-+        .platform = &.{.GLFW},
-+        .renderer = &.{.Vulkan},
++        .platforms = &.{.GLFW},
++        .renderers = &.{.Vulkan},
 +    });
 +
 +    const cimgui_lib = cimgui_dep.artifact("cimgui");
