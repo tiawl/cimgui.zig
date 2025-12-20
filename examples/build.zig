@@ -4,16 +4,28 @@ const cimgui = @import("cimgui_zig");
 const Platform = cimgui.Platform;
 const Renderer = cimgui.Renderer;
 
-fn platform(dir_name: []const u8) !Platform {
-    return if (std.mem.indexOf(u8, dir_name, "_glfw") != null) .GLFW else if (std.mem.indexOf(u8, dir_name, "_sdl3") != null) .SDL3 else if (std.mem.indexOf(u8, dir_name, "_sdlgpu3") != null) .SDLGPU3 else error.UnknownPlatformBackend;
+fn platforms(dir_name: []const u8) ![]const Platform {
+    return if (std.mem.startsWith(u8, dir_name, "example_glfw_")) &.{
+        .GLFW,
+    } else if (std.mem.startsWith(u8, dir_name, "example_sdl3_")) &.{
+        .SDL3,
+    } else if (std.mem.startsWith(u8, dir_name, "example_sdlgpu3_")) &.{
+        .SDLGPU3,
+    } else error.UnknownPlatformBackend;
 }
 
-fn renderer(dir_name: []const u8) !Renderer {
-    return if (std.mem.indexOf(u8, dir_name, "_vulkan") != null) .Vulkan else if (std.mem.indexOf(u8, dir_name, "_opengl3") != null) .OpenGL3 else error.UnknownRendererBackend;
+fn renderers(dir_name: []const u8) ![]const Renderer {
+    return if (std.mem.endsWith(u8, dir_name, "_vulkan")) &.{
+        .Vulkan,
+    } else if (std.mem.endsWith(u8, dir_name, "_opengl3")) &.{
+        .OpenGL3,
+    } else if (std.mem.endsWith(u8, dir_name, "_vulkan+opengl3")) &.{
+        .Vulkan, .OpenGL3,
+    } else error.UnknownRendererBackend;
 }
 
 fn linkLibAndImportModules(lib: *std.Build.Step.Compile, exe: *std.Build.Step.Compile, dir_name: []const u8) void {
-    if (std.mem.indexOf(u8, dir_name, "_opengl3") != null) {
+    if (std.mem.endsWith(u8, dir_name, "_opengl3") or std.mem.endsWith(u8, dir_name, "_vulkan+opengl3")) {
         exe.root_module.addImport("gl", lib.root_module.import_table.get("gl").?);
         _ = lib.root_module.import_table.swapRemove("gl");
     }
@@ -58,8 +70,8 @@ pub fn build(builder: *std.Build) !void {
             cimgui_dep = builder.dependency("cimgui_zig", .{
                 .target = target,
                 .optimize = optimize,
-                .platform = try platform(entry.name),
-                .renderer = try renderer(entry.name),
+                .platforms = try platforms(entry.name),
+                .renderers = try renderers(entry.name),
                 .@"toolbox-logging" = logging,
             });
 

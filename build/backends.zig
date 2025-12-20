@@ -20,100 +20,110 @@ pub const Platform = enum {
 };
 
 pub fn backendOptions(toolbox: *Toolbox, builder: *std.Build, lib: *std.Build.Step.Compile, target: *const std.Build.ResolvedTarget, optimize: *const std.builtin.OptimizeMode, path: *const Paths, flags: *std.ArrayListUnmanaged([]const u8)) !void {
-    const renderer_opt = builder.option(Renderer, "renderer", "Specify the renderer backend");
-    const platform_opt = builder.option(Platform, "platform", "Specify the platform backend");
+    const renderers_opt = builder.option([]const Renderer, "renderers", "Specify the renderer backends");
+    const platforms_opt = builder.option([]const Platform, "platforms", "Specify the platform backends");
 
-    if (renderer_opt) |renderer| {
-        switch (renderer) {
-            .Vulkan => {
-                if (platform_opt) |platform| {
-                    if (platform != .GLFW) {
-                        const vulkan_dep = builder.dependency("vulkan_zig", .{
-                            .target = target.*,
-                            .optimize = optimize.*,
-                        });
+    if (renderers_opt) |renderers| {
+        if (renderers.len == 0) {
+            std.log.warn("Unspecified renderer backend", .{});
+        }
+        for (renderers) |renderer| {
+            switch (renderer) {
+                .Vulkan => {
+                    if (platforms_opt) |platforms| {
+                        if (std.mem.indexOf(Platform, platforms, &.{.GLFW}) == null) {
+                            const vulkan_dep = builder.dependency("vulkan_zig", .{
+                                .target = target.*,
+                                .optimize = optimize.*,
+                            });
 
-                        const vulkan_lib = vulkan_dep.artifact("vulkan");
+                            const vulkan_lib = vulkan_dep.artifact("vulkan");
 
-                        lib.linkLibrary(vulkan_lib);
-                        lib.installLibraryHeaders(vulkan_lib);
+                            lib.linkLibrary(vulkan_lib);
+                            lib.installLibraryHeaders(vulkan_lib);
+                        }
                     }
-                }
-                flags.appendAssumeCapacity("-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES");
-                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_vulkan.cpp", flags.items);
-                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_vulkan.cpp", flags.items);
-            },
-            .OpenGL3 => {
-                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_opengl3.cpp", flags.items);
-                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_opengl3.cpp", flags.items);
+                    flags.appendAssumeCapacity("-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES");
+                    try toolbox.addSource(lib, path.getBackends(), "imgui_impl_vulkan.cpp", flags.items);
+                    try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_vulkan.cpp", flags.items);
+                },
+                .OpenGL3 => {
+                    try toolbox.addSource(lib, path.getBackends(), "imgui_impl_opengl3.cpp", flags.items);
+                    try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_opengl3.cpp", flags.items);
 
-                const gl_bindings = zigglgen.generateBindingsModule(builder, .{
-                    .api = .gl,
-                    .version = builder.option(zigglgen.GeneratorOptions.Version, "gl_version", "Specify the gl version") orelse .@"4.6",
-                    .profile = .core,
-                    .extensions = builder.option([]const zigglgen.GeneratorOptions.Extension, "gl_ext", "Specify the gl extensions") orelse &.{},
-                });
+                    const gl_bindings = zigglgen.generateBindingsModule(builder, .{
+                        .api = .gl,
+                        .version = builder.option(zigglgen.GeneratorOptions.Version, "gl_version", "Specify the gl version") orelse .@"4.6",
+                        .profile = .core,
+                        .extensions = builder.option([]const zigglgen.GeneratorOptions.Extension, "gl_ext", "Specify the gl extensions") orelse &.{},
+                    });
 
-                lib.root_module.addImport("gl", gl_bindings);
-            },
+                    lib.root_module.addImport("gl", gl_bindings);
+                },
+            }
         }
     } else std.log.warn("Unspecified renderer backend", .{});
 
-    if (platform_opt) |platform| {
-        switch (platform) {
-            .GLFW => {
-                const glfw_dep = builder.dependency("glfw_zig", .{
-                    .target = target.*,
-                    .optimize = optimize.*,
-                });
+    if (platforms_opt) |platforms| {
+        if (platforms.len == 0) {
+            std.log.warn("Unspecified platform backend", .{});
+        }
+        for (platforms) |platform| {
+            switch (platform) {
+                .GLFW => {
+                    const glfw_dep = builder.dependency("glfw_zig", .{
+                        .target = target.*,
+                        .optimize = optimize.*,
+                    });
 
-                const glfw_lib = glfw_dep.artifact("glfw");
-                for (glfw_lib.root_module.include_dirs.items) |*included| {
-                    switch (included.*) {
-                        .path => lib.addIncludePath(included.path),
-                        else => {},
+                    const glfw_lib = glfw_dep.artifact("glfw");
+                    for (glfw_lib.root_module.include_dirs.items) |*included| {
+                        switch (included.*) {
+                            .path => lib.addIncludePath(included.path),
+                            else => {},
+                        }
                     }
-                }
 
-                lib.linkLibrary(glfw_lib);
-                lib.installLibraryHeaders(glfw_lib);
+                    lib.linkLibrary(glfw_lib);
+                    lib.installLibraryHeaders(glfw_lib);
 
-                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_glfw.cpp", flags.items);
-                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_glfw.cpp", flags.items);
+                    try toolbox.addSource(lib, path.getBackends(), "imgui_impl_glfw.cpp", flags.items);
+                    try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_glfw.cpp", flags.items);
 
-                lib.root_module.addCMacro("GLFW_INCLUDE_NONE", "1");
-                if (renderer_opt) |renderer| {
-                    if (renderer == .Vulkan) {
-                        lib.root_module.addCMacro("GLFW_INCLUDE_VULKAN", "1");
+                    lib.root_module.addCMacro("GLFW_INCLUDE_NONE", "1");
+                    if (renderers_opt) |renderers| {
+                        if (std.mem.indexOf(Renderer, renderers, &.{.Vulkan}) != null) {
+                            lib.root_module.addCMacro("GLFW_INCLUDE_VULKAN", "1");
+                        }
                     }
-                }
-            },
-            .SDL3 => {
-                const sdl_dep = builder.dependency("sdl", .{
-                    .target = target.*,
-                    .optimize = optimize.*,
-                });
+                },
+                .SDL3 => {
+                    const sdl_dep = builder.dependency("sdl", .{
+                        .target = target.*,
+                        .optimize = optimize.*,
+                    });
 
-                lib.linkLibrary(sdl_dep.artifact("SDL3"));
-                lib.installLibraryHeaders(sdl_dep.artifact("SDL3"));
+                    lib.linkLibrary(sdl_dep.artifact("SDL3"));
+                    lib.installLibraryHeaders(sdl_dep.artifact("SDL3"));
 
-                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdl3.cpp", flags.items);
-                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdl3.cpp", flags.items);
-            },
-            .SDLGPU3 => {
-                const sdl_dep = builder.dependency("sdl", .{
-                    .target = target.*,
-                    .optimize = optimize.*,
-                });
+                    try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdl3.cpp", flags.items);
+                    try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdl3.cpp", flags.items);
+                },
+                .SDLGPU3 => {
+                    const sdl_dep = builder.dependency("sdl", .{
+                        .target = target.*,
+                        .optimize = optimize.*,
+                    });
 
-                lib.linkLibrary(sdl_dep.artifact("SDL3"));
-                lib.installLibraryHeaders(sdl_dep.artifact("SDL3"));
+                    lib.linkLibrary(sdl_dep.artifact("SDL3"));
+                    lib.installLibraryHeaders(sdl_dep.artifact("SDL3"));
 
-                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdl3.cpp", flags.items);
-                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdl3.cpp", flags.items);
-                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdlgpu3.cpp", flags.items);
-                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdlgpu3.cpp", flags.items);
-            },
+                    try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdl3.cpp", flags.items);
+                    try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdl3.cpp", flags.items);
+                    try toolbox.addSource(lib, path.getBackends(), "imgui_impl_sdlgpu3.cpp", flags.items);
+                    try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_sdlgpu3.cpp", flags.items);
+                },
+            }
         }
         lib.root_module.addCMacro("IMGUI_USE_LEGACY_CRC32_ADLER", "1");
     } else std.log.warn("Unspecified platform backend", .{});
