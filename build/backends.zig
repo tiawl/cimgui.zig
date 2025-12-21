@@ -59,26 +59,27 @@ pub fn backendOptions(toolbox: *Toolbox, builder: *std.Build, lib: *std.Build.St
                         .extensions = builder.option([]const zigglgen.GeneratorOptions.Extension, "gl_ext", "Specify the gl extensions") orelse &.{},
                     });
 
-                lib.root_module.addImport("gl", gl_bindings);
-            },
-            .Metal => {
-                if (target.result.os.tag != .macos and target.result.os.tag != .ios) {
-                    std.log.err("Metal renderer is only available on macOS/iOS", .{});
-                    return error.UnsupportedTarget;
-                }
+                    lib.root_module.addImport("gl", gl_bindings);
+                },
+                .Metal => {
+                    if (target.result.os.tag != .macos and target.result.os.tag != .ios) {
+                        std.log.err("Metal renderer is only available on macOS/iOS", .{});
+                        return error.UnsupportedTarget;
+                    }
 
-                // Link Metal frameworks
-                lib.linkFramework("Metal");
-                lib.linkFramework("MetalKit");
-                lib.linkFramework("Cocoa");
-                lib.linkFramework("IOKit");
-                lib.linkFramework("CoreVideo");
-                lib.linkFramework("QuartzCore");
+                    // Link Metal frameworks
+                    lib.linkFramework("Metal");
+                    lib.linkFramework("MetalKit");
+                    lib.linkFramework("Cocoa");
+                    lib.linkFramework("IOKit");
+                    lib.linkFramework("CoreVideo");
+                    lib.linkFramework("QuartzCore");
 
-                // Add Metal backend sources (compile separately to avoid header conflicts)
-                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_metal.mm", flags.items);
-                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_metal.mm", flags.items);
-            },
+                    // Add Metal backend sources (compile separately to avoid header conflicts)
+                    try toolbox.addSource(lib, path.getBackends(), "imgui_impl_metal.mm", flags.items);
+                    try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_metal.mm", flags.items);
+                },
+            }
         }
     } else std.log.warn("Unspecified renderer backend", .{});
 
