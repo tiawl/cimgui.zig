@@ -66,6 +66,7 @@ The backends are separated in two categories : the platforms (handling windows, 
 ### Renderers
   - [Vulkan][5]
   - [OpenGL][12]
+  - Metal
 
 > As you can see, these backends do not support all of those supported by ImGUI. Adding a backend is a bit of work because of the needed *maintenance*. Please do not ask for backends to be added if you don't feel like adding them yourselves !
 
