@@ -21,6 +21,8 @@ fn renderers(dir_name: []const u8) ![]const Renderer {
         .OpenGL3,
     } else if (std.mem.endsWith(u8, dir_name, "_vulkan+opengl3")) &.{
         .Vulkan, .OpenGL3,
+    } else if (std.mem.indexOf(u8, dir_name, "_metal") != null) &.{
+        .Metal,
     } else error.UnknownRendererBackend;
 }
 
@@ -53,6 +55,14 @@ pub fn build(builder: *std.Build) !void {
             std.mem.startsWith(u8, entry.name, "example_") and
             std.mem.indexOf(u8, entry.name, pattern) != null)
         {
+            // Skip Metal examples on non-macOS targets
+            if (std.mem.indexOf(u8, entry.name, "_metal") != null) {
+                if (target.result.os.tag != .macos and target.result.os.tag != .ios) {
+                    std.log.info("Skipping {s} (Metal only available on macOS/iOS)", .{entry.name});
+                    continue;
+                }
+            }
+
             exe = builder.addExecutable(.{
                 .name = entry.name,
                 .root_module = std.Build.Module.create(builder, .{
