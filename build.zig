@@ -134,9 +134,37 @@ fn update(toolbox: *Toolbox, path: *const Paths) !void {
     }
 
     try std.fs.deleteTreeAbsolute(path.getTmp());
+
+    const copyme_path = try toolbox.buildRootJoin(&.{
+        "build", "copyme",
+    });
+
+    var copyme_dir = try std.fs.openDirAbsolute(copyme_path, .{
+        .iterate = true,
+    });
+    defer copyme_dir.close();
+
+    var walker = try copyme_dir.walk(toolbox.getAllocator());
+    defer walker.deinit();
+
+    while (try walker.next()) |*entry| {
+        const dest = toolbox.pathJoin(&.{
+            path.getBackends(), entry.path,
+        });
+        switch (entry.kind) {
+            .file => try toolbox.copy(toolbox.pathJoin(&.{
+                copyme_path, entry.path,
+            }), dest),
+            .directory => try toolbox.make(dest),
+            else => return error.UnexpectedEntryKind,
+        }
+    }
+
     try toolbox.clean(&.{
         "dcimgui",
-    }, &.{});
+    }, &.{
+        ".mm",
+    });
 }
 
 const FromZon = toolbox_pkg.Repositories(.{
