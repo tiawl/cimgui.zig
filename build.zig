@@ -175,9 +175,37 @@ const DuringExec = toolbox_pkg.Repositories(.{
     .imgui, .dcimgui,
 });
 
+fn join_backend(builder: *std.Build, buf: *[]const u8, tag: []const u8, separator: []const u8) !void {
+    if (buf.len > 0) {
+        buf.* = try std.mem.join(builder.allocator, separator, &[_][]const u8{
+            buf.*, tag,
+        });
+    } else buf.* = tag;
+}
+
 pub fn build(builder: *std.Build) !void {
     const target = builder.standardTargetOptions(.{});
     const optimize = builder.standardOptimizeOption(.{});
+
+    const list_renderers_opt = builder.option(bool, "list-renderers", "Print available renderer backends. This options prevail on list-platforms option") orelse false;
+    const list_platforms_opt = builder.option(bool, "list-platforms", "Print available platform backends") orelse false;
+    const separator_opt = builder.option([]const u8, "separator", "Used separator instead of default newline character") orelse "\n";
+
+    var stdout_buffer: [1024]u8 = undefined;
+    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+    const stdout = &stdout_writer.interface;
+
+    if (list_renderers_opt or list_platforms_opt) {
+        var buf: []const u8 = "";
+        if (list_renderers_opt) {
+            for (std.enums.values(Renderer)) |backend| try join_backend(builder, &buf, @tagName(backend), separator_opt);
+        } else {
+            for (std.enums.values(Platform)) |backend| try join_backend(builder, &buf, @tagName(backend), separator_opt);
+        }
+        try stdout.print("{s}\n", .{buf});
+        try stdout.flush();
+        return;
+    }
 
     var toolbox = try Toolbox.init(FromZon, DuringExec, builder, optimize, .cimgui_zig, "0x4e4978d2929b7bd9", &.{
         "build", "dcimgui",
