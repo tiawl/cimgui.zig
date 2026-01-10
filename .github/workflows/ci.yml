@@ -22,10 +22,10 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
-    runs-on: "${{ matrix.os }}"
+          - ubuntu
+          - windows
+          - macos
+    runs-on: "${{ matrix.os }}-latest"
     steps:
     - uses: actions/checkout@v4
       with:
@@ -42,13 +42,13 @@ jobs:
         repo:
           - spaceporn
         os:
-          - ubuntu-latest
-          - windows-latest
+          - ubuntu
+          - windows
         zig_opts:
           - ''
           - '-Ddev'
           - '-Dturbo'
-    runs-on: "${{ matrix.os }}"
+    runs-on: "${{ matrix.os }}-latest"
     steps:
     - uses: actions/checkout@v4
       with:
