@@ -198,7 +198,14 @@ pub fn build(builder: *std.Build) !void {
     if (list_renderers_opt or list_platforms_opt) {
         var buf: []const u8 = "";
         if (list_renderers_opt) {
-            for (std.enums.values(Renderer)) |backend| try join_backend(builder, &buf, @tagName(backend), separator_opt);
+            for (std.enums.values(Renderer)) |backend| {
+                switch (target.result.os.tag) {
+                    .windows => if (backend == .Metal) continue,
+                    .macos => {},
+                    else => if (backend == .Metal) continue,
+                }
+                try join_backend(builder, &buf, @tagName(backend), separator_opt);
+            }
         } else {
             for (std.enums.values(Platform)) |backend| try join_backend(builder, &buf, @tagName(backend), separator_opt);
         }
