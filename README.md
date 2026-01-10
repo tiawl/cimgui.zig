@@ -99,13 +99,27 @@ This repository is automatically updated when a new release is available from th
 
 These additional options have been implemented for maintainability tasks:
 ```
+  -Dlist-renderers=[bool]      Print available renderer backends. This options prevail on list-platforms option
+  -Dlist-platforms=[bool]      Print available platform backends
+  -Dseparator=[string]         Used separator instead of default newline character
   -Dfetch=[bool]               Update .references folder and build.zig.zon then stop execution
   -Dupdate=[bool]              Update binding
-  -Drenderer=[enum]            Specify the renderer backend
+  -Dtoolbox-logging=[bool]     Enabled toolbox debug logging
+  -Dtoolbox=[string]           Switch to the given branch from a given fork for the toolbox repository
+  -Dvulkan_zig=[string]        Switch to the given branch from a given fork for the vulkan_zig repository
+  -Dglfw_zig=[string]          Switch to the given branch from a given fork for the glfw_zig repository
+  -Dsdl=[string]               Switch to the given branch from a given fork for the sdl repository
+  -Dzigglgen=[string]          Switch to the given branch from a given fork for the zigglgen repository
+```
+
+These additional options have been implemented for users:
+```
+  -Drenderers=[enum_list]      Specify the renderer backends
                                  Supported Values:
                                    Vulkan
                                    OpenGL3
-  -Dplatform=[enum]            Specify the platform backend
+                                   Metal
+  -Dplatforms=[enum_list]      Specify the platform backends
                                  Supported Values:
                                    GLFW
                                    SDL3
