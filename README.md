@@ -28,6 +28,8 @@ Add it to your `build.zig` :
 ```diff
 const std = @import("std");
 +const cimgui = @import("cimgui_zig");
++const Renderer = cimgui.Renderer;
++const Platform = cimgui.Platform;
 
 pub fn build(b: *std.Build) void {
     // -- snip --
