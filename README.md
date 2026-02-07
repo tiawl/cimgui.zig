@@ -1,3 +1,6 @@
+> [!WARNING]
+> If you are using the `docking` branch it won't be updated anymore and there won't be more `*-docking` tags. Please use the `-Ddocking` option [instead](https://github.com/tiawl/cimgui.zig/tree/trunk?tab=readme-ov-file#cimguizig-as-a-library) now.
+
 # cimgui.zig
 
 This is a fork of [ocornut/imgui][1] packaged for [Zig][2]
