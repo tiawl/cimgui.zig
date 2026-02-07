@@ -9,11 +9,6 @@ on:
 
 jobs:
   pong:
-    strategy:
-      matrix:
-        branch:
-          - trunk
-          - docking
     permissions:
       contents: write
       pull-requests: write
@@ -23,18 +18,15 @@ jobs:
       with:
         repository: "${{ github.repository }}"
         token: "${{ secrets.PAT }}"
-        ref: "${{ matrix.branch }}"
 
     - name: Setup git user information
       env:
-        BRANCH: "bot-${{ matrix.branch }}"
         EMAIL: "<>"
         NAME: "GitHub Actions[bot]"
       shell: bash
       run: |
         git config user.name "${NAME}"
         git config user.email "${EMAIL}"
-        git checkout -b "${BRANCH}"
 
     - name: Setup Zig
       uses: mlugg/setup-zig@v2.0.5
@@ -55,8 +47,8 @@ jobs:
     - name: Create Pull Request
       if: steps.diff.outputs.len != '0'
       env:
-        BRANCH: "bot-${{ matrix.branch }}"
-        DEFAULT: "${{ matrix.branch }}"
+        BRANCH: "bot"
+        DEFAULT: "trunk"
         GH_TOKEN: "${{ secrets.PAT }}"
         TITLE: "Update dependencies"
       shell: bash

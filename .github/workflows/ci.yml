@@ -4,15 +4,12 @@ on:
   pull_request:
     branches:
       - trunk
-      - docking
 
 jobs:
   linter:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-      with:
-        ref: "${{ github.event.pull_request.head.ref }}"
     - uses: mlugg/setup-zig@v2.0.5
     - name: Check zig is canonical
       shell: bash
@@ -28,45 +25,48 @@ jobs:
     runs-on: "${{ matrix.os }}-latest"
     steps:
     - uses: actions/checkout@v4
-      with:
-        ref: "${{ github.event.pull_request.head.ref }}"
     - uses: mlugg/setup-zig@v2.0.5
     - name: Test building examples
       shell: bash
       run: |
         unset ZIG_LOCAL_CACHE_DIR
         env -C "${GITHUB_WORKSPACE}/examples" zig build
-  build:
-    strategy:
-      matrix:
-        repo:
-          - spaceporn
-        os:
-          - ubuntu
-          - windows
-        zig_opts:
-          - ''
-          - '-Ddev'
-          - '-Dturbo'
-    runs-on: "${{ matrix.os }}-latest"
+        env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking
+  maintainance:
+    runs-on: ubuntu-latest
     steps:
+    - name: Install packages
+      shell: 'bash'
+      run: |
+        sudo apt-get update --fix-missing
+        sudo apt-get install -y python3-venv mesa-utils
+        printf 'ACTIVATE_DIR=bin\n' >> "${GITHUB_ENV}"
+
     - uses: actions/checkout@v4
-      with:
-        repository: "${{ github.repository_owner }}/${{ matrix.repo }}"
     - name: Setup Zig
       uses: mlugg/setup-zig@v2.0.5
 
-    - name: Prepare ${{ matrix.repo }}/build.zig.zon
+    - name: Activate python virtual env & install pip packages
       env:
-        URL: "git+${{ github.server_url }}/${{ github.repository }}#${{ github.event.pull_request.head.sha }}"
+        RUNNER_TMP: "${{ runner.temp }}"
       shell: 'bash'
       run: |
-        zig fetch --save "${URL}"
+        python3 -m venv "${RUNNER_TMP}/venv"
+        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
+        pip install ply
 
-    - name: Test building ${{ matrix.repo }}
+    - name: Test updating
       env:
-        OPTIONS: "${{ matrix.zig_opts }}"
         RUNNER_TMP: "${{ runner.temp }}"
-      shell: bash
-      run:
-        zig build ${OPTIONS}
+      shell: 'bash'
+      run: |
+        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
+        zig build -Dupdate
+
+    - name: Test fetching
+      env:
+        RUNNER_TMP: "${{ runner.temp }}"
+      shell: 'bash'
+      run: |
+        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
+        zig build -Dfetch

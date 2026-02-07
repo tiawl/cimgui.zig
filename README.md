@@ -17,6 +17,7 @@ The goal of this repository is not to provide a [Zig][2] binding for [ocornut/im
 - as a daily updated interface for your [Zig][2] binding of [ocornut/imgui][1] (see [here][10] for a private usage).
 
 ### cimgui.zig as a library
+
 If you want to add `cimgui.zig` as a library to your project, you can do the following (do know that it requires a zig version `>0.13`) :
 
 Fetch this repository :
@@ -39,6 +40,7 @@ pub fn build(b: *std.Build) void {
 +        .optimize = optimize,
 +        .platforms = &[_]Platform{.GLFW},
 +        .renderers = &[_]Renderer{.Vulkan},
++        // .docking = true, // Default value: false
 +    });
 +
 +    const cimgui_lib = cimgui_dep.artifact("cimgui");

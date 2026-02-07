@@ -7,11 +7,6 @@ on:
 
 jobs:
   update:
-    strategy:
-      matrix:
-        branch:
-          - trunk
-          - docking
     permissions:
       contents: write
       issues: write
@@ -19,10 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-      with:
-        repository: "${{ github.repository }}"
-        ref: "${{ matrix.branch }}"
-
     - name: Setup Zig
       uses: mlugg/setup-zig@v2.0.5
     - name: Install apt packages
@@ -43,7 +34,7 @@ jobs:
 
     - name: Setup git user information
       env:
-        BRANCH: "bot-${{ matrix.branch }}"
+        BRANCH: "bot"
         EMAIL: "<>"
         NAME: "GitHub Actions[bot]"
       shell: bash
@@ -81,8 +72,8 @@ jobs:
     - name: Create Pull Request
       if: steps.fetch.conclusion == 'success' && steps.diff.outputs.len != '0'
       env:
-        BRANCH: "bot-${{ matrix.branch }}"
-        DEFAULT: "${{ matrix.branch }}"
+        BRANCH: "bot"
+        DEFAULT: "trunk"
         GH_TOKEN: "${{ github.token }}"
         TITLE: "Update dependencies"
       shell: bash
