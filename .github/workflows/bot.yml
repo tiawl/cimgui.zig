@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup Zig
-      uses: mlugg/setup-zig@v2.0.5
+      uses: mlugg/setup-zig@v2
     - name: Install apt packages
       shell: bash
       run: |
@@ -50,7 +50,7 @@ jobs:
       shell: bash
       run: |
         source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
-        zig build -Dfetch
+        zig build -Dfetch -Dverbose
 
     - name: Diff
       if: steps.fetch.conclusion == 'success'
@@ -67,7 +67,7 @@ jobs:
       shell: bash
       run: |
         source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
-        zig build -Dupdate
+        zig build -Dupdate -Dverbose
 
     - name: Create Pull Request
       if: steps.fetch.conclusion == 'success' && steps.diff.outputs.len != '0'

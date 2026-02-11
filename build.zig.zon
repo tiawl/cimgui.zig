@@ -3,24 +3,34 @@
     .version = "1.0.0",
     .dependencies = .{
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=X11.zig-libX11-1.8.13#9ab1b6f4c855ec5ad7bc2ec77a6565746d29ec44",
-            .hash = "glfw_zig-1.0.0-NrvYo-PXGQDMOO3ilxE5n1_HpDu_auyqRlHbneGb_JwJ",
+            .path = "../glfw.zig",
         },
         .sdl = .{
             .url = "git+https://github.com/castholm/SDL#887fa805e40d5c7bb3955ae69b89ed566c6a0471",
             .hash = "sdl-0.4.0+3.4.0-SDL--rq2owEZsySGuHCuVJ9naEvH3i3e_pyUIjziBtJ-",
         },
         .toolbox = .{
-            .url = "git+https://github.com/tiawl/toolbox?ref=1.12.6#79c1dffe608a9c4a7dcf11f98f1dc88b9b46e9f5",
-            .hash = "toolbox-1.12.6-kRAu4BJbAAAGPWPltdn1vwY83xau2Zh9015JTQ0MZjyM",
+            .path = "../toolbox",
         },
         .zigglgen = .{
             .url = "git+https://github.com/castholm/zigglgen#6b21369ac50de8826f8af60a7edb33693b4ec7bf",
             .hash = "zigglgen-0.5.0-zigglr_CLwBs1aABtYVtxNPo1SB8AzgKMVouoqULqkDQ",
         },
         .vulkan_zig = .{
-            .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.343#f66e8c34e270bbb471ee057c5c61d20b22e6593d",
-            .hash = "vulkan_zig-1.0.0-p2wg3qmGPQGYTOSvwMxrYSMrUujPD6tJ1bQillB9oLAH",
+            .path = "../vulkan.zig",
+        },
+        .@"imgui-master" = .{
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.5#6d910d5487d11ca567b61c7824b0c78c569d62f0",
+            .hash = "N-V-__8AAINncwDX2BgEByIO726dzGjzWPMDygWnFijznd8U",
+        },
+        .@"imgui-docking" = .{
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.5-docking#3912b3d9a9c1b3f17431aebafd86d2f40ee6e59c",
+            .hash = "N-V-__8AAAu4fQBE-TxAn-Lk6rxPToxAGnzeIiKtzHNTeoai",
+            .branch = "docking",
+        },
+        .dcimgui = .{
+            .url = "git+https://github.com/dearimgui/dear_bindings#c8049278a3dcda45dea93555534c8cab250d566b",
+            .hash = "N-V-__8AADrXCAA2dA61i058pjoYHMhUPzM35yUsvZwYQ-nv",
         },
     },
     .minimum_zig_version = "0.15.2",
