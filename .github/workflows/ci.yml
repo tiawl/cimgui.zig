@@ -30,8 +30,8 @@ jobs:
       shell: bash
       run: |
         unset ZIG_LOCAL_CACHE_DIR
-        env -C "${GITHUB_WORKSPACE}/examples" zig build -Dverbose
-        env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking -Dverbose
+        env -C "${GITHUB_WORKSPACE}/examples" zig build
+        env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking
   maintainance:
     runs-on: ubuntu-latest
     steps:

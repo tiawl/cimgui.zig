@@ -16,10 +16,10 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
     try pkg_builder.make(&.{ "dcimgui", "master" });
     try pkg_builder.make(&.{ "dcimgui", "master", "backends" });
 
-    const imgui_master_dep = pkg_builder.dependency("imgui-master");
-    const imgui_docking_dep = pkg_builder.dependency("imgui-docking");
+    const imgui_master_dep = pkg_builder.verboseDependency("imgui-master");
+    const imgui_docking_dep = pkg_builder.verboseDependency("imgui-docking");
     var imgui_builder: VerboseBuilder = undefined;
-    const dcimgui_dep = pkg_builder.dependency("dcimgui");
+    const dcimgui_dep = pkg_builder.verboseDependency("dcimgui");
     var dcimgui_builder = VerboseBuilder.initFromDependency(dcimgui_dep);
     var docking = false;
 
@@ -137,11 +137,11 @@ fn buildFn(pkg_builder: *VerboseBuilder) !void {
     const lib = pkg_builder.addLibrary("cimgui");
     pkg_builder.linkLibCpp(lib);
 
-    while (try pkg_builder.walk(&.{"dcimgui"})) |*entry| {
-        if (entry.kind == .directory) pkg_builder.addInclude(lib, &.{entry.path});
-    }
+    pkg_builder.addInclude(lib, &.{"dcimgui", if (docking) "docking" else "master"});
 
-    pkg_builder.installHeaders(lib, &.{ "dcimgui", if (docking) "docking" else "master" }, ".", &toolbox.ext.c.header);
+    while (try pkg_builder.iterate(&.{ "dcimgui", if (docking) "docking" else "master" })) |*entry| {
+        if (toolbox.isCHeader(entry.name)) pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", entry.name }, &.{entry.name});
+    }
 
     var flags_buffer: [16][]const u8 = undefined;
     var flags = std.ArrayListUnmanaged([]const u8).initBuffer(&flags_buffer);

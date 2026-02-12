@@ -27,7 +27,7 @@ pub fn build(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, docking
         switch (renderer) {
             .Vulkan => {
                 if (std.mem.indexOfScalar(Platform, platforms, .GLFW) == null) {
-                    const vulkan_dep = pkg_builder.dependency("vulkan_zig");
+                    const vulkan_dep = pkg_builder.verboseDependency("vulkan_zig");
                     const vulkan_artifact = pkg_builder.artifact(vulkan_dep, "vulkan");
 
                     pkg_builder.linkLibrary(lib, vulkan_artifact);
@@ -36,10 +36,14 @@ pub fn build(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, docking
                 flags.appendAssumeCapacity("-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES");
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_vulkan.cpp" }, flags.items);
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_vulkan.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_vulkan.h" }, &.{ "backends", "imgui_impl_vulkan.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_vulkan.h" }, &.{ "backends", "dcimgui_impl_vulkan.h" });
             },
             .OpenGL3 => {
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_opengl3.cpp" }, flags.items);
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_opengl3.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_opengl3.h" }, &.{ "backends", "imgui_impl_opengl3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_opengl3.h" }, &.{ "backends", "dcimgui_impl_opengl3.h" });
 
                 const gl_bindings = zigglgen.generateBindingsModule(pkg_builder.ptrBuilder(), .{
                     .api = .gl,
@@ -67,6 +71,8 @@ pub fn build(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, docking
                 // Add Metal backend sources (compile separately to avoid header conflicts)
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_metal.mm" }, flags.items);
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_metal.mm" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_metal.h" }, &.{ "backends", "imgui_impl_metal.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_metal.h" }, &.{ "backends", "dcimgui_impl_metal.h" });
             },
         }
     }
@@ -77,20 +83,16 @@ pub fn build(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, docking
     for (platforms) |platform| {
         switch (platform) {
             .GLFW => {
-                const glfw_dep = pkg_builder.dependency("glfw_zig");
+                const glfw_dep = pkg_builder.verboseDependency("glfw_zig");
                 const glfw_artifact = pkg_builder.artifact(glfw_dep, "glfw");
-                for (glfw_artifact.root_module.include_dirs.items) |*included| {
-                    switch (included.*) {
-                        .path => pkg_builder.addIncludePath(lib, included.path),
-                        else => {},
-                    }
-                }
 
                 pkg_builder.linkLibrary(lib, glfw_artifact);
                 pkg_builder.installLibraryHeaders(lib, glfw_artifact);
 
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_glfw.cpp" }, flags.items);
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_glfw.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_glfw.h" }, &.{ "backends", "imgui_impl_glfw.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_glfw.h" }, &.{ "backends", "dcimgui_impl_glfw.h" });
 
                 pkg_builder.addCMacro(lib, "GLFW_INCLUDE_NONE", "1");
                 if (std.mem.indexOfScalar(Renderer, renderers, .Vulkan) != null) {
@@ -105,6 +107,8 @@ pub fn build(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, docking
 
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdl3.cpp" }, flags.items);
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdl3.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdl3.h" }, &.{ "backends", "imgui_impl_sdl3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdl3.h" }, &.{ "backends", "dcimgui_impl_sdl3.h" });
             },
             .SDLGPU3 => {
                 const sdl_dep = pkg_builder.dependency("sdl");
@@ -116,6 +120,10 @@ pub fn build(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, docking
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdl3.cpp" }, flags.items);
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdlgpu3.cpp" }, flags.items);
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdlgpu3.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdl3.h" }, &.{ "backends", "imgui_impl_sdl3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdl3.h" }, &.{ "backends", "dcimgui_impl_sdl3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdlgpu3.h" }, &.{ "backends", "imgui_impl_sdlgpu3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdlgpu3.h" }, &.{ "backends", "dcimgui_impl_sdlgpu3.h" });
             },
         }
     }

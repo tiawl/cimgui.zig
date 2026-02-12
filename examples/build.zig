@@ -49,7 +49,6 @@ pub fn build(builder: *std.Build) !void {
     var exe: *std.Build.Step.Compile = undefined;
     var cimgui_dep: *std.Build.Dependency = undefined;
     var it = examples_dir.iterate();
-    const logging = builder.option(bool, "toolbox-logging", "toolbox logging") orelse false;
     const docking = builder.option(bool, "docking", "use master or docking ocornut/imgui branch ?") orelse false;
     while (try it.next()) |*entry| {
         if (entry.kind == .directory and
@@ -83,7 +82,6 @@ pub fn build(builder: *std.Build) !void {
                 .optimize = optimize,
                 .platforms = try platforms(entry.name),
                 .renderers = try renderers(entry.name),
-                .@"toolbox-logging" = logging,
                 .docking = docking,
             });
 
