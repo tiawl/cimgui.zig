@@ -93,7 +93,7 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
             }
         }
 
-        while (try pkg_builder.iterate(&.{ "copyme" })) |*entry| {
+        while (try pkg_builder.iterate(&.{"copyme"})) |*entry| {
             switch (entry.kind) {
                 .file => try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "backends", entry.name }, pkg_builder, &.{ "copyme", entry.name }),
                 else => {},
