@@ -2,22 +2,13 @@
     .name = .cimgui_zig,
     .version = "1.0.0",
     .dependencies = .{
-        .glfw_zig = .{
-            .path = "../glfw.zig",
-        },
         .sdl = .{
             .url = "git+https://github.com/castholm/SDL#887fa805e40d5c7bb3955ae69b89ed566c6a0471",
             .hash = "sdl-0.4.0+3.4.0-SDL--rq2owEZsySGuHCuVJ9naEvH3i3e_pyUIjziBtJ-",
         },
-        .toolbox = .{
-            .path = "../toolbox",
-        },
         .zigglgen = .{
             .url = "git+https://github.com/castholm/zigglgen#6b21369ac50de8826f8af60a7edb33693b4ec7bf",
             .hash = "zigglgen-0.5.0-zigglr_CLwBs1aABtYVtxNPo1SB8AzgKMVouoqULqkDQ",
-        },
-        .vulkan_zig = .{
-            .path = "../vulkan.zig",
         },
         .@"imgui-master" = .{
             .url = "git+https://github.com/ocornut/imgui?ref=v1.92.5#6d910d5487d11ca567b61c7824b0c78c569d62f0",
@@ -31,6 +22,18 @@
         .dcimgui = .{
             .url = "git+https://github.com/dearimgui/dear_bindings#c8049278a3dcda45dea93555534c8cab250d566b",
             .hash = "N-V-__8AADrXCAA2dA61i058pjoYHMhUPzM35yUsvZwYQ-nv",
+        },
+        .toolbox = .{
+            .url = "git+https://github.com/tiawl/toolbox#c40e214efcaf902c455dc9ba3dc1ddf64bb3bf25",
+            .hash = "toolbox-2.0.0-kRAu4Cp6AAAOOwydlP8GG2SVXq82AhgeA_C6ABUpDZhH",
+        },
+        .vulkan_zig = .{
+            .url = "git+https://github.com/tiawl/vulkan.zig#ddeae6e453100a93b68d42a28ee0b1ef9782114d",
+            .hash = "vulkan_zig-1.0.0-p2wg3taBPQFFVmGwWu3vMizhARKnPPgF2n4WyLOP6S-V",
+        },
+        .glfw_zig = .{
+            .url = "git+https://github.com/tiawl/glfw.zig#d0041f83ee3b62c0b96006e5c0d70ab9f5db9635",
+            .hash = "glfw_zig-1.0.0-NrvYo3bQGQDZO23sw_LdrMx2YdiOwT8zflx9mlVTirhc",
         },
     },
     .minimum_zig_version = "0.15.2",
