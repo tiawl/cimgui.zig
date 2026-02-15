@@ -1,199 +1,119 @@
 const std = @import("std");
-const toolbox_pkg = @import("toolbox");
-const Toolbox = toolbox_pkg.Toolbox;
+const build_zig_zon = @import("build.zig.zon");
+const toolbox = @import("toolbox");
+const VerboseBuilder = toolbox.VerboseBuilder;
 
-const utils = @import("build/utils.zig");
-const Paths = utils.Paths;
-const flags_size = utils.flags_size;
+const zigglgen = @import("zigglgen");
 
-const backends = @import("build/backends.zig");
-pub const Renderer = backends.Renderer;
-pub const Platform = backends.Platform;
-const backendOptions = backends.backendOptions;
+pub const Renderer = enum {
+    Vulkan,
+    OpenGL3,
+    Metal,
+};
 
-fn update(toolbox: *Toolbox, path: *const Paths) !void {
-    for ([_][]const u8{
-        path.getDcimgui(null), path.getTmp(),
-    }) |clone_path| {
-        std.fs.deleteTreeAbsolute(clone_path) catch |err| {
-            switch (err) {
-                error.FileNotFound => {},
-                else => return err,
-            }
-        };
-    }
+pub const Platform = enum {
+    GLFW,
+    SDL3,
+    SDLGPU3,
+};
 
-    inline for (&[_]bool{
-        false, true,
-    }) |docking| {
-        try toolbox.clone(if (docking) .imgui_docking else .imgui_master, path.getDcimgui(docking));
+fn updateFn(pkg_builder: *VerboseBuilder) !void {
+    try pkg_builder.remove(&.{"dcimgui"});
+    try pkg_builder.make(&.{"dcimgui"});
+    try pkg_builder.make(&.{ "dcimgui", "docking" });
+    try pkg_builder.make(&.{ "dcimgui", "docking", "backends" });
+    try pkg_builder.make(&.{ "dcimgui", "master" });
+    try pkg_builder.make(&.{ "dcimgui", "master", "backends" });
 
-        var dcimgui_dir = try std.fs.openDirAbsolute(path.getDcimgui(docking), .{
-            .iterate = true,
-        });
-        defer dcimgui_dir.close();
+    const imgui_master_dep = pkg_builder.verboseDependency("imgui-master");
+    const imgui_docking_dep = pkg_builder.verboseDependency("imgui-docking");
+    var imgui_builder: VerboseBuilder = undefined;
+    const dcimgui_dep = pkg_builder.verboseDependency("dcimgui");
+    var dcimgui_builder = VerboseBuilder.initFromDependency(dcimgui_dep);
+    var docking = false;
 
-        var it = dcimgui_dir.iterate();
-        while (try it.next()) |*entry| {
-            if (!std.mem.eql(u8, entry.name, "backends") and !std.mem.startsWith(u8, entry.name, "im")) {
-                try std.fs.deleteTreeAbsolute(toolbox.pathJoin(&.{
-                    path.getDcimgui(docking), entry.name,
-                }));
+    try dcimgui_builder.make(&.{"backends"});
+
+    for ([_]*std.Build.Dependency{ imgui_master_dep, imgui_docking_dep }) |imgui_dep| {
+        imgui_builder = VerboseBuilder.initFromDependency(imgui_dep);
+
+        while (try imgui_builder.iterate(&.{"."})) |*entry| {
+            switch (entry.kind) {
+                .file => if (std.mem.startsWith(u8, entry.name, "im")) {
+                    try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", entry.name }, &imgui_builder, &.{entry.name});
+                },
+                else => {},
             }
         }
 
-        var backends_dir = try std.fs.openDirAbsolute(path.getBackends(docking), .{
-            .iterate = true,
-        });
-        defer backends_dir.close();
+        while (try imgui_builder.iterate(&.{"backends"})) |*entry| {
+            switch (entry.kind) {
+                .file => if (std.mem.startsWith(u8, entry.name, "im")) {
+                    try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "backends", entry.name }, &imgui_builder, &.{ "backends", entry.name });
+                    try dcimgui_builder.remove(&.{ "backends", entry.name });
+                    try dcimgui_builder.copy(&.{ "backends", entry.name }, &imgui_builder, &.{ "backends", entry.name });
+                },
+                else => {},
+            }
+        }
 
-        try toolbox.clone(.dcimgui, path.getTmp());
+        try dcimgui_builder.remove(&.{"imgui.h"});
+        try dcimgui_builder.copy(&.{"imgui.h"}, &imgui_builder, &.{"imgui.h"});
+        try dcimgui_builder.remove(&.{"imgui_internal.h"});
+        try dcimgui_builder.copy(&.{"imgui_internal.h"}, &imgui_builder, &.{"imgui_internal.h"});
+        try dcimgui_builder.remove(&.{"imconfig.h"});
+        try dcimgui_builder.copy(&.{"imconfig.h"}, &imgui_builder, &.{"imconfig.h"});
+        _ = try dcimgui_builder.run(&.{ "python3", "dear_bindings.py", "--output", "dcimgui", "imgui.h" }, dcimgui_builder.ptrCwd().*);
+        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "dcimgui.h" }, &dcimgui_builder, &.{"dcimgui.h"});
+        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "dcimgui.cpp" }, &dcimgui_builder, &.{"dcimgui.cpp"});
 
-        const binding_py = toolbox.pathJoin(&.{
-            path.getTmp(), "dear_bindings.py",
-        });
-        const imconfig_h = toolbox.pathJoin(&.{
-            path.getDcimgui(docking), "imconfig.h",
-        });
-        const imgui_h = toolbox.pathJoin(&.{
-            path.getDcimgui(docking), "imgui.h",
-        });
-        const imgui_out = toolbox.pathJoin(&.{
-            path.getDcimgui(docking), "dcimgui",
-        });
-        const imgui_internal_h = toolbox.pathJoin(&.{
-            path.getDcimgui(docking), "imgui_internal.h",
-        });
-        const imgui_internal_out = toolbox.pathJoin(&.{
-            path.getDcimgui(docking), "dcimgui_internal",
-        });
-        try toolbox.run(.{
-            .argv = &[_][]const u8{
-                "python3", binding_py, "--output", imgui_out, imgui_h,
-            },
-        });
-        try toolbox.run(.{
-            .argv = &[_][]const u8{
-                "python3", binding_py, "-o", imgui_internal_out, "--include", imgui_h, imgui_internal_h,
-            },
-        });
+        _ = try dcimgui_builder.run(&.{ "python3", "dear_bindings.py", "-o", "dcimgui_internal", "--include", "imgui.h", "imgui_internal.h" }, dcimgui_builder.ptrCwd().*);
+        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "dcimgui_internal.h" }, &dcimgui_builder, &.{"dcimgui_internal.h"});
+        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "dcimgui_internal.cpp" }, &dcimgui_builder, &.{"dcimgui_internal.cpp"});
 
-        const templates = toolbox.pathJoin(&.{
-            path.getTmp(), "src", "templates",
-        });
-        var templates_dir = try std.fs.openDirAbsolute(templates, .{
-            .iterate = true,
-        });
-        defer templates_dir.close();
-
-        var backend_h: []const u8 = undefined;
-        var backend_cpp: []const u8 = undefined;
-        var backend_mm: []const u8 = undefined;
-        var out: []const u8 = undefined;
-        it = backends_dir.iterate();
-        while (try it.next()) |*entry| {
+        while (try dcimgui_builder.iterate(&.{"backends"})) |*entry| {
             switch (entry.kind) {
                 .file => {
-                    const stem = std.fs.path.stem(entry.name);
-                    const cpp_template = toolbox.pathJoin(&.{
-                        templates, toolbox.fmt("{s}-header-template.cpp", .{
-                            stem,
-                        }),
-                    });
-                    const h_template = toolbox.pathJoin(&.{
-                        templates, toolbox.fmt("{s}-header-template.h", .{
-                            stem,
-                        }),
-                    });
-                    backend_cpp = toolbox.pathJoin(&.{
-                        path.getBackends(docking), toolbox.fmt("{s}.cpp", .{
-                            stem,
-                        }),
-                    });
-                    backend_mm = toolbox.pathJoin(&.{
-                        path.getBackends(docking), toolbox.fmt("{s}.mm", .{
-                            stem,
-                        }),
-                    });
-                    const has_impl = toolbox_pkg.exists(backend_cpp) or toolbox_pkg.exists(backend_mm);
-                    if (toolbox_pkg.isCHeader(entry.name) and has_impl and std.mem.startsWith(u8, entry.name, "imgui") and !std.meta.isError(std.fs.accessAbsolute(cpp_template, .{})) and !std.meta.isError(std.fs.accessAbsolute(h_template, .{}))) {
-                        backend_h = toolbox.pathJoin(&.{
-                            path.getBackends(docking), entry.name,
-                        });
-                        out = toolbox.pathJoin(&.{
-                            path.getBackends(docking), toolbox.fmt("dc{s}", .{
-                                stem,
-                            }),
-                        });
-                        try toolbox.run(.{
-                            .argv = &[_][]const u8{
-                                "python3", binding_py, "--backend", "--include", imgui_h, "--imconfig-path", imconfig_h, "--output", out, backend_h,
-                            },
-                        });
+                    const backend = std.fs.path.stem(entry.name);
+                    const source_template = [_][]const u8{ "src", "templates", pkg_builder.fmt("{s}-header-template.cpp", .{backend}) };
+                    const header_template = [_][]const u8{ "src", "templates", pkg_builder.fmt("{s}-header-template.h", .{backend}) };
+                    const source = if (imgui_builder.access(&.{ "backends", imgui_builder.fmt("{s}.cpp", .{backend}) })) imgui_builder.fmt("{s}.cpp", .{backend}) else if (imgui_builder.access(&.{ "backends", imgui_builder.fmt("{s}.mm", .{backend}) })) imgui_builder.fmt("{s}.mm", .{backend}) else null;
+                    if (toolbox.isCHeader(entry.name) and
+                        std.mem.startsWith(u8, entry.name, "imgui") and
+                        (source != null) and
+                        dcimgui_builder.access(&source_template) and
+                        dcimgui_builder.access(&header_template))
+                    {
+                        _ = try dcimgui_builder.run(&.{ "python3", "dear_bindings.py", "--backend", "--include", "imgui.h", "--imconfig-path", "imconfig.h", "--output", pkg_builder.resolve(&.{ "backends", pkg_builder.fmt("dc{s}", .{backend}) }), pkg_builder.resolve(&.{ "backends", entry.name }) }, dcimgui_builder.ptrCwd().*);
+                        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "backends", pkg_builder.fmt("dc{s}", .{entry.name}) }, &dcimgui_builder, &.{ "backends", pkg_builder.fmt("dc{s}", .{entry.name}) });
+                        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "backends", pkg_builder.fmt("dc{s}", .{source.?}) }, &dcimgui_builder, &.{ "backends", pkg_builder.fmt("dc{s}", .{source.?}) });
                     }
                 },
                 else => {},
             }
         }
 
-        try std.fs.deleteTreeAbsolute(path.getTmp());
-
-        const copyme_path = try toolbox.buildRootJoin(&.{
-            "build", "copyme",
-        });
-
-        var copyme_dir = try std.fs.openDirAbsolute(copyme_path, .{
-            .iterate = true,
-        });
-        defer copyme_dir.close();
-
-        var walker = try copyme_dir.walk(toolbox.getAllocator());
-        defer walker.deinit();
-
-        while (try walker.next()) |*entry| {
-            const dest = toolbox.pathJoin(&.{
-                path.getBackends(docking), entry.path,
-            });
+        while (try pkg_builder.iterate(&.{"copyme"})) |*entry| {
             switch (entry.kind) {
-                .file => try toolbox.copy(toolbox.pathJoin(&.{
-                    copyme_path, entry.path,
-                }), dest),
-                .directory => try toolbox.make(dest),
-                else => return error.UnexpectedEntryKind,
+                .file => try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "backends", entry.name }, pkg_builder, &.{ "copyme", entry.name }),
+                else => {},
             }
         }
 
-        try toolbox.clean(&.{
-            "dcimgui",
-        }, &.{
-            ".mm",
-        });
+        docking = true;
     }
 }
 
-const FromZon = toolbox_pkg.Repositories(.{
-    .toolbox, .vulkan_zig, .glfw_zig, .sdl, .zigglgen,
-});
-
-const DuringExec = toolbox_pkg.Repositories(.{
-    .imgui_master, .imgui_docking, .dcimgui,
-});
-
-fn join_backend(builder: *std.Build, buf: *[]const u8, tag: []const u8, separator: []const u8) !void {
+fn joinBackend(pkg_builder: *VerboseBuilder, buf: *[]const u8, tag: []const u8, separator: []const u8) void {
     if (buf.len > 0) {
-        buf.* = try std.mem.join(builder.allocator, separator, &[_][]const u8{
-            buf.*, tag,
-        });
+        buf.* = pkg_builder.join(separator, &[_][]const u8{ buf.*, tag });
     } else buf.* = tag;
 }
 
-pub fn build(builder: *std.Build) !void {
-    const target = builder.standardTargetOptions(.{});
-    const optimize = builder.standardOptimizeOption(.{});
-
-    const list_renderers_opt = builder.option(bool, "list-renderers", "Print available renderer backends. This options prevail on list-platforms option") orelse false;
-    const list_platforms_opt = builder.option(bool, "list-platforms", "Print available platform backends") orelse false;
-    const separator_opt = builder.option([]const u8, "separator", "Used separator instead of default newline character") orelse "\n";
+fn list(pkg_builder: *VerboseBuilder) bool {
+    const list_renderers_opt = pkg_builder.option(bool, false, "list-renderers", "Print available renderer backends. This options prevail on list-platforms option");
+    const list_platforms_opt = pkg_builder.option(bool, false, "list-platforms", "Print available platform backends");
+    const separator_opt = pkg_builder.option([]const u8, "\n", "separator", "Used separator instead of default newline character");
 
     var stdout_buffer: [1024]u8 = undefined;
     var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
@@ -203,119 +123,180 @@ pub fn build(builder: *std.Build) !void {
         var buf: []const u8 = "";
         if (list_renderers_opt) {
             for (std.enums.values(Renderer)) |backend| {
-                switch (target.result.os.tag) {
+                switch (pkg_builder.getOs()) {
                     .windows => if (backend == .Metal) continue,
                     .macos => {},
                     else => if (backend == .Metal) continue,
                 }
-                try join_backend(builder, &buf, @tagName(backend), separator_opt);
+                joinBackend(pkg_builder, &buf, @tagName(backend), separator_opt);
             }
         } else {
-            for (std.enums.values(Platform)) |backend| try join_backend(builder, &buf, @tagName(backend), separator_opt);
+            for (std.enums.values(Platform)) |backend| joinBackend(pkg_builder, &buf, @tagName(backend), separator_opt);
         }
-        try stdout.print("{s}\n", .{buf});
-        try stdout.flush();
-        return;
+        stdout.print("{s}\n", .{buf}) catch @panic("OOM");
+        stdout.flush() catch @panic("OOM");
+        return true;
+    }
+    return false;
+}
+
+pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, docking: bool, flags: *std.ArrayListUnmanaged([]const u8)) !void {
+    const renderers = pkg_builder.option([]const Renderer, &.{}, "renderers", "Specify the renderer backends");
+    const platforms = pkg_builder.option([]const Platform, &.{}, "platforms", "Specify the platform backends");
+
+    if (renderers.len == 0) std.log.warn("Unspecified renderer backend", .{});
+    for (renderers) |renderer| {
+        switch (renderer) {
+            .Vulkan => {
+                if (std.mem.indexOfScalar(Platform, platforms, .GLFW) == null) {
+                    const vulkan_dep = pkg_builder.verboseDependency("vulkan_zig");
+                    const vulkan_artifact = pkg_builder.artifact(vulkan_dep, "vulkan");
+
+                    pkg_builder.linkLibrary(lib, vulkan_artifact);
+                    pkg_builder.installLibraryHeaders(lib, vulkan_artifact);
+                }
+                flags.appendAssumeCapacity("-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES");
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_vulkan.cpp" }, flags.items);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_vulkan.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_vulkan.h" }, &.{ "backends", "imgui_impl_vulkan.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_vulkan.h" }, &.{ "backends", "dcimgui_impl_vulkan.h" });
+            },
+            .OpenGL3 => {
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_opengl3.cpp" }, flags.items);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_opengl3.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_opengl3.h" }, &.{ "backends", "imgui_impl_opengl3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_opengl3.h" }, &.{ "backends", "dcimgui_impl_opengl3.h" });
+
+                const gl_bindings = zigglgen.generateBindingsModule(pkg_builder.ptrBuilder(), .{
+                    .api = .gl,
+                    .version = pkg_builder.option(zigglgen.GeneratorOptions.Version, .@"4.6", "gl_version", "Specify the gl version"),
+                    .profile = .core,
+                    .extensions = pkg_builder.option([]const zigglgen.GeneratorOptions.Extension, &.{}, "gl_ext", "Specify the gl extensions"),
+                });
+
+                pkg_builder.addImport(lib, "gl", gl_bindings);
+            },
+            .Metal => {
+                if (pkg_builder.getOs() != .macos and pkg_builder.getOs() != .ios) {
+                    std.log.err("Metal renderer is only available on macOS/iOS", .{});
+                    return error.UnsupportedTarget;
+                }
+
+                // Link Metal frameworks
+                pkg_builder.linkFramework(lib, "Metal");
+                pkg_builder.linkFramework(lib, "MetalKit");
+                pkg_builder.linkFramework(lib, "Cocoa");
+                pkg_builder.linkFramework(lib, "IOKit");
+                pkg_builder.linkFramework(lib, "CoreVideo");
+                pkg_builder.linkFramework(lib, "QuartzCore");
+
+                // Add Metal backend sources (compile separately to avoid header conflicts)
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_metal.mm" }, flags.items);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_metal.mm" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_metal.h" }, &.{ "backends", "imgui_impl_metal.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_metal.h" }, &.{ "backends", "dcimgui_impl_metal.h" });
+            },
+        }
     }
 
-    const docking = builder.option(bool, "docking", "master or docking ocornut/imgui branch ?") orelse false;
+    if (platforms.len == 0) std.log.warn("Unspecified platform backend", .{});
+    for (platforms) |platform| {
+        switch (platform) {
+            .GLFW => {
+                const glfw_dep = pkg_builder.verboseDependency("glfw_zig");
+                const glfw_artifact = pkg_builder.artifact(glfw_dep, "glfw");
 
-    var toolbox = try Toolbox.init(FromZon, DuringExec, builder, optimize, .cimgui_zig, "0x4e4978d2929b7bd9", &.{
-        "build", "dcimgui",
-    }, .{
-        .toolbox = .{
-            .name = "tiawl/toolbox",
-            .host = .github,
-            .ref = .tag,
-        },
-        .vulkan_zig = .{
-            .name = "tiawl/vulkan.zig",
-            .host = .github,
-            .ref = .tag,
-        },
-        .glfw_zig = .{
-            .name = "tiawl/glfw.zig",
-            .host = .github,
-            .ref = .tag,
-        },
-        .sdl = .{
-            .name = "castholm/SDL",
-            .host = .github,
-            .ref = .commit,
-        },
-        .zigglgen = .{
-            .name = "castholm/zigglgen",
-            .host = .github,
-            .ref = .commit,
-        },
-    }, .{
-        .imgui_master = .{
-            .name = "ocornut/imgui",
-            .host = .github,
-            .ref = .tag,
-        },
-        .imgui_docking = .{
-            .name = "ocornut/imgui",
-            .host = .github,
-            .ref = .tag,
-            .branch = "docking",
-        },
-        .dcimgui = .{
-            .name = "dearimgui/dear_bindings",
-            .host = .github,
-            .ref = .commit,
-        },
-    });
-    defer toolbox.deinit();
+                for (glfw_artifact.root_module.include_dirs.items) |*included| {
+                    switch (included.*) {
+                        .path => pkg_builder.addIncludePath(lib, included.path),
+                        .config_header_step => pkg_builder.addConfigHeaderIntoCompile(lib, included.config_header_step),
+                        else => {},
+                    }
+                }
 
-    const path = try Paths.init(&toolbox);
+                pkg_builder.linkLibrary(lib, glfw_artifact);
+                pkg_builder.installLibraryHeaders(lib, glfw_artifact);
 
-    if (toolbox.getUpdate()) try update(&toolbox, &path);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_glfw.cpp" }, flags.items);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_glfw.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_glfw.h" }, &.{ "backends", "imgui_impl_glfw.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_glfw.h" }, &.{ "backends", "dcimgui_impl_glfw.h" });
 
-    const lib = builder.addLibrary(.{
-        .name = "cimgui",
-        .root_module = std.Build.Module.create(builder, .{
-            .root_source_file = builder.addWriteFiles().add("empty.zig", ""),
-            .target = target,
-            .optimize = optimize,
-        }),
-    });
+                pkg_builder.addCMacro(lib, "GLFW_INCLUDE_NONE", "1");
+                if (std.mem.indexOfScalar(Renderer, renderers, .Vulkan) != null) {
+                    pkg_builder.addCMacro(lib, "GLFW_INCLUDE_VULKAN", "1");
+                }
+            },
+            .SDL3 => {
+                const sdl_dep = pkg_builder.dependency("sdl");
+                const sdl_artifact = pkg_builder.artifact(sdl_dep, "SDL3");
+                pkg_builder.linkLibrary(lib, sdl_artifact);
+                pkg_builder.installLibraryHeaders(lib, sdl_artifact);
 
-    var flags_buffer: [flags_size][]const u8 = undefined;
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdl3.cpp" }, flags.items);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdl3.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdl3.h" }, &.{ "backends", "imgui_impl_sdl3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdl3.h" }, &.{ "backends", "dcimgui_impl_sdl3.h" });
+            },
+            .SDLGPU3 => {
+                const sdl_dep = pkg_builder.dependency("sdl");
+                const sdl_artifact = pkg_builder.artifact(sdl_dep, "SDL3");
+                pkg_builder.linkLibrary(lib, sdl_artifact);
+                pkg_builder.installLibraryHeaders(lib, sdl_artifact);
+
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdl3.cpp" }, flags.items);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdl3.cpp" }, flags.items);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdlgpu3.cpp" }, flags.items);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdlgpu3.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdl3.h" }, &.{ "backends", "imgui_impl_sdl3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdl3.h" }, &.{ "backends", "dcimgui_impl_sdl3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdlgpu3.h" }, &.{ "backends", "imgui_impl_sdlgpu3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdlgpu3.h" }, &.{ "backends", "dcimgui_impl_sdlgpu3.h" });
+            },
+        }
+    }
+    pkg_builder.addCMacro(lib, "IMGUI_USE_LEGACY_CRC32_ADLER", "1");
+}
+
+fn buildFn(pkg_builder: *VerboseBuilder) !void {
+    const docking = pkg_builder.option(bool, false, "docking", "master or docking ocornut/imgui branch ?");
+
+    const lib = pkg_builder.addLibrary("cimgui");
+    pkg_builder.linkLibCpp(lib);
+
+    pkg_builder.addInclude(lib, &.{ "dcimgui", if (docking) "docking" else "master" });
+
+    while (try pkg_builder.iterate(&.{ "dcimgui", if (docking) "docking" else "master" })) |*entry| {
+        if (toolbox.isCHeader(entry.name)) pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", entry.name }, &.{entry.name});
+    }
+
+    var flags_buffer: [16][]const u8 = undefined;
     var flags = std.ArrayListUnmanaged([]const u8).initBuffer(&flags_buffer);
 
-    var root_dir = try builder.build_root.handle.openDir(".", .{
-        .iterate = true,
-    });
-    defer root_dir.close();
-
-    var walk = try root_dir.walk(builder.allocator);
-
-    while (try walk.next()) |*entry| {
-        if (std.mem.startsWith(u8, entry.path, "dcimgui") and entry.kind == .directory) {
-            toolbox.addInclude(lib, entry.path);
+    while (try pkg_builder.iterate(&.{ "dcimgui", if (docking) "docking" else "master" })) |entry| {
+        switch (entry.kind) {
+            .file => {
+                if ((std.mem.startsWith(u8, entry.name, "imgui") or
+                    std.mem.startsWith(u8, entry.name, "dcimgui")) and
+                    toolbox.isCppSource(entry.name))
+                {
+                    pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", entry.name }, flags.items);
+                }
+            },
+            else => {},
         }
     }
 
-    var dcimgui_dir = try std.fs.openDirAbsolute(path.getDcimgui(docking), .{
-        .iterate = true,
-    });
-    defer dcimgui_dir.close();
+    try buildBackends(pkg_builder, lib, docking, &flags);
 
-    toolbox.addHeader(lib, path.getDcimgui(docking), ".", &.{
-        ".h",
-    });
+    pkg_builder.installArtifact(lib);
+}
 
-    lib.linkLibCpp();
+pub fn build(builder: *std.Build) !void {
+    var pkg_builder = try VerboseBuilder.init(builder, build_zig_zon, buildFn, updateFn);
 
-    var it = dcimgui_dir.iterate();
-    while (try it.next()) |*entry| {
-        if ((std.mem.startsWith(u8, entry.name, "imgui") or std.mem.startsWith(u8, entry.name, "dcimgui")) and toolbox_pkg.isCppSource(entry.name) and entry.kind == .file) {
-            try toolbox.addSource(lib, path.getDcimgui(docking), entry.name, flags.items);
-        }
-    }
-
-    try backendOptions(&toolbox, builder, lib, &target, &optimize, &path, docking, &flags);
-
-    builder.installArtifact(lib);
+    if (list(&pkg_builder)) return;
+    try pkg_builder.fetch(build_zig_zon);
+    try pkg_builder.update();
+    try pkg_builder.build();
 }

@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: mlugg/setup-zig@v2.0.5
+    - uses: mlugg/setup-zig@v2
     - name: Check zig is canonical
       shell: bash
       run: |
@@ -25,7 +25,7 @@ jobs:
     runs-on: "${{ matrix.os }}-latest"
     steps:
     - uses: actions/checkout@v4
-    - uses: mlugg/setup-zig@v2.0.5
+    - uses: mlugg/setup-zig@v2
     - name: Test building examples
       shell: bash
       run: |
@@ -44,7 +44,7 @@ jobs:
 
     - uses: actions/checkout@v4
     - name: Setup Zig
-      uses: mlugg/setup-zig@v2.0.5
+      uses: mlugg/setup-zig@v2
 
     - name: Activate python virtual env & install pip packages
       env:
@@ -61,12 +61,4 @@ jobs:
       shell: 'bash'
       run: |
         source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
-        zig build -Dupdate
-
-    - name: Test fetching
-      env:
-        RUNNER_TMP: "${{ runner.temp }}"
-      shell: 'bash'
-      run: |
-        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
-        zig build -Dfetch
+        zig build -Dupdate -Dverbose
