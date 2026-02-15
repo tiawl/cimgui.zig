@@ -206,6 +206,14 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
                 const glfw_dep = pkg_builder.verboseDependency("glfw_zig");
                 const glfw_artifact = pkg_builder.artifact(glfw_dep, "glfw");
 
+                for (glfw_artifact.root_module.include_dirs.items) |*included| {
+                    switch (included.*) {
+                        .path => pkg_builder.addIncludePath(lib, included.path),
+                        .config_header_step => pkg_builder.addConfigHeaderIntoCompile(lib, included.config_header_step),
+                        else => {},
+                    }
+                }
+
                 pkg_builder.linkLibrary(lib, glfw_artifact);
                 pkg_builder.installLibraryHeaders(lib, glfw_artifact);
 
