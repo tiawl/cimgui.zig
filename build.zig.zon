@@ -28,12 +28,12 @@
             .hash = "toolbox-2.0.0-kRAu4EF8AAC9LKCNAHFDbj1RzTI4yczjgz7PL_9YjYqb",
         },
         .vulkan_zig = .{
-            .url = "git+https://github.com/tiawl/vulkan.zig#da247e19cfb0e26967e902f539f338e45ad67bce",
-            .hash = "vulkan_zig-1.0.0-p2wg3taBPQFFVmGwWu3vMizhARKnPPgF2n4WyLOP6S-V",
+            .url = "git+https://github.com/tiawl/vulkan.zig?ref=toolbox-2.0.0#e916fb73247b0664ca6df1a19f45718e61ace719",
+            .hash = "vulkan_zig-1.0.0-p2wg3uCBPQGi_kx66D1m006wmtjL5GxNsFuS05dRmjmw",
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig#a1b7cf9286a9e8eee6c618f0ff0c3a3f5f26463a",
-            .hash = "glfw_zig-1.0.0-NrvYo_PRGQCJlpSBSjOn8OTWQL4kM2KPuc7OI507_u3o",
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=toolbox-2.0.0#5072e2f08f3d1f90939dbf9ebd8456577b3b879a",
+            .hash = "glfw_zig-1.0.0-NrvYozPSGQDcZZ55GgThpnHTauUKQMelDJIryXu1HL0I",
         },
     },
     .minimum_zig_version = "0.15.2",
