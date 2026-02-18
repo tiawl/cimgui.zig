@@ -58,7 +58,7 @@ CIMGUI_IMPL_API void cImGui_ImplSDLRenderer2_RenderDrawData(ImDrawData* draw_dat
 CIMGUI_IMPL_API void cImGui_ImplSDLRenderer2_CreateDeviceObjects(void);
 CIMGUI_IMPL_API void cImGui_ImplSDLRenderer2_DestroyDeviceObjects(void);
 
-// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
+// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = nullptr to handle this manually.
 CIMGUI_IMPL_API void cImGui_ImplSDLRenderer2_UpdateTexture(ImTextureData* tex);
 
 // [BETA] Selected render state data shared with callbacks.

@@ -151,4 +151,9 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplSDL3_SetGamepadModeEx(cimgui::ImGui_Impl
     ::ImGui_ImplSDL3_SetGamepadMode(static_cast<::ImGui_ImplSDL3_GamepadMode>(mode), reinterpret_cast<::SDL_Gamepad**>(manual_gamepads_array), manual_gamepads_count);
 }
 
+CIMGUI_IMPL_API void cimgui::cImGui_ImplSDL3_SetMouseCaptureMode(cimgui::ImGui_ImplSDL3_MouseCaptureMode mode)
+{
+    ::ImGui_ImplSDL3_SetMouseCaptureMode(static_cast<::ImGui_ImplSDL3_MouseCaptureMode>(mode));
+}
+
 #endif // #ifndef IMGUI_DISABLE

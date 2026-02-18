@@ -71,6 +71,18 @@ typedef enum
 } ImGui_ImplSDL2_GamepadMode;
 CIMGUI_IMPL_API void cImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode mode); // Implied manual_gamepads_array = nullptr, manual_gamepads_count = -1
 CIMGUI_IMPL_API void cImGui_ImplSDL2_SetGamepadModeEx(ImGui_ImplSDL2_GamepadMode mode, struct _SDL_GameController** manual_gamepads_array /* = nullptr */, int manual_gamepads_count /* = -1 */);
+
+// (Advanced, for X11 users) Override Mouse Capture mode. Mouse capture allows receiving updated mouse position after clicking inside our window and dragging outside it.
+// Having this 'Enabled' is in theory always better. But, on X11 if you crash/break to debugger while capture is active you may temporarily lose access to your mouse.
+// The best solution is to setup your debugger to automatically release capture, e.g. 'setxkbmap -option grab:break_actions && xdotool key XF86Ungrab' or via a GDB script. See #3650.
+// But you may independently decide on X11, when a debugger is attached, to set this value to ImGui_ImplSDL2_MouseCaptureMode_Disabled.
+typedef enum
+{
+    ImGui_ImplSDL2_MouseCaptureMode_Enabled,
+    ImGui_ImplSDL2_MouseCaptureMode_EnabledAfterDrag,
+    ImGui_ImplSDL2_MouseCaptureMode_Disabled,
+} ImGui_ImplSDL2_MouseCaptureMode;
+CIMGUI_IMPL_API void cImGui_ImplSDL2_SetMouseCaptureMode(ImGui_ImplSDL2_MouseCaptureMode mode);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
