@@ -57,7 +57,7 @@ CIMGUI_IMPL_API void cImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data);
 CIMGUI_IMPL_API bool cImGui_ImplOpenGL3_CreateDeviceObjects(void);
 CIMGUI_IMPL_API void cImGui_ImplOpenGL3_DestroyDeviceObjects(void);
 
-// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
+// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = nullptr to handle this manually.
 CIMGUI_IMPL_API void cImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex);
 
 // Configuration flags to add in your imconfig file:

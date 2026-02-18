@@ -51,11 +51,19 @@ extern "C"
 // Setup Emscripten default if not specified.
 #if defined(__EMSCRIPTEN__)&&!defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN)&&!defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)
 #include <emscripten/version.h>
+#ifdef __EMSCRIPTEN_MAJOR__
+#if (__EMSCRIPTEN_MAJOR__ >= 4)&&(__EMSCRIPTEN_MINOR__ >= 0)&&(__EMSCRIPTEN_TINY__ >= 10)
+#define IMGUI_IMPL_WEBGPU_BACKEND_DAWN
+#else
+#define IMGUI_IMPL_WEBGPU_BACKEND_WGPU
+#endif // #if (__EMSCRIPTEN_MAJOR__ >= 4)&&(__EMSCRIPTEN_MINOR__ >= 0)&&(__EMSCRIPTEN_TINY__ >= 10)
+#else
 #if (__EMSCRIPTEN_major__ >= 4)&&(__EMSCRIPTEN_minor__ >= 0)&&(__EMSCRIPTEN_tiny__ >= 10)
 #define IMGUI_IMPL_WEBGPU_BACKEND_DAWN
 #else
 #define IMGUI_IMPL_WEBGPU_BACKEND_WGPU
 #endif // #if (__EMSCRIPTEN_major__ >= 4)&&(__EMSCRIPTEN_minor__ >= 0)&&(__EMSCRIPTEN_tiny__ >= 10)
+#endif // #ifdef __EMSCRIPTEN_MAJOR__
 #endif // #if defined(__EMSCRIPTEN__)&&!defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN)&&!defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)
 #include <webgpu/webgpu.h>
 #if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)&&!defined(__EMSCRIPTEN__)
@@ -82,7 +90,7 @@ CIMGUI_IMPL_API void cImGui_ImplWGPU_RenderDrawData(ImDrawData* draw_data, WGPUR
 CIMGUI_IMPL_API bool cImGui_ImplWGPU_CreateDeviceObjects(void);
 CIMGUI_IMPL_API void cImGui_ImplWGPU_InvalidateDeviceObjects(void);
 
-// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
+// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = nullptr to handle this manually.
 CIMGUI_IMPL_API void cImGui_ImplWGPU_UpdateTexture(ImTextureData* tex);
 
 // [BETA] Selected render state data shared with callbacks.

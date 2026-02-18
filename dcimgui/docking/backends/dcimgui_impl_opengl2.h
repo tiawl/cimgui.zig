@@ -53,7 +53,7 @@ CIMGUI_IMPL_API void cImGui_ImplOpenGL2_RenderDrawData(ImDrawData* draw_data);
 CIMGUI_IMPL_API bool cImGui_ImplOpenGL2_CreateDeviceObjects(void);
 CIMGUI_IMPL_API void cImGui_ImplOpenGL2_DestroyDeviceObjects(void);
 
-// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
+// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = nullptr to handle this manually.
 CIMGUI_IMPL_API void cImGui_ImplOpenGL2_UpdateTexture(ImTextureData* tex);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus

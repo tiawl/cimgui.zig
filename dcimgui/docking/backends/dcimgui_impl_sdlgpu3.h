@@ -67,7 +67,7 @@ CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_RenderDrawDataEx(ImDrawData* draw_data, 
 CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_CreateDeviceObjects(void);
 CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_DestroyDeviceObjects(void);
 
-// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
+// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = nullptr to handle this manually.
 CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_UpdateTexture(ImTextureData* tex);
 
 // [BETA] Selected render state data shared with callbacks.
@@ -76,7 +76,8 @@ CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_UpdateTexture(ImTextureData* tex);
 struct ImGui_ImplSDLGPU3_RenderState_t
 {
     SDL_GPUDevice*  Device;
-    SDL_GPUSampler* SamplerDefault;  // Default sampler (bilinear filtering)
+    SDL_GPUSampler* SamplerLinear;   // Bilinear filtering sampler
+    SDL_GPUSampler* SamplerNearest;  // Nearest/point filtering sampler
     SDL_GPUSampler* SamplerCurrent;  // Current sampler (may be changed by callback)
 };
 #endif// #ifndef IMGUI_DISABLE

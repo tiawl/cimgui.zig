@@ -50,7 +50,7 @@ CIMGUI_IMPL_API void cImGui_ImplDX10_RenderDrawData(ImDrawData* draw_data);
 CIMGUI_IMPL_API bool cImGui_ImplDX10_CreateDeviceObjects(void);
 CIMGUI_IMPL_API void cImGui_ImplDX10_InvalidateDeviceObjects(void);
 
-// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
+// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = nullptr to handle this manually.
 CIMGUI_IMPL_API void cImGui_ImplDX10_UpdateTexture(ImTextureData* tex);
 
 // [BETA] Selected render state data shared with callbacks.
@@ -59,7 +59,8 @@ CIMGUI_IMPL_API void cImGui_ImplDX10_UpdateTexture(ImTextureData* tex);
 struct ImGui_ImplDX10_RenderState_t
 {
     ID3D10Device*       Device;
-    ID3D10SamplerState* SamplerDefault;
+    ID3D10SamplerState* SamplerLinear;
+    ID3D10SamplerState* SamplerNearest;
     ID3D10Buffer*       VertexConstantBuffer;
 };
 #endif// #ifndef IMGUI_DISABLE

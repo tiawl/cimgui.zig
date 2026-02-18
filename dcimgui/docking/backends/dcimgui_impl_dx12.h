@@ -42,6 +42,11 @@ extern "C"
 #ifndef IMGUI_DISABLE
 #include <dxgiformat.h>
 #include <d3d12.h>
+// Clang/GCC warnings with -Weverything
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wold-style-cast"  // warning: use of old-style cast
+#endif // #if defined(__clang__)
 typedef struct ImGui_ImplDX12_InitInfo_ImDrawData_t ImGui_ImplDX12_InitInfo_ImDrawData;
 // Initialization data, for ImGui_ImplDX12_Init()
 struct ImGui_ImplDX12_InitInfo_t
@@ -80,7 +85,7 @@ CIMGUI_IMPL_API bool cImGui_ImplDX12_InitID3D12DevicePtr(ID3D12Device* device, i
 CIMGUI_IMPL_API bool cImGui_ImplDX12_CreateDeviceObjects(void);
 CIMGUI_IMPL_API void cImGui_ImplDX12_InvalidateDeviceObjects(void);
 
-// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
+// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = nullptr to handle this manually.
 CIMGUI_IMPL_API void cImGui_ImplDX12_UpdateTexture(ImTextureData* tex);
 
 // [BETA] Selected render state data shared with callbacks.
@@ -91,6 +96,10 @@ struct ImGui_ImplDX12_RenderState_t
     ID3D12Device*              Device;
     ID3D12GraphicsCommandList* CommandList;
 };
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif // #if defined(__clang__)
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block
