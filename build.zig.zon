@@ -3,8 +3,8 @@
     .version = "1.0.0",
     .dependencies = .{
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL#887fa805e40d5c7bb3955ae69b89ed566c6a0471",
-            .hash = "sdl-0.4.0+3.4.0-SDL--rq2owEZsySGuHCuVJ9naEvH3i3e_pyUIjziBtJ-",
+            .url = "git+https://github.com/castholm/SDL#95980cb420254ff4578657a5a85abfb44046507a",
+            .hash = "sdl-0.4.1+3.4.2-SDL--umApAGq9hhwKcquz9eEQtR1x7S3pnQUe2mNpjVj",
         },
         .zigglgen = .{
             .url = "git+https://github.com/castholm/zigglgen#6b21369ac50de8826f8af60a7edb33693b4ec7bf",
