@@ -11,9 +11,9 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Setup Zig
       uses: mlugg/setup-zig@v2
     - name: Install apt packages
@@ -73,7 +73,7 @@ jobs:
       if: steps.fetch.conclusion == 'success' && steps.diff.outputs.len != '0'
       env:
         BRANCH: "bot"
-        DEFAULT: "trunk"
+        DEFAULT: "${{ github.event.repository.default_branch }}"
         GH_TOKEN: "${{ github.token }}"
         TITLE: "Update dependencies"
       shell: bash

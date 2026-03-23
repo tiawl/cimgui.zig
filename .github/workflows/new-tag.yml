@@ -13,9 +13,9 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         repository: "${{ github.repository }}"
 
@@ -23,7 +23,7 @@ jobs:
       env:
         NAME: "GitHub Actions[bot]"
         EMAIL: "<>"
-        BRANCH: "trunk"
+        BRANCH: "${{ github.event.repository.default_branch }}"
         NEW_TAG: "${{ github.event.inputs.new-tag }}"
         GH_TOKEN: "${{ github.token }}"
       shell: bash

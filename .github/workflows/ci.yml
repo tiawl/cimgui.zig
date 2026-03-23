@@ -3,13 +3,13 @@ name: ci
 on:
   pull_request:
     branches:
-      - trunk
+      - zig-stable
 
 jobs:
   linter:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: mlugg/setup-zig@v2
     - name: Check zig is canonical
       shell: bash
@@ -19,12 +19,12 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu
-          - windows
-          - macos
-    runs-on: "${{ matrix.os }}-latest"
+          - ubuntu-24.04
+          - windows-2025
+          - macos-15
+    runs-on: "${{ matrix.os }}"
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: mlugg/setup-zig@v2
     - name: Test building examples
       shell: bash
@@ -33,7 +33,7 @@ jobs:
         env -C "${GITHUB_WORKSPACE}/examples" zig build
         env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking
   maintainance:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - name: Install packages
       shell: 'bash'
@@ -42,7 +42,7 @@ jobs:
         sudo apt-get install -y python3-venv mesa-utils
         printf 'ACTIVATE_DIR=bin\n' >> "${GITHUB_ENV}"
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Setup Zig
       uses: mlugg/setup-zig@v2
 
