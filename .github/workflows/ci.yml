@@ -4,17 +4,19 @@ on:
   pull_request:
     branches:
       - zig-stable
+      - zig-nightly
 
 jobs:
   linter:
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v6
+      with:
+        ref: "${{ github.event.pull_request.head.ref }}"
     - uses: mlugg/setup-zig@v2
     - name: Check zig is canonical
-      shell: bash
-      run: |
-        zig fmt --check .
+      shell: 'bash'
+      run: zig fmt --check .
   examples:
     strategy:
       matrix:
@@ -25,10 +27,13 @@ jobs:
     runs-on: "${{ matrix.os }}"
     steps:
     - uses: actions/checkout@v6
+      with:
+        ref: "${{ github.event.pull_request.head.ref }}"
     - uses: mlugg/setup-zig@v2
     - name: Test building examples
-      shell: bash
+      shell: 'bash'
       run: |
+        set -x
         unset ZIG_LOCAL_CACHE_DIR
         env -C "${GITHUB_WORKSPACE}/examples" zig build
         env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking
@@ -38,11 +43,14 @@ jobs:
     - name: Install packages
       shell: 'bash'
       run: |
+        set -x
         sudo apt-get update --fix-missing
         sudo apt-get install -y python3-venv mesa-utils
         printf 'ACTIVATE_DIR=bin\n' >> "${GITHUB_ENV}"
 
     - uses: actions/checkout@v6
+      with:
+        ref: "${{ github.event.pull_request.head.ref }}"
     - name: Setup Zig
       uses: mlugg/setup-zig@v2
 
@@ -51,6 +59,7 @@ jobs:
         RUNNER_TMP: "${{ runner.temp }}"
       shell: 'bash'
       run: |
+        set -x
         python3 -m venv "${RUNNER_TMP}/venv"
         source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
         pip install ply
@@ -60,5 +69,6 @@ jobs:
         RUNNER_TMP: "${{ runner.temp }}"
       shell: 'bash'
       run: |
+        set -x
         source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
         zig build -Dupdate -Dverbose

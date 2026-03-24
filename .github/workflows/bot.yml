@@ -11,14 +11,46 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
+    strategy:
+      matrix:
+        branch:
+          - zig-stable
+          - zig-nightly
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v6
+      with:
+        repository: "${{ github.repository }}"
+        ref: "${{ matrix.branch }}"
+
+    - name: Close every bot PRs
+      env:
+        GH_TOKEN: "${{ github.token }}"
+      shell: 'bash'
+      run: |
+        set -x
+        declare -a pr_list=( $(gh pr list --author '@me' --state open --json 'number' | jq '.[] | .number') )
+        for pr_nr in ${pr_list[@]}
+        do
+          gh pr close "${pr_nr}" --comment 'Outdated PR/issue' --delete-branch
+        done
+    - name: Check bot PRs are all closed
+      env:
+        GH_TOKEN: "${{ github.token }}"
+      shell: 'bash'
+      run: |
+        set -x
+        if [[ "$(gh pr list --author '@me' --state open --json 'number' | jq length)" != '0' ]]
+        then
+          exit 1
+        fi
+
     - name: Setup Zig
       uses: mlugg/setup-zig@v2
     - name: Install apt packages
-      shell: bash
+      shell: 'bash'
       run: |
+        set -x
         sudo apt-get update --fix-missing
         sudo apt-get install -y python3-venv mesa-utils
         printf 'ACTIVATE_DIR=bin\n' >> "${GITHUB_ENV}"
@@ -26,37 +58,41 @@ jobs:
     - name: Activate python virtual env & install pip packages
       env:
         RUNNER_TMP: "${{ runner.temp }}"
-      shell: bash
+      shell: 'bash'
       run: |
+        set -x
         python3 -m venv "${RUNNER_TMP}/venv"
         source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
         pip install ply
 
     - name: Setup git user information
       env:
-        BRANCH: "bot"
+        CHILD_BRANCH: "${{ matrix.branch }}-bot"
         EMAIL: "<>"
         NAME: "GitHub Actions[bot]"
-      shell: bash
+      shell: 'bash'
       run: |
+        set -x
         git config user.name "${NAME}"
         git config user.email "${EMAIL}"
-        git checkout -b "${BRANCH}"
+        git checkout -b "${CHILD_BRANCH}"
 
     - name: Fetch
       id: fetch
       env:
         RUNNER_TMP: "${{ runner.temp }}"
-      shell: bash
+      shell: 'bash'
       run: |
+        set -x
         source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
         zig build -Dfetch -Dverbose
 
     - name: Diff
       if: steps.fetch.conclusion == 'success'
       id: diff
-      shell: bash
+      shell: 'bash'
       run: |
+        set -x
         diffs="$(git diff HEAD --name-only | wc -l)"
         printf 'len=%s\n' "${diffs}" >> "${GITHUB_OUTPUT}"
 
@@ -64,21 +100,22 @@ jobs:
       if: steps.fetch.conclusion == 'success' && steps.diff.outputs.len != '0'
       env:
         RUNNER_TMP: "${{ runner.temp }}"
-      shell: bash
+      shell: 'bash'
       run: |
+        set -x
         source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
         zig build -Dupdate -Dverbose
 
     - name: Create Pull Request
       if: steps.fetch.conclusion == 'success' && steps.diff.outputs.len != '0'
       env:
-        BRANCH: "bot"
-        DEFAULT: "${{ github.event.repository.default_branch }}"
+        CHILD_BRANCH: "${{ matrix.branch }}-bot"
+        PARENT_BRANCH: "${{ matrix.branch }}"
         GH_TOKEN: "${{ github.token }}"
-        TITLE: "Update dependencies"
-      shell: bash
+      shell: 'bash'
       run: |
+        set -x
         git add -A
-        git commit -m "Bot: ${TITLE}"
-        git push --force --set-upstream origin "${BRANCH}"
-        gh pr create --base "${DEFAULT}" --fill --reviewer "${GITHUB_REPOSITORY_OWNER}"
+        git commit -m 'Bot: Update dependencies'
+        git push --force --set-upstream origin "${CHILD_BRANCH}"
+        gh pr create --base "${PARENT_BRANCH}" --fill --reviewer "${GITHUB_REPOSITORY_OWNER}"
