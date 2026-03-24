@@ -31,7 +31,7 @@ fn linkLibAndImportModules(lib: *std.Build.Step.Compile, exe: *std.Build.Step.Co
         exe.root_module.addImport("gl", lib.root_module.import_table.get("gl").?);
         _ = lib.root_module.import_table.swapRemove("gl");
     }
-    exe.linkLibrary(lib);
+    exe.root_module.linkLibrary(lib);
 }
 
 pub fn build(builder: *std.Build) !void {
@@ -40,17 +40,16 @@ pub fn build(builder: *std.Build) !void {
 
     const pattern = builder.option([]const u8, "pattern", "Simple & stupid indexOf pattern matching to select examples") orelse "";
 
-    var examples_dir =
-        try builder.build_root.handle.openDir(".", .{
-            .iterate = true,
-        });
-    defer examples_dir.close();
+    var examples_dir = try builder.build_root.handle.openDir(builder.graph.io, ".", .{
+        .iterate = true,
+    });
+    defer examples_dir.close(builder.graph.io);
 
     var exe: *std.Build.Step.Compile = undefined;
     var cimgui_dep: *std.Build.Dependency = undefined;
     var it = examples_dir.iterate();
     const docking = builder.option(bool, "docking", "use master or docking ocornut/imgui branch ?") orelse false;
-    while (try it.next()) |*entry| {
+    while (try it.next(builder.graph.io)) |*entry| {
         if (entry.kind == .directory and
             std.mem.startsWith(u8, entry.name, "example_") and
             std.mem.indexOf(u8, entry.name, pattern) != null)

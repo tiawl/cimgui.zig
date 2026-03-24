@@ -116,7 +116,7 @@ fn list(pkg_builder: *VerboseBuilder) bool {
     const separator_opt = pkg_builder.option([]const u8, "\n", "separator", "Used separator instead of default newline character");
 
     var stdout_buffer: [1024]u8 = undefined;
-    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+    var stdout_writer = std.Io.File.stdout().writer(pkg_builder.getIo(), &stdout_buffer);
     const stdout = &stdout_writer.interface;
 
     if (list_renderers_opt or list_platforms_opt) {

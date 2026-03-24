@@ -384,14 +384,12 @@ fn FramePresent(wd: *c.ImGui_ImplVulkanH_Window) void {
     wd.SemaphoreIndex = (wd.SemaphoreIndex + 1) % wd.SemaphoreCount; // Now we can use the next set of semaphores
 }
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
 
-    var env = try std.process.getEnvMap(allocator);
-    defer env.deinit();
-    const you_choosed_vulkan = (env.get("USE_GL") == null);
+    const you_choosed_vulkan = (init.environ_map.get("USE_GL") == null);
 
     if (you_choosed_vulkan) {
         std.log.info("I'm using Vulkan Renderer backend", .{});
