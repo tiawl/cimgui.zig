@@ -13,7 +13,10 @@ jobs:
     - uses: actions/checkout@v6
       with:
         ref: "${{ github.event.pull_request.head.ref }}"
-    - uses: mlugg/setup-zig@v2
+    - name: Setup zig
+      uses: mlugg/setup-zig@v2
+      with:
+        version: "${{ github.event.pull_request.base.ref == 'zig-stable' && 'latest' || 'master' }}"
     - name: Check zig is canonical
       shell: 'bash'
       run: zig fmt --check .
@@ -29,11 +32,15 @@ jobs:
     - uses: actions/checkout@v6
       with:
         ref: "${{ github.event.pull_request.head.ref }}"
-    - uses: mlugg/setup-zig@v2
+    - name: Setup zig
+      uses: mlugg/setup-zig@v2
+      with:
+        version: "${{ github.event.pull_request.base.ref == 'zig-stable' && 'latest' || 'master' }}"
     - name: Test building examples
       shell: 'bash'
       run: |
         set -x
+        rm -rf .zig-cache
         unset ZIG_LOCAL_CACHE_DIR
         env -C "${GITHUB_WORKSPACE}/examples" zig build
         env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking
@@ -53,6 +60,8 @@ jobs:
         ref: "${{ github.event.pull_request.head.ref }}"
     - name: Setup Zig
       uses: mlugg/setup-zig@v2
+      with:
+        version: "${{ github.event.pull_request.base.ref == 'zig-stable' && 'latest' || 'master' }}"
 
     - name: Activate python virtual env & install pip packages
       env:
@@ -60,6 +69,7 @@ jobs:
       shell: 'bash'
       run: |
         set -x
+        rm -rf .zig-cache
         python3 -m venv "${RUNNER_TMP}/venv"
         source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
         pip install ply
