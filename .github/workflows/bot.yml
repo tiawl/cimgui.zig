@@ -35,6 +35,8 @@ jobs:
           gh pr close "${pr_nr}" --comment 'Outdated PR/issue' --delete-branch
         done
     - name: Check bot PRs are all closed
+      env:
+        GH_TOKEN: "${{ github.token }}"
       shell: 'bash'
       run: |
         set -x
@@ -45,6 +47,8 @@ jobs:
 
     - name: Setup Zig
       uses: mlugg/setup-zig@v2
+      with:
+        version: "${{ matrix.branch == 'zig-stable' && 'latest' || 'master' }}"
     - name: Install apt packages
       shell: 'bash'
       run: |
