@@ -23,7 +23,6 @@ jobs:
       env:
         NAME: "GitHub Actions[bot]"
         EMAIL: "<>"
-        BRANCH: "${{ github.event.repository.default_branch }}"
         NEW_TAG: "${{ github.event.inputs.new-tag }}"
         GH_TOKEN: "${{ github.token }}"
       shell: 'bash'
@@ -31,6 +30,5 @@ jobs:
         set -x
         git config user.name "${NAME}"
         git config user.email "${EMAIL}"
-        git checkout "${BRANCH}"
         git tag "${NEW_TAG}"
         git push --tags
