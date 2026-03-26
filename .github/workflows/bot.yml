@@ -86,6 +86,7 @@ jobs:
       shell: 'bash'
       run: |
         set -x
+        rn -rf .zig-cache
         source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
         zig build -Dfetch -Dverbose
 
