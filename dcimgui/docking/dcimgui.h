@@ -33,8 +33,12 @@
 
 // Library Version
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if IMGUI_VERSION_NUM >= 12345')
+#ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
 #define IMGUI_VERSION       "1.92.6"
+#endif // #ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
+#ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
 #define IMGUI_VERSION_NUM   19261
+#endif // #ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
 #define IMGUI_HAS_TABLE              // Added BeginTable() - from IMGUI_VERSION_NUM >= 18000
 #define IMGUI_HAS_TEXTURES           // Added ImGuiBackendFlags_RendererHasTextures - from IMGUI_VERSION_NUM >= 19198
 #define IMGUI_HAS_VIEWPORT           // In 'docking' WIP branch.
@@ -2426,9 +2430,13 @@ CIMGUI_API ImStr ImStr_FromCharStr(const char* b);  // Build an ImStr from a reg
 //-----------------------------------------------------------------------------
 
 #ifndef IMGUI_DISABLE_DEBUG_TOOLS
-#define IMGUI_DEBUG_LOG(...)        ImGui::DebugLog(__VA_ARGS__)
+#ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
+#define IMGUI_DEBUG_LOG(...) ImGui_DebugLog(__VA_ARGS__)
+#endif // #ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
 #else
-#define IMGUI_DEBUG_LOG(...)        ((void)0)
+#ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
+#define IMGUI_DEBUG_LOG(...) ((void)0)
+#endif // #ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
 #endif // #ifndef IMGUI_DISABLE_DEBUG_TOOLS
 //-----------------------------------------------------------------------------
 // IM_MALLOC(), IM_FREE(), IM_NEW(), IM_PLACEMENT_NEW(), IM_DELETE()
