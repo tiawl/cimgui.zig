@@ -13,6 +13,9 @@
 #include <stdio.h>
 
 // Wrap this in a namespace to keep it separate from the C++ API
+// This define prevents #defines in the header getting defined again (as they are already in the normal header above),
+// and thus generating redefinition warnings
+#define DEAR_BINDINGS_INTERNAL_GLUE_CODE
 namespace cimgui
 {
 extern "C"
@@ -21,7 +24,7 @@ extern "C"
 #include "dcimgui_internal.h"
 }
 }
-// By-value struct conversions
+#undef DEAR_BINDINGS_INTERNAL_GLUE_CODE// By-value struct conversions
 
 static inline cimgui::ImVec2 ConvertFromCPP_ImVec2(const ::ImVec2& src)
 {
