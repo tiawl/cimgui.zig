@@ -170,14 +170,14 @@ CIMGUI_IMPL_API const char* cimgui::cImGui_ImplWGPU_GetErrorTypeName(WGPUErrorTy
 #endif // #if defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN)
 
 #if !(defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN))
-#if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)&&!defined(__EMSCRIPTEN__)
+#if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)
 
 CIMGUI_IMPL_API const char* cimgui::cImGui_ImplWGPU_GetLogLevelName(WGPULogLevel level)
 {
     return ::ImGui_ImplWGPU_GetLogLevelName(level);
 }
 
-#endif // #if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)&&!defined(__EMSCRIPTEN__)
+#endif // #if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)
 #endif // #if !(defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN))
 
 #ifndef __EMSCRIPTEN__

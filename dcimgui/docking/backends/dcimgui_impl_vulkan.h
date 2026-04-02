@@ -4,6 +4,7 @@
 
 // dear imgui: Renderer Backend for Vulkan
 // Auto-generated forward declarations for C header
+typedef struct ImVector_VkDynamicState_t ImVector_VkDynamicState;
 typedef struct ImGui_ImplVulkan_PipelineInfo_t ImGui_ImplVulkan_PipelineInfo;
 typedef struct ImGui_ImplVulkan_InitInfo_t ImGui_ImplVulkan_InitInfo;
 typedef struct ImGui_ImplVulkan_RenderState_t ImGui_ImplVulkan_RenderState;
@@ -99,6 +100,7 @@ extern "C"
 // Backend uses a small number of descriptors per font atlas + as many as additional calls done to ImGui_ImplVulkan_AddTexture().
 #define IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE   (8)      // Minimum per atlas
 
+struct ImVector_VkDynamicState_t { int Size; int Capacity; VkDynamicState* Data; };  // Instantiation of ImVector<VkDynamicState>
 // Specify settings to create pipeline and swapchain
 struct ImGui_ImplVulkan_PipelineInfo_t
 {
@@ -108,6 +110,7 @@ struct ImGui_ImplVulkan_PipelineInfo_t
     // For Main and Secondary viewports
     uint32_t                         Subpass;                      //
     VkSampleCountFlagBits            MSAASamples /* = {} */;       // 0 defaults to VK_SAMPLE_COUNT_1_BIT
+    ImVector_VkDynamicState          ExtraDynamicStates;           // Optional, allows to insert more dynamic states into our VkPipeline
 #ifdef IMGUI_IMPL_VULKAN_HAS_DYNAMIC_RENDERING
     VkPipelineRenderingCreateInfoKHR PipelineRenderingCreateInfo;  // Optional, valid if .sType == VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR
 #endif // #ifdef IMGUI_IMPL_VULKAN_HAS_DYNAMIC_RENDERING

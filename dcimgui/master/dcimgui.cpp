@@ -1735,6 +1735,11 @@ CIMGUI_API void  cimgui::ImGui_SetNextItemStorageID(ImGuiID storage_id)
     ::ImGui::SetNextItemStorageID(storage_id);
 }
 
+CIMGUI_API bool  cimgui::ImGui_TreeNodeGetOpen(ImGuiID storage_id)
+{
+    return ::ImGui::TreeNodeGetOpen(storage_id);
+}
+
 CIMGUI_API bool cimgui::ImGui_Selectable(const char* label)
 {
     return ::ImGui::Selectable(label);
@@ -4059,26 +4064,6 @@ CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetWindowContentRegionMin(void)
 CIMGUI_API cimgui::ImVec2 cimgui::ImGui_GetWindowContentRegionMax(void)
 {
     return ConvertFromCPP_ImVec2(::ImGui::GetWindowContentRegionMax());
-}
-
-CIMGUI_API bool   cimgui::ImGui_ComboObsolete(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count)
-{
-    return ::ImGui::Combo(label, current_item, old_callback, user_data, items_count);
-}
-
-CIMGUI_API bool   cimgui::ImGui_ComboObsoleteEx(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count, int popup_max_height_in_items)
-{
-    return ::ImGui::Combo(label, current_item, old_callback, user_data, items_count, popup_max_height_in_items);
-}
-
-CIMGUI_API bool   cimgui::ImGui_ListBoxObsolete(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count)
-{
-    return ::ImGui::ListBox(label, current_item, old_callback, user_data, items_count);
-}
-
-CIMGUI_API bool   cimgui::ImGui_ListBoxObsoleteEx(const char* label, int* current_item, bool (*old_callback)(void* user_data, int idx, const char** out_text), void* user_data, int items_count, int height_in_items)
-{
-    return ::ImGui::ListBox(label, current_item, old_callback, user_data, items_count, height_in_items);
 }
 
 #endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
