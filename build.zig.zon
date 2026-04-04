@@ -11,17 +11,17 @@
             .hash = "zigglgen-0.5.0-zigglr_CLwBs1aABtYVtxNPo1SB8AzgKMVouoqULqkDQ",
         },
         .@"imgui-master" = .{
-            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.6#6ded5230d043aa32c755e65c910c2af5002fb9f9",
-            .hash = "N-V-__8AAKo9dQCnHCbDc8SV78HlckAXKEwfcXl-Beusyi3T",
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.7#dac07199cfd761113d966eb8ad739254e10df2fe",
+            .hash = "N-V-__8AAJYGdgBRpnbvCM6TYAXaF3SAnIHIShxHtrL4uhCU",
         },
         .@"imgui-docking" = .{
-            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.6-docking#2a1b69f05748ad909f03acf4533447cac1331611",
-            .hash = "N-V-__8AAOSlfwD9SQYt6XBCvJduJQ2mvyloFlCNv_vzIlm4",
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.7-docking#b1bcb12a624af7509894c8e77dd47416997777fa",
+            .hash = "N-V-__8AAPaAgABZhe_qrsumV412WbnTGsh4IKVTRYSF_jCc",
             .branch = "docking",
         },
         .dcimgui = .{
-            .url = "git+https://github.com/dearimgui/dear_bindings#79e2f490530865602184a357ff054687c3bb464f",
-            .hash = "N-V-__8AAKcPCQBo2ZZZBaKHfPkAdZC7m5ZlOZDQb2FXkKYi",
+            .url = "git+https://github.com/dearimgui/dear_bindings#ac4c71e986122402e35773a75bf81c9b57f43865",
+            .hash = "N-V-__8AALMPCQAZEggHJy_2n8p_qPfVBPi-DV9fhCdlJVnp",
         },
         .toolbox = .{
             .url = "git+https://github.com/tiawl/toolbox?ref=2.0.0#8cfe99b13c380c0a0437e9edc05ab4b961b242d6",
@@ -34,8 +34,8 @@
             .branch = "zig-stable",
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=vulkan.zig-v1.4.347#fc333fb5e86ead03ca404fb1df15464b39108f1b",
-            .hash = "glfw_zig-1.0.0-NrvYozDSGQCSlWl_LTSeRefBRIz30COr8T8FVk0wpBwh",
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=wayland.zig-wayland-protocols-1.48#8ae4dc3afdc08ec2293df3802805f26cdce18d18",
+            .hash = "glfw_zig-1.0.0-NrvYo8fSGQDWlwoWseEQLPlyfGTwx3Miozs-gzvKAvo7",
             .branch = "zig-stable",
         },
     },
