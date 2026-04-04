@@ -17,7 +17,6 @@ typedef struct ImVector_ImGui_ImplVulkanH_FrameSemaphores_t ImVector_ImGui_ImplV
 #ifndef ImDrawIdx
 typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility with renderer backends)
 #endif // #ifndef ImDrawIdx
-struct ImVector_VkDynamicState_t { int Size; int Capacity; VkDynamicState* Data; };  // Instantiation of ImVector<VkDynamicState>
 // This needs to be used along with a Platform Backend (e.g. GLFW, SDL, Win32, custom..)
 
 // Implemented features:
@@ -100,6 +99,7 @@ extern "C"
 // Backend uses a small number of descriptors per font atlas + as many as additional calls done to ImGui_ImplVulkan_AddTexture().
 #define IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE   (8)      // Minimum per atlas
 
+struct ImVector_VkDynamicState_t { int Size; int Capacity; VkDynamicState* Data; };  // Instantiation of ImVector<VkDynamicState>
 // Specify settings to create pipeline and swapchain
 struct ImGui_ImplVulkan_PipelineInfo_t
 {
