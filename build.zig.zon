@@ -11,17 +11,17 @@
             .hash = "zigglgen-0.5.0-zigglr_CLwBs1aABtYVtxNPo1SB8AzgKMVouoqULqkDQ",
         },
         .@"imgui-master" = .{
-            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.6#6ded5230d043aa32c755e65c910c2af5002fb9f9",
-            .hash = "N-V-__8AAKo9dQCnHCbDc8SV78HlckAXKEwfcXl-Beusyi3T",
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.7#dac07199cfd761113d966eb8ad739254e10df2fe",
+            .hash = "N-V-__8AAJYGdgBRpnbvCM6TYAXaF3SAnIHIShxHtrL4uhCU",
         },
         .@"imgui-docking" = .{
-            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.6-docking#2a1b69f05748ad909f03acf4533447cac1331611",
-            .hash = "N-V-__8AAOSlfwD9SQYt6XBCvJduJQ2mvyloFlCNv_vzIlm4",
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.7-docking#b1bcb12a624af7509894c8e77dd47416997777fa",
+            .hash = "N-V-__8AAPaAgABZhe_qrsumV412WbnTGsh4IKVTRYSF_jCc",
             .branch = "docking",
         },
         .dcimgui = .{
-            .url = "git+https://github.com/dearimgui/dear_bindings#79e2f490530865602184a357ff054687c3bb464f",
-            .hash = "N-V-__8AAKcPCQBo2ZZZBaKHfPkAdZC7m5ZlOZDQb2FXkKYi",
+            .url = "git+https://github.com/dearimgui/dear_bindings#ac4c71e986122402e35773a75bf81c9b57f43865",
+            .hash = "N-V-__8AALMPCQAZEggHJy_2n8p_qPfVBPi-DV9fhCdlJVnp",
         },
         .toolbox = .{
             .url = "git+https://github.com/tiawl/toolbox.git?ref=2.0.0-nightly#770f0a8af8adc0b309800ccaf382733b05f062b8",
@@ -34,8 +34,8 @@
             .branch = "zig-nightly",
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig.git?ref=toolbox-2.0.0-nightly#6d7465afb4db06f23cee0b8dec2200640f6d45e0",
-            .hash = "glfw_zig-1.0.1-NrvYo_vSGQC5wr82ns8Loyd6wE4MBJTkG_MkpfbZlBSp",
+            .url = "git+https://github.com/tiawl/glfw.zig.git?ref=wayland.zig-wayland-protocols-1.48-nightly#51730903417876746bf2292d954565eca447af14",
+            .hash = "glfw_zig-1.0.1-NrvYowTTGQBei-01t4kvOy9nzZpcdg3bEZ5z3ovDV_cs",
             .branch = "zig-nightly",
         },
     },
