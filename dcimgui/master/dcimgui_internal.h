@@ -3,8 +3,6 @@
 // https://github.com/dearimgui/dear_bindings
 
 // dear imgui, v1.92.7
-struct ImVector_ImFontBakedPtr_t { int Size; int Capacity; ImFontBaked** Data; };  // Instantiation of ImVector<ImFontBaked*>
-struct ImVector_ImFontAtlasPtr_t { int Size; int Capacity; ImFontAtlas** Data; };  // Instantiation of ImVector<ImFontAtlas*>
 // (internal structures/api)
 
 // You may use this file to debug, understand or extend Dear ImGui features but we don't provide any guarantee of forward compatibility.
@@ -76,6 +74,8 @@ extern "C"
 #include <nmmintrin.h>
 #endif // #if (defined __AVX__ || defined __SSE4_2__)
 #endif // #if (defined __SSE__ || defined __x86_64__ || defined _M_X64 ||(defined(_M_IX86_FP)&&(_M_IX86_FP >= 1)))&&!defined(IMGUI_DISABLE_SSE)&&!defined(_M_ARM64)&&!defined(_M_ARM64EC)
+struct ImVector_ImFontBakedPtr_t { int Size; int Capacity; ImFontBaked** Data; };  // Instantiation of ImVector<ImFontBaked*>
+struct ImVector_ImFontAtlasPtr_t { int Size; int Capacity; ImFontAtlas** Data; };  // Instantiation of ImVector<ImFontAtlas*>
 // Emscripten has partial SSE 4.2 support where _mm_crc32_u32 is not available. See https://emscripten.org/docs/porting/simd.html#id11 and #8213
 #if defined(IMGUI_ENABLE_SSE4_2)&&!defined(IMGUI_USE_LEGACY_CRC32_ADLER)&&!defined(__EMSCRIPTEN__)
 #define IMGUI_ENABLE_SSE4_2_CRC
@@ -3615,16 +3615,17 @@ CIMGUI_API bool                     ImGui_DataTypeClamp(ImGuiDataType data_type,
 CIMGUI_API bool                     ImGui_DataTypeIsZero(ImGuiDataType data_type, const void* p_data);
 
 // InputText
-CIMGUI_API bool ImGui_InputTextWithHintAndSize(const char* label, const char* hint, char* buf, int buf_size, ImVec2 size_arg, ImGuiInputTextFlags flags);  // Implied callback = NULL, user_data = NULL
-CIMGUI_API bool ImGui_InputTextWithHintAndSizeEx(const char* label, const char* hint, char* buf, int buf_size, ImVec2 size_arg, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback /* = NULL */, void* user_data /* = NULL */);
-CIMGUI_API void ImGui_InputTextDeactivateHook(ImGuiID id);
-CIMGUI_API bool ImGui_TempInputText(ImRect bb, ImGuiID id, const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags /* = 0 */);            // Implied callback = NULL, user_data = NULL
-CIMGUI_API bool ImGui_TempInputTextEx(ImRect bb, ImGuiID id, const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags /* = 0 */, ImGuiInputTextCallback callback /* = NULL */, void* user_data /* = NULL */);
-CIMGUI_API bool ImGui_TempInputScalar(ImRect bb, ImGuiID id, const char* label, ImGuiDataType data_type, void* p_data, const char* format);                // Implied p_clamp_min = NULL, p_clamp_max = NULL
-CIMGUI_API bool ImGui_TempInputScalarEx(ImRect bb, ImGuiID id, const char* label, ImGuiDataType data_type, void* p_data, const char* format, const void* p_clamp_min /* = NULL */, const void* p_clamp_max /* = NULL */);
-CIMGUI_API bool ImGui_TempInputIsActive(ImGuiID id);
-CIMGUI_API void ImGui_SetNextItemRefVal(ImGuiDataType data_type, void* p_data);
-CIMGUI_API bool ImGui_IsItemActiveAsInputText(void);                                                                                                       // This may be useful to apply workaround that a based on distinguish whenever an item is active as a text input field.
+CIMGUI_API bool                 ImGui_InputTextWithHintAndSize(const char* label, const char* hint, char* buf, int buf_size, ImVec2 size_arg, ImGuiInputTextFlags flags);  // Implied callback = NULL, user_data = NULL
+CIMGUI_API bool                 ImGui_InputTextWithHintAndSizeEx(const char* label, const char* hint, char* buf, int buf_size, ImVec2 size_arg, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback /* = NULL */, void* user_data /* = NULL */);
+CIMGUI_API void                 ImGui_InputTextDeactivateHook(ImGuiID id);
+CIMGUI_API bool                 ImGui_TempInputText(ImRect bb, ImGuiID id, const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags /* = 0 */);            // Implied callback = NULL, user_data = NULL
+CIMGUI_API bool                 ImGui_TempInputTextEx(ImRect bb, ImGuiID id, const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags /* = 0 */, ImGuiInputTextCallback callback /* = NULL */, void* user_data /* = NULL */);
+CIMGUI_API bool                 ImGui_TempInputScalar(ImRect bb, ImGuiID id, const char* label, ImGuiDataType data_type, void* p_data, const char* format);                // Implied p_clamp_min = NULL, p_clamp_max = NULL
+CIMGUI_API bool                 ImGui_TempInputScalarEx(ImRect bb, ImGuiID id, const char* label, ImGuiDataType data_type, void* p_data, const char* format, const void* p_clamp_min /* = NULL */, const void* p_clamp_max /* = NULL */);
+CIMGUI_API bool                 ImGui_TempInputIsActive(ImGuiID id);
+CIMGUI_API ImGuiInputTextState* ImGui_GetInputTextState(ImGuiID id);                                                                                                       // Get input text state if active
+CIMGUI_API void                 ImGui_SetNextItemRefVal(ImGuiDataType data_type, void* p_data);
+CIMGUI_API bool                 ImGui_IsItemActiveAsInputText(void);                                                                                                       // This may be useful to apply workaround that a based on distinguish whenever an item is active as a text input field.
 
 // Color
 CIMGUI_API void ImGui_ColorTooltip(const char* text, const float* col, ImGuiColorEditFlags flags);
@@ -3688,6 +3689,7 @@ CIMGUI_API void  ImGui_DebugNodeStorage(ImGuiStorage* storage, const char* label
 CIMGUI_API void  ImGui_DebugNodeTabBar(ImGuiTabBar* tab_bar, const char* label);
 CIMGUI_API void  ImGui_DebugNodeTable(ImGuiTable* table);
 CIMGUI_API void  ImGui_DebugNodeTableSettings(ImGuiTableSettings* settings);
+CIMGUI_API void  ImGui_DebugNodeInputTextState(ImGuiInputTextState* state);
 CIMGUI_API void  ImGui_DebugNodeTypingSelectState(ImGuiTypingSelectState* state);
 CIMGUI_API void  ImGui_DebugNodeMultiSelectState(ImGuiMultiSelectState* state);
 CIMGUI_API void  ImGui_DebugNodeWindow(ImGuiWindow* window, const char* label);
