@@ -29,13 +29,13 @@
             .branch = "zig-stable",
         },
         .vulkan_zig = .{
-            .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.348#62fffe3696344826313828fa700146bd9e8721b7",
-            .hash = "vulkan_zig-1.0.0-p2wg3kWrRQFBQPH66bNMgJh0lv8iHpsQtUiMp8nF_QPO",
+            .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.349#6cf6b6bec2577ea30dfc2a6c303be9dcab801375",
+            .hash = "vulkan_zig-1.0.0-p2wg3leLRwGU6k9nlyawhakm034JoUbU1Fy8RiwIqHEd",
             .branch = "zig-stable",
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=vulkan.zig-v1.4.348#ec3d8127e1e5c2fd361f5c02c99ccf671619eb55",
-            .hash = "glfw_zig-1.0.0-NrvYo8fSGQDds8fkhwYepCg57sUbgmv6ohe0JGhwPuca",
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=vulkan.zig-v1.4.349#f535b6e2c07e3a7cedfb55c021c82ebef410921a",
+            .hash = "glfw_zig-1.0.0-NrvYo8fSGQCh3VmN_NHGxAj_ZvlVCbhiJZmgYRUALd7D",
             .branch = "zig-stable",
         },
     },
