@@ -40,7 +40,6 @@ jobs:
       shell: 'bash'
       run: |
         set -x
-        rm -rf .zig-cache
         unset ZIG_LOCAL_CACHE_DIR
         env -C "${GITHUB_WORKSPACE}/examples" zig build
         env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking
@@ -69,7 +68,6 @@ jobs:
       shell: 'bash'
       run: |
         set -x
-        rm -rf .zig-cache
         python3 -m venv "${RUNNER_TMP}/venv"
         source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
         pip install ply
