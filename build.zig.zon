@@ -24,17 +24,17 @@
             .hash = "N-V-__8AAFMfCQDc_SkDHo7VP9rsVxjv_n3w8DkpXs_mmUjB",
         },
         .toolbox = .{
-            .url = "git+https://github.com/tiawl/toolbox#4e53db5c19ca6980fa34d9a7d6df514757381520",
+            .url = "git+https://github.com/tiawl/toolbox#77eed4c48c2d0590f618854a1ea2723db7564e50",
             .hash = "toolbox-2.0.1-kRAu4DeDAAAuGdsJQqTDrGKN2CyNt9Xrxc8_qateuv50",
             .branch = "zig-nightly",
         },
         .vulkan_zig = .{
-            .url = "git+https://github.com/tiawl/vulkan.zig#e18e5a9787b985d1ae1cdb9e8aed4e6d2e40a779",
+            .url = "git+https://github.com/tiawl/vulkan.zig#ce3d453f07ef7b78330e3e375ecce381a2c697be",
             .hash = "vulkan_zig-1.0.1-p2wg3lKLRwEtlBJ5P3Fes1XrOcewPiSpbDPKVaEpDGBO",
             .branch = "zig-nightly",
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig#f8f24690ea8eb0d9018a55f8095e2d20298366e0",
+            .url = "git+https://github.com/tiawl/glfw.zig#5e67301c5067746deb857cc4234e3d8800c8e233",
             .hash = "glfw_zig-1.0.1-NrvYo4vSGQBdVLYXYaS_bGZhJ5M82823dJPHacz3E0nH",
             .branch = "zig-nightly",
         },
