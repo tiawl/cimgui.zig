@@ -15,7 +15,6 @@ jobs:
       matrix:
         branch:
           - zig-stable
-          - zig-nightly
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v6
@@ -48,7 +47,7 @@ jobs:
     - name: Setup Zig
       uses: mlugg/setup-zig@v2
       with:
-        version: "${{ matrix.branch == 'zig-stable' && 'latest' || 'master' }}"
+        version: 'master'
     - name: Install apt packages
       shell: 'bash'
       run: |

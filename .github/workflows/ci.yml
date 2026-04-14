@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - zig-stable
-      - zig-nightly
 
 jobs:
   linter:
@@ -16,7 +15,7 @@ jobs:
     - name: Setup zig
       uses: mlugg/setup-zig@v2
       with:
-        version: "${{ github.event.pull_request.base.ref == 'zig-stable' && 'latest' || 'master' }}"
+        version: 'master'
     - name: Check zig is canonical
       shell: 'bash'
       run: zig fmt --check .
@@ -35,7 +34,7 @@ jobs:
     - name: Setup zig
       uses: mlugg/setup-zig@v2
       with:
-        version: "${{ github.event.pull_request.base.ref == 'zig-stable' && 'latest' || 'master' }}"
+        version: 'master'
     - name: Test building examples
       shell: 'bash'
       run: |
@@ -60,7 +59,7 @@ jobs:
     - name: Setup Zig
       uses: mlugg/setup-zig@v2
       with:
-        version: "${{ github.event.pull_request.base.ref == 'zig-stable' && 'latest' || 'master' }}"
+        version: 'master'
 
     - name: Activate python virtual env & install pip packages
       env:
