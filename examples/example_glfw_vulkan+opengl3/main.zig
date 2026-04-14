@@ -384,14 +384,12 @@ fn FramePresent(wd: *c.ImGui_ImplVulkanH_Window) void {
     wd.SemaphoreIndex = (wd.SemaphoreIndex + 1) % wd.SemaphoreCount; // Now we can use the next set of semaphores
 }
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = arena.allocator();
 
-    var env = try std.process.getEnvMap(allocator);
-    defer env.deinit();
-    const you_choosed_vulkan = (env.get("USE_GL") == null);
+    const you_choosed_vulkan = (init.environ_map.get("USE_GL") == null);
 
     if (you_choosed_vulkan) {
         std.log.info("I'm using Vulkan Renderer backend", .{});
@@ -523,7 +521,7 @@ pub fn main() !void {
                 _ = c.ImGui_Begin("Hello, world!", null, 0);
                 defer c.ImGui_End();
 
-                c.ImGui_Text("This is some useful text.");
+                //c.ImGui_Text("This is some useful text.");
                 _ = c.ImGui_Checkbox("Demo Window", &show_demo_window);
                 _ = c.ImGui_Checkbox("Another Window", &show_another_window);
 
@@ -532,16 +530,16 @@ pub fn main() !void {
 
                 if (c.ImGui_Button("Button")) counter += 1;
                 c.ImGui_SameLine();
-                c.ImGui_Text("counter = %d", counter);
+                //c.ImGui_Text("counter = %d", counter);
 
-                c.ImGui_Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / io.*.Framerate, io.*.Framerate);
+                //c.ImGui_Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / io.*.Framerate, io.*.Framerate);
             }
 
             // 3. Show another simple window.
             if (show_another_window) {
                 _ = c.ImGui_Begin("Another Window", &show_another_window, 0);
                 defer c.ImGui_End();
-                c.ImGui_Text("Hello from another window!");
+                //c.ImGui_Text("Hello from another window!");
                 if (c.ImGui_Button("Close Me")) show_another_window = false;
             }
         }

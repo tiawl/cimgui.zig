@@ -505,7 +505,7 @@ pub fn main() !void {
             _ = c.ImGui_Begin("Hello, world!", null, 0);
             defer c.ImGui_End();
 
-            c.ImGui_Text("This is some useful text.");
+            //c.ImGui_Text("This is some useful text.");
             _ = c.ImGui_Checkbox("Demo Window", &show_demo_window);
             _ = c.ImGui_Checkbox("Another Window", &show_another_window);
 
@@ -514,16 +514,16 @@ pub fn main() !void {
 
             if (c.ImGui_Button("Button")) counter += 1;
             c.ImGui_SameLine();
-            c.ImGui_Text("counter = %d", counter);
+            //c.ImGui_Text("counter = %d", counter);
 
-            c.ImGui_Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / io.*.Framerate, io.*.Framerate);
+            //c.ImGui_Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / io.*.Framerate, io.*.Framerate);
         }
 
         // 3. Show another simple window.
         if (show_another_window) {
             _ = c.ImGui_Begin("Another Window", &show_another_window, 0);
             defer c.ImGui_End();
-            c.ImGui_Text("Hello from another window!");
+            //c.ImGui_Text("Hello from another window!");
             if (c.ImGui_Button("Close Me")) show_another_window = false;
         }
     }
