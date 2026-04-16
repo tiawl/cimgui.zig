@@ -26,12 +26,16 @@ fn renderers(dir_name: []const u8) ![]const Renderer {
     } else error.UnknownRendererBackend;
 }
 
-fn linkLibAndImportModules(lib: *std.Build.Step.Compile, exe: *std.Build.Step.Compile, dir_name: []const u8) void {
-    if (std.mem.endsWith(u8, dir_name, "_opengl3") or std.mem.endsWith(u8, dir_name, "_vulkan+opengl3")) {
-        exe.root_module.addImport("gl", lib.root_module.import_table.get("gl").?);
-        _ = lib.root_module.import_table.swapRemove("gl");
+fn addIncludePathsToTranslateC(translate_c: *std.Build.Step.TranslateC, lib: *std.Build.Step.Compile) void {
+    for (lib.root_module.include_dirs.items) |*included| {
+        switch (included.*) {
+            .path => translate_c.addIncludePath(included.path),
+            .config_header_step => translate_c.addConfigHeader(included.config_header_step),
+            .path_system => translate_c.addSystemIncludePath(included.path_system),
+            .other_step => addIncludePathsToTranslateC(translate_c, included.other_step),
+            else => unreachable,
+        }
     }
-    exe.root_module.linkLibrary(lib);
 }
 
 pub fn build(builder: *std.Build) !void {
@@ -45,8 +49,11 @@ pub fn build(builder: *std.Build) !void {
     });
     defer examples_dir.close(builder.graph.io);
 
-    var exe: *std.Build.Step.Compile = undefined;
+    var translate_c: *std.Build.Step.TranslateC = undefined;
+    var c_module: *std.Build.Module = undefined;
     var cimgui_dep: *std.Build.Dependency = undefined;
+    var cimgui_artifact: *std.Build.Step.Compile = undefined;
+    var exe: *std.Build.Step.Compile = undefined;
     var it = examples_dir.iterate();
     const docking = builder.option(bool, "docking", "use master or docking ocornut/imgui branch ?") orelse false;
     while (try it.next(builder.graph.io)) |*entry| {
@@ -62,18 +69,12 @@ pub fn build(builder: *std.Build) !void {
                 }
             }
 
-            exe = builder.addExecutable(.{
-                .name = entry.name,
-                .root_module = std.Build.Module.create(builder, .{
-                    .root_source_file = .{
-                        .cwd_relative = try builder.build_root.join(builder.allocator, &.{
-                            entry.name,
-                            "main.zig",
-                        }),
-                    },
-                    .target = target,
-                    .optimize = optimize,
-                }),
+            translate_c = builder.addTranslateC(.{
+                .root_source_file = builder.path(builder.pathJoin(&.{
+                    entry.name, "c.h",
+                })),
+                .target = target,
+                .optimize = optimize,
             });
 
             cimgui_dep = builder.dependency("cimgui_zig", .{
@@ -84,7 +85,34 @@ pub fn build(builder: *std.Build) !void {
                 .docking = docking,
             });
 
-            linkLibAndImportModules(cimgui_dep.artifact("cimgui"), exe, entry.name);
+            cimgui_artifact = cimgui_dep.artifact("cimgui");
+
+            addIncludePathsToTranslateC(translate_c, cimgui_artifact);
+
+            c_module = translate_c.createModule();
+            c_module.linkLibrary(cimgui_artifact);
+
+            exe = builder.addExecutable(.{
+                .name = entry.name,
+                .root_module = std.Build.Module.create(builder, .{
+                    .root_source_file = builder.path(builder.pathJoin(&.{
+                        entry.name, "main.zig",
+                    })),
+                    .target = target,
+                    .optimize = optimize,
+                    .imports = &.{
+                        .{
+                            .name = "c",
+                            .module = c_module,
+                        },
+                    },
+                }),
+            });
+
+            if (std.mem.endsWith(u8, entry.name, "_opengl3") or std.mem.endsWith(u8, entry.name, "_vulkan+opengl3")) {
+                exe.root_module.addImport("gl", cimgui_artifact.root_module.import_table.get("gl").?);
+                _ = cimgui_artifact.root_module.import_table.swapRemove("gl");
+            }
 
             builder.installArtifact(exe);
         }

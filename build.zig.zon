@@ -23,17 +23,17 @@
             .url = "git+https://github.com/dearimgui/dear_bindings#05f6a235c2d1963b17d98730b6a9d09f705e001c",
             .hash = "N-V-__8AAFMfCQDc_SkDHo7VP9rsVxjv_n3w8DkpXs_mmUjB",
         },
-        .toolbox = .{
-            .url = "git+https://github.com/tiawl/toolbox?ref=zig-0.16.0#7d7d056c47e1bc9a66c4ab4d53928c86f1cbb954",
-            .hash = "toolbox-2.0.1-kRAu4DODAAC4GkZ714OgwurhfE5YXxI3BMQAlecmxa5f",
-        },
         .vulkan_zig = .{
-            .url = "git+https://github.com/tiawl/vulkan.zig?ref=zig-0.16.0#2d19e47e7457c18b304769d8fe125684f88b517c",
-            .hash = "vulkan_zig-1.0.0-p2wg3jiLRwHSQOWDBG20gp3sklVM7gz4LN4CNkRQZ68G",
+            .url = "git+https://github.com/tiawl/vulkan.zig#69f5d5fd46feb75833203a2f8c6a5ced8fa6aad3",
+            .hash = "vulkan_zig-1.0.0-p2wg3liLRwGFC6b46ekWvUTsZRrh0jiWUge0aBMCHmdG",
+        },
+        .toolbox = .{
+            .url = "git+https://github.com/tiawl/toolbox#25cd5e1ab762c3f947df5cfe464e90b208ad8fc1",
+            .hash = "toolbox-2.0.2-kRAu4BibAADKQMUUYyFacpyGgKCWxPyrcxa6ziZQZXwH",
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=zig-0.16.0#885b260a97eae7d299fc74490afae533e6e53886",
-            .hash = "glfw_zig-1.0.0-NrvYoy_SGQD5J2e5okpIf_dir8BZpWdKaUmWNDenm_ki",
+            .url = "git+https://github.com/tiawl/glfw.zig#17e432c51884370650950d1d379a326afa520956",
+            .hash = "glfw_zig-1.0.0-NrvYo-vQGQAD4Y2fmh3H66_ns1BGt9RWY6grvOSlmvmp",
         },
     },
     .minimum_zig_version = "0.16.0",

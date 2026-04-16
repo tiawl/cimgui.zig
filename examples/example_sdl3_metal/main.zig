@@ -1,12 +1,5 @@
 const std = @import("std");
-
-const c = @cImport({
-    @cInclude("SDL3/SDL.h");
-    @cInclude("SDL3/SDL_metal.h");
-    @cInclude("dcimgui.h");
-    @cInclude("backends/dcimgui_impl_sdl3.h");
-    @cInclude("backends/dcimgui_impl_metal.h");
-});
+const c = @import("c");
 
 // Objective-C runtime functions for calling Metal APIs from C
 extern "C" fn objc_msgSend() void;

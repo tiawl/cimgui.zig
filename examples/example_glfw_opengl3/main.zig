@@ -1,13 +1,6 @@
 const std = @import("std");
 const gl = @import("gl");
-
-const c = @cImport({
-    @cDefine("GLFW_INCLUDE_NONE", "1");
-    @cInclude("GLFW/glfw3.h");
-    @cInclude("dcimgui.h");
-    @cInclude("backends/dcimgui_impl_glfw.h");
-    @cInclude("backends/dcimgui_impl_opengl3.h");
-});
+const c = @import("c");
 
 fn errorCallback(errn: c_int, str: [*c]const u8) callconv(std.builtin.CallingConvention.c) void {
     std.log.err("GLFW Error '{}'': {s}", .{ errn, str });
