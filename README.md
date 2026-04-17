@@ -28,6 +28,16 @@ Fetch this repository:
 $ zig fetch --save git+https://github.com/tiawl/cimgui.zig.git
 ```
 
+Add a `c.h` file with the header you need:
+```c
+#define GLFW_INCLUDE_VULKAN 1
+#define GLFW_INCLUDE_NONE 1
+#include "GLFW/glfw3.h"
+#include "dcimgui.h"
+#include "backends/dcimgui_impl_glfw.h"
+#include "backends/dcimgui_impl_vulkan.h"
+```
+
 Add it to your `build.zig` :
 ```diff
 const std = @import("std");
@@ -35,8 +45,28 @@ const std = @import("std");
 +const Renderer = cimgui.Renderer;
 +const Platform = cimgui.Platform;
 
++fn addIncludePathsToTranslateC(translate_c: *std.Build.Step.TranslateC, lib: *std.Build.Step.Compile) void {
++    for (lib.root_module.include_dirs.items) |*included| {
++        switch (included.*) {
++            .path => translate_c.addIncludePath(included.path),
++            .config_header_step => translate_c.addConfigHeader(included.config_header_step),
++            .path_system => translate_c.addSystemIncludePath(included.path_system),
++            .other_step => addIncludePathsToTranslateC(translate_c, included.other_step),
++            else => unreachable,
++        }
++    }
++}
+
 pub fn build(b: *std.Build) void {
     // -- snip --
+
++    translate_c = b.addTranslateC(.{
++        .root_source_file = b.path(b.pathJoin(&.{
++            entry.name, "c.h",
++        })),
++        .target = target,
++        .optimize = optimize,
++    });
 
 +    const cimgui_dep = b.dependency("cimgui_zig", .{
 +        .target = target,
@@ -47,6 +77,9 @@ pub fn build(b: *std.Build) void {
 +    });
 +
 +    const cimgui_lib = cimgui_dep.artifact("cimgui");
++    addIncludePathsToTranslateC(translate_c, cimgui_artifact);
++    const c_module = translate_c.createModule();
++    c_module.linkLibrary(cimgui_lib);
 
     // The following conditional is only necessary for OpenGL backends:
 +    if (cimgui_lib.root_module.import_table.get("gl")) |gl_module| {
@@ -54,7 +87,7 @@ pub fn build(b: *std.Build) void {
 +    }
 
     // Where `exe` represents your executable/library to link to
-+    exe.linkLibrary(cimgui_lib);
++    exe.root_module.addImport("c", c_module);
 
     // -- snip --
 }
@@ -80,8 +113,7 @@ The backends are separated in two categories: the platforms (handling windows, e
 
 ## Dependencies
 
-The [Zig][2] part of this package is relying on the latest [Zig][2] release (0.15.2) and will only be updated for the next one.
-It you use a more recent [Zig][2] version, please consider the `zig-nightly` branch and `*-nightly` tags.
+The [Zig][2] part of this package requires the latest (0.16.0) or the master (0.17.0-dev) [Zig][2] release.
 
 For other dependencies see [the build.zig.zon](https://github.com/tiawl/cimgui.zig/blob/zig-stable/build.zig.zon)
 

@@ -1,19 +1,5 @@
 const std = @import("std");
-
-const c = @cImport({
-    @cDefine("SDL_DISABLE_OLD_NAMES", {});
-    @cInclude("SDL3/SDL.h");
-    @cInclude("SDL3/SDL_revision.h");
-    // For programs that provide their own entry points instead of relying on SDL's main function
-    // macro magic, 'SDL_MAIN_HANDLED' should be defined before including 'SDL_main.h'.
-    @cDefine("SDL_MAIN_HANDLED", {});
-    @cInclude("SDL3/SDL_main.h");
-    @cInclude("SDL3/SDL_vulkan.h");
-    @cInclude("vulkan/vulkan.h");
-    @cInclude("dcimgui.h");
-    @cInclude("backends/dcimgui_impl_sdl3.h");
-    @cInclude("backends/dcimgui_impl_sdlgpu3.h");
-});
+const c = @import("c");
 
 pub fn main() !void {
     errdefer |err| if (err == error.SdlError) std.log.err("SDL error: {s}", .{c.SDL_GetError()});

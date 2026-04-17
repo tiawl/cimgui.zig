@@ -148,13 +148,13 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
     for (renderers) |renderer| {
         switch (renderer) {
             .Vulkan => {
+                const vulkan_dep = pkg_builder.verboseDependency("vulkan_zig");
+                const vulkan_artifact = pkg_builder.artifact(vulkan_dep, "vulkan");
                 if (std.mem.indexOfScalar(Platform, platforms, .GLFW) == null) {
-                    const vulkan_dep = pkg_builder.verboseDependency("vulkan_zig");
-                    const vulkan_artifact = pkg_builder.artifact(vulkan_dep, "vulkan");
-
                     pkg_builder.linkLibrary(lib, vulkan_artifact);
                     pkg_builder.installLibraryHeaders(lib, vulkan_artifact);
                 }
+                pkg_builder.addIncludePathsFromLib(@TypeOf(lib.*), lib, vulkan_artifact);
                 flags.appendAssumeCapacity("-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES");
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_vulkan.cpp" }, flags.items);
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_vulkan.cpp" }, flags.items);
@@ -206,14 +206,7 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
                 const glfw_dep = pkg_builder.verboseDependency("glfw_zig");
                 const glfw_artifact = pkg_builder.artifact(glfw_dep, "glfw");
 
-                for (glfw_artifact.root_module.include_dirs.items) |*included| {
-                    switch (included.*) {
-                        .path => pkg_builder.addIncludePath(lib, included.path),
-                        .config_header_step => pkg_builder.addConfigHeaderIntoCompile(lib, included.config_header_step),
-                        else => {},
-                    }
-                }
-
+                pkg_builder.addIncludePathsFromLib(@TypeOf(lib.*), lib, glfw_artifact);
                 pkg_builder.linkLibrary(lib, glfw_artifact);
                 pkg_builder.installLibraryHeaders(lib, glfw_artifact);
 

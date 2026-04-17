@@ -1,12 +1,5 @@
 const std = @import("std");
-
-const c = @cImport({
-    @cInclude("SDL3/SDL.h");
-    @cInclude("SDL3/SDL_vulkan.h");
-    @cInclude("dcimgui.h");
-    @cInclude("backends/dcimgui_impl_sdl3.h");
-    @cInclude("backends/dcimgui_impl_vulkan.h");
-});
+const c = @import("c");
 
 var g_Allocator: ?*c.VkAllocationCallbacks = null;
 var g_Loader: Loader = undefined;
