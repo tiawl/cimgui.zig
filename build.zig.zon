@@ -7,8 +7,8 @@
             .hash = "sdl-0.4.2+3.4.4-SDL--kB3pQHKG_4zWG-pH04ZcZZj_IRF7dwMpxNVGwd6",
         },
         .zigglgen = .{
-            .url = "git+https://github.com/castholm/zigglgen#6b21369ac50de8826f8af60a7edb33693b4ec7bf",
-            .hash = "zigglgen-0.5.0-zigglr_CLwBs1aABtYVtxNPo1SB8AzgKMVouoqULqkDQ",
+            .url = "git+https://github.com/castholm/zigglgen#7e55ad15655fc4d602ed3bcbe7fb487592063156",
+            .hash = "zigglgen-0.5.0-ziggltzDLwA0Gk0Pj6QMij1j6Z_jkvGEtGKBM6-YlI_s",
         },
         .@"imgui-master" = .{
             .url = "git+https://github.com/ocornut/imgui?ref=v1.92.7#dac07199cfd761113d966eb8ad739254e10df2fe",
