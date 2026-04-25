@@ -143,8 +143,14 @@ fn list(pkg_builder: *VerboseBuilder) bool {
 pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, docking: bool, flags: *std.ArrayListUnmanaged([]const u8)) !void {
     const renderers = pkg_builder.option([]const Renderer, &.{}, "renderers", "Specify the renderer backends");
     const platforms = pkg_builder.option([]const Platform, &.{}, "platforms", "Specify the platform backends");
+    const no_renderer = pkg_builder.option(bool, false, "no_renderer", "Specify there no need for renderer backend. It returns an error if you use it with `renderers` option.");
+    const no_platform = pkg_builder.option(bool, false, "no_platform", "Specify there no need for platform backend. It returns an error if you use it with `platforms` option.");
 
-    if (renderers.len == 0) std.log.warn("Unspecified renderer backend", .{});
+    if (renderers.len == 0 and !no_renderer) {
+        std.log.warn("Unspecified renderer backend", .{});
+    } else if (renderers.len > 0 and no_renderer) {
+        return error.ConflictingOptions;
+    }
     for (renderers) |renderer| {
         switch (renderer) {
             .Vulkan => {
@@ -199,7 +205,11 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
         }
     }
 
-    if (platforms.len == 0) std.log.warn("Unspecified platform backend", .{});
+    if (platforms.len == 0 and !no_platform) {
+        std.log.warn("Unspecified platform backend", .{});
+    } else if (platforms.len > 0 and no_platform) {
+        return error.ConflictingOptions;
+    }
     for (platforms) |platform| {
         switch (platform) {
             .GLFW => {

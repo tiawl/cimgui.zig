@@ -74,6 +74,8 @@ pub fn build(b: *std.Build) void {
 +        .platforms = &[_]Platform{.GLFW},
 +        .renderers = &[_]Renderer{.Vulkan},
 +        // .docking = true, // Default value: false
++        // .no_renderer = true, // Default value: false. Comment `renderers` field if you use this one
++        // .no_platform = true, // Default value: false. Comment `platforms` field if you use this one
 +    });
 +
 +    const cimgui_lib = cimgui_dep.artifact("cimgui");
@@ -132,6 +134,8 @@ These additional options have been implemented to cover main usecases:
                                    SDL3
                                    SDLGPU3
   -Ddocking=[bool]             master or docking ocornut/imgui branch ?
+  -Dno_renderer=[bool]         Specify there no need for renderer backend. It returns an error if you use it with `renderers` option.
+  -Dno_platform=[bool]         Specify there no need for platform backend. It returns an error if you use it with `platforms` option.
 ```
 
 These additional options have mainly been implemented for maintainability tasks but they maybe could be useful for edge usecases:
