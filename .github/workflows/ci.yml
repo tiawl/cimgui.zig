@@ -22,6 +22,7 @@ jobs:
       uses: mlugg/setup-zig@v2
       with:
         version: "${{ matrix.zig-version }}"
+        cache-key: "${{ github.job }}_${{ runner.os }}_zig-${{ matrix.zig-version }}_${{ matrix.repo || '' }}"
     - name: Check zig is canonical
       shell: 'bash'
       run: zig fmt --check .
@@ -48,6 +49,7 @@ jobs:
       uses: mlugg/setup-zig@v2
       with:
         version: "${{ matrix.zig-version }}"
+        cache-key: "${{ github.job }}_${{ runner.os }}_zig-${{ matrix.zig-version }}_${{ matrix.repo || '' }}"
     - name: Test building examples
       shell: 'bash'
       run: |
@@ -79,6 +81,7 @@ jobs:
       uses: mlugg/setup-zig@v2
       with:
         version: "${{ matrix.zig-version }}"
+        cache-key: "${{ github.job }}_${{ runner.os }}_zig-${{ matrix.zig-version }}_${{ matrix.repo || '' }}"
 
     - name: Activate python virtual env & install pip packages
       env:
