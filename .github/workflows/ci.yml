@@ -7,6 +7,11 @@ on:
 
 jobs:
   linter:
+    strategy:
+      matrix:
+        zig-version:
+          - latest
+          - master
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v6
@@ -16,13 +21,19 @@ jobs:
     - name: Setup zig
       uses: mlugg/setup-zig@v2
       with:
-        version: 'master'
+        version: "${{ matrix.zig-version }}"
     - name: Check zig is canonical
       shell: 'bash'
       run: zig fmt --check .
   examples:
     strategy:
       matrix:
+        exclude: #https://codeberg.org/ziglang/translate-c/issues/346
+          - zig-version: master
+            os: windows-2025
+        zig-version:
+          - latest
+          - master
         os:
           - ubuntu-24.04
           - windows-2025
@@ -36,7 +47,7 @@ jobs:
     - name: Setup zig
       uses: mlugg/setup-zig@v2
       with:
-        version: 'master'
+        version: "${{ matrix.zig-version }}"
     - name: Test building examples
       shell: 'bash'
       run: |
@@ -45,6 +56,11 @@ jobs:
         env -C "${GITHUB_WORKSPACE}/examples" zig build
         env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking
   maintainance:
+    strategy:
+      matrix:
+        zig-version:
+          - latest
+          - master
     runs-on: ubuntu-24.04
     steps:
     - name: Install packages
@@ -62,7 +78,7 @@ jobs:
     - name: Setup Zig
       uses: mlugg/setup-zig@v2
       with:
-        version: 'master'
+        version: "${{ matrix.zig-version }}"
 
     - name: Activate python virtual env & install pip packages
       env:
