@@ -3,8 +3,8 @@
     .version = "1.0.0",
     .dependencies = .{
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL.git#c5ba24c694b5d520cdc1d029d8def398690d6894",
-            .hash = "sdl-0.4.2+3.4.4-SDL--kB3pQHKG_4zWG-pH04ZcZZj_IRF7dwMpxNVGwd6",
+            .url = "git+https://github.com/castholm/SDL.git#21c6b79840d123e94a9f183f4b0fa1731668f48d",
+            .hash = "sdl-0.5.0+3.4.8-SDL--k4DpgH323IfF6cEaGzKUdtUQv1azbBmmcv0RMAu",
         },
         .zigglgen = .{
             .url = "git+https://github.com/castholm/zigglgen#7e55ad15655fc4d602ed3bcbe7fb487592063156",
@@ -20,8 +20,8 @@
             .branch = "docking",
         },
         .dcimgui = .{
-            .url = "git+https://github.com/dearimgui/dear_bindings#05f6a235c2d1963b17d98730b6a9d09f705e001c",
-            .hash = "N-V-__8AAFMfCQDc_SkDHo7VP9rsVxjv_n3w8DkpXs_mmUjB",
+            .url = "git+https://github.com/dearimgui/dear_bindings#42af84a267109a9f8f4d9879826eb4d415de6c19",
+            .hash = "N-V-__8AAPQhCQA0nygW60Np2fcZdByxnewDwg9JpumhRqSb",
         },
         .vulkan_zig = .{
             .url = "git+https://github.com/tiawl/vulkan.zig?ref=toolbox-2.0.2#2162714e44c62550274ee99c8e1c9a7ff006003d",
