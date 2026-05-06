@@ -2,8 +2,6 @@ const std = @import("std");
 const c = @import("c");
 
 pub fn main() !void {
-    errdefer |err| if (err == error.SdlError) std.log.err("SDL error: {s}", .{c.SDL_GetError()});
-
     c.SDL_SetMainReady();
     defer c.SDL_Quit();
 
@@ -135,5 +133,11 @@ pub inline fn errify(value: anytype) error{SdlError}!switch (@typeInfo(@TypeOf(v
             .unsigned => if (value != 0) value else error.SdlError,
         },
         else => comptime unreachable,
+    } catch |err| switch (err) {
+        error.SdlError => {
+            std.log.err("SDL error: {s}", .{c.SDL_GetError()});
+            return err;
+        },
+        else => unreachable,
     };
 }
