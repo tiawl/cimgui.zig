@@ -1,5 +1,5 @@
 > [!WARNING]
-> If you are using the `docking` branch it won't be updated anymore and there won't be more `*-docking` tags. Please use the `-Ddocking` option [instead](https://github.com/tiawl/cimgui.zig/tree/zig-stable?tab=readme-ov-file#cimguizig-as-a-library).
+> If you are using the `docking` branch it won't be updated anymore and there won't be more `*-docking` tags. Please use the `-Ddocking` option [instead](https://github.com/tiawl/cimgui.zig/tree/stable?tab=readme-ov-file#cimguizig-as-a-library).
 
 # cimgui.zig
 
@@ -16,7 +16,7 @@ The intention under this fork is to package [ocornut/imgui][1] for [Zig][2]. So:
 ## How to use it
 
 The goal of this repository is not to provide a [Zig][2] binding for [ocornut/imgui][1]. The point of this repository is to abstract the [ocornut/imgui][1] compilation process with [Zig][2] (which is not easy to maintain) to let you focus on your application. So you can use **cimgui.zig**:
-- as raw (see the [examples directory](https://github.com/tiawl/cimgui.zig/blob/zig-stable/examples)),
+- as raw (see the [examples directory](https://github.com/tiawl/cimgui.zig/blob/stable/examples)),
 - as a daily updated interface for your [Zig][2] binding of [ocornut/imgui][1]
 
 ### cimgui.zig as a library
@@ -117,7 +117,7 @@ The backends are separated in two categories: the platforms (handling windows, e
 
 The [Zig][2] part of this package requires the latest (0.16.0) or the master (0.17.0-dev) [Zig][2] release.
 
-For other dependencies see [the build.zig.zon](https://github.com/tiawl/cimgui.zig/blob/zig-stable/build.zig.zon)
+For other dependencies see [the build.zig.zon](https://github.com/tiawl/cimgui.zig/blob/stable/build.zig.zon)
 
 ## `zig build` options
 
