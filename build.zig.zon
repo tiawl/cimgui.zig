@@ -20,8 +20,8 @@
             .branch = "docking",
         },
         .dcimgui = .{
-            .url = "git+https://github.com/dearimgui/dear_bindings#42af84a267109a9f8f4d9879826eb4d415de6c19",
-            .hash = "N-V-__8AAPQhCQA0nygW60Np2fcZdByxnewDwg9JpumhRqSb",
+            .url = "git+https://github.com/dearimgui/dear_bindings#c9ff64913915df41c0f4beef485b98a1c685eda5",
+            .hash = "N-V-__8AAPErCQARgFL-uXKTjXbwnJv4IPOIC8kr-yJrFXEr",
         },
         .vulkan_zig = .{
             .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.351#8bfd6ee40289d78112ca7bac8f5afa3c43d9bcda",
