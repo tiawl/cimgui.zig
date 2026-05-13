@@ -29,7 +29,7 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 // Missing features:
 //  [ ] Renderer: Multi-viewport support (multiple windows).
 
-// You can copy and use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
+// You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
 // Learn about Dear ImGui:
 // - FAQ                  https://dearimgui.com/faq

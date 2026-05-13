@@ -11,12 +11,12 @@
             .hash = "zigglgen-0.5.0-ziggltzDLwA0Gk0Pj6QMij1j6Z_jkvGEtGKBM6-YlI_s",
         },
         .@"imgui-master" = .{
-            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.7#dac07199cfd761113d966eb8ad739254e10df2fe",
-            .hash = "N-V-__8AAJYGdgBRpnbvCM6TYAXaF3SAnIHIShxHtrL4uhCU",
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.8#8936b58fe26e8c3da834b8f60b06511d537b4c63",
+            .hash = "N-V-__8AAGksdwBW9WS5PeUEDj4h55ps1ItuvJNZWfw86hyN",
         },
         .@"imgui-docking" = .{
-            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.7-docking#b1bcb12a624af7509894c8e77dd47416997777fa",
-            .hash = "N-V-__8AAPaAgABZhe_qrsumV412WbnTGsh4IKVTRYSF_jCc",
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.8-docking#b61e56346a92cfcaf1f43a545ca37b0b32239654",
+            .hash = "N-V-__8AAKmrgQA-iEFHovAwDtF8olu0VkgmKg_3T15wRPzJ",
             .branch = "docking",
         },
         .dcimgui = .{
