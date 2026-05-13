@@ -14,18 +14,18 @@ jobs:
           - master
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v6
-      with:
-        repository: "${{ github.event.pull_request.head.repo.full_name }}"
-        ref: "${{ github.event.pull_request.head.ref }}"
-    - name: Setup zig
-      uses: mlugg/setup-zig@v2
-      with:
-        version: "${{ matrix.zig-version }}"
-        cache-key: "${{ github.job }}_${{ runner.os }}_zig-${{ matrix.zig-version }}_${{ matrix.repo || '' }}"
-    - name: Check zig is canonical
-      shell: 'bash'
-      run: zig fmt --check .
+      - uses: actions/checkout@v6
+        with:
+          repository: "${{ github.event.pull_request.head.repo.full_name }}"
+          ref: "${{ github.event.pull_request.head.ref }}"
+      - name: Setup zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: "${{ matrix.zig-version }}"
+          cache-key: "${{ github.job }}_${{ runner.os }}_zig-${{ matrix.zig-version }}_${{ matrix.repo || '' }}"
+      - name: Check zig is canonical
+        shell: 'bash'
+        run: zig fmt --check .
   examples:
     strategy:
       matrix:
@@ -41,22 +41,22 @@ jobs:
           - macos-15
     runs-on: "${{ matrix.os }}"
     steps:
-    - uses: actions/checkout@v6
-      with:
-        repository: "${{ github.event.pull_request.head.repo.full_name }}"
-        ref: "${{ github.event.pull_request.head.ref }}"
-    - name: Setup zig
-      uses: mlugg/setup-zig@v2
-      with:
-        version: "${{ matrix.zig-version }}"
-        cache-key: "${{ github.job }}_${{ runner.os }}_zig-${{ matrix.zig-version }}_${{ matrix.repo || '' }}"
-    - name: Test building examples
-      shell: 'bash'
-      run: |
-        set -x
-        unset ZIG_LOCAL_CACHE_DIR
-        env -C "${GITHUB_WORKSPACE}/examples" zig build
-        env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking
+      - uses: actions/checkout@v6
+        with:
+          repository: "${{ github.event.pull_request.head.repo.full_name }}"
+          ref: "${{ github.event.pull_request.head.ref }}"
+      - name: Setup zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: "${{ matrix.zig-version }}"
+          cache-key: "${{ github.job }}_${{ runner.os }}_zig-${{ matrix.zig-version }}_${{ matrix.repo || '' }}"
+      - name: Test building examples
+        shell: 'bash'
+        run: |
+          set -x
+          unset ZIG_LOCAL_CACHE_DIR
+          env -C "${GITHUB_WORKSPACE}/examples" zig build
+          env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking
   maintainance:
     strategy:
       matrix:
@@ -65,39 +65,39 @@ jobs:
           - master
     runs-on: ubuntu-24.04
     steps:
-    - name: Install packages
-      shell: 'bash'
-      run: |
-        set -x
-        sudo apt-get update --fix-missing
-        sudo apt-get install -y python3-venv mesa-utils
-        printf 'ACTIVATE_DIR=bin\n' >> "${GITHUB_ENV}"
+      - name: Install packages
+        shell: 'bash'
+        run: |
+          set -x
+          sudo apt-get update --fix-missing
+          sudo apt-get install -y python3-venv mesa-utils
+          printf 'ACTIVATE_DIR=bin\n' >> "${GITHUB_ENV}"
 
-    - uses: actions/checkout@v6
-      with:
-        repository: "${{ github.event.pull_request.head.repo.full_name }}"
-        ref: "${{ github.event.pull_request.head.ref }}"
-    - name: Setup Zig
-      uses: mlugg/setup-zig@v2
-      with:
-        version: "${{ matrix.zig-version }}"
-        cache-key: "${{ github.job }}_${{ runner.os }}_zig-${{ matrix.zig-version }}_${{ matrix.repo || '' }}"
+      - uses: actions/checkout@v6
+        with:
+          repository: "${{ github.event.pull_request.head.repo.full_name }}"
+          ref: "${{ github.event.pull_request.head.ref }}"
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: "${{ matrix.zig-version }}"
+          cache-key: "${{ github.job }}_${{ runner.os }}_zig-${{ matrix.zig-version }}_${{ matrix.repo || '' }}"
 
-    - name: Activate python virtual env & install pip packages
-      env:
-        RUNNER_TMP: "${{ runner.temp }}"
-      shell: 'bash'
-      run: |
-        set -x
-        python3 -m venv "${RUNNER_TMP}/venv"
-        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
-        pip install ply
+      - name: Activate python virtual env & install pip packages
+        env:
+          RUNNER_TMP: "${{ runner.temp }}"
+        shell: 'bash'
+        run: |
+          set -x
+          python3 -m venv "${RUNNER_TMP}/venv"
+          source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
+          pip install ply
 
-    - name: Test updating
-      env:
-        RUNNER_TMP: "${{ runner.temp }}"
-      shell: 'bash'
-      run: |
-        set -x
-        source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
-        zig build -Dupdate -Dverbose
+      - name: Test updating
+        env:
+          RUNNER_TMP: "${{ runner.temp }}"
+        shell: 'bash'
+        run: |
+          set -x
+          source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
+          zig build -Dupdate -Dverbose
