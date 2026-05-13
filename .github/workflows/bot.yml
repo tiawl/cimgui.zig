@@ -7,23 +7,16 @@ on:
 
 jobs:
   zig-update:
-    strategy:
-      matrix:
-        zig-version:
-          - latest
-          - master
-        branch:
-          - stable
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
         with:
           repository: "${{ github.repository }}"
-          ref: "${{ matrix.branch }}"
+          ref: "${{ github.event.repository.default_branch }}"
       - name: Setup Zig
         uses: mlugg/setup-zig@v2
         with:
-          version: "${{ matrix.zig-version }}"
+          version: 'master'
       - name: Build
         shell: 'bash'
         run: zig build
@@ -32,16 +25,12 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
-    strategy:
-      matrix:
-        branch:
-          - stable
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
         with:
           repository: "${{ github.repository }}"
-          ref: "${{ matrix.branch }}"
+          ref: "${{ github.event.repository.default_branch }}"
 
       - name: Close every bot PRs
         env:
@@ -89,9 +78,9 @@ jobs:
 
       - name: Setup git user information
         env:
-          CHILD_BRANCH: "bot/${{ matrix.branch }}"
-          EMAIL: "<>"
-          NAME: "GitHub Actions[bot]"
+          CHILD_BRANCH: "bot/${{ github.event.repository.default_branch }}"
+          EMAIL: '<>'
+          NAME: 'GitHub Actions[bot]'
         shell: 'bash'
         run: |
           set -x
@@ -132,8 +121,8 @@ jobs:
       - name: Create Pull Request
         if: steps.fetch.conclusion == 'success' && steps.diff.outputs.len != '0'
         env:
-          CHILD_BRANCH: "bot/${{ matrix.branch }}"
-          PARENT_BRANCH: "${{ matrix.branch }}"
+          CHILD_BRANCH: "bot/${{ github.event.repository.default_branch }}"
+          PARENT_BRANCH: "${{ github.event.repository.default_branch }}"
           GH_TOKEN: "${{ github.token }}"
         shell: 'bash'
         run: |

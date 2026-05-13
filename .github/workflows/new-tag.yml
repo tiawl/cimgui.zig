@@ -15,20 +15,20 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v6
-      with:
-        repository: "${{ github.repository }}"
+      - uses: actions/checkout@v6
+        with:
+          repository: "${{ github.repository }}"
 
-    - name: Setup git user information, create and push new tag
-      env:
-        NAME: "GitHub Actions[bot]"
-        EMAIL: "<>"
-        NEW_TAG: "${{ github.event.inputs.new-tag }}"
-        GH_TOKEN: "${{ github.token }}"
-      shell: 'bash'
-      run: |
-        set -x
-        git config user.name "${NAME}"
-        git config user.email "${EMAIL}"
-        git tag "${NEW_TAG}"
-        git push --tags
+      - name: Setup git user information, create and push new tag
+        env:
+          NAME: 'GitHub Actions[bot]'
+          EMAIL: '<>'
+          NEW_TAG: "${{ github.event.inputs.new-tag }}"
+          GH_TOKEN: "${{ github.token }}"
+        shell: 'bash'
+        run: |
+          set -x
+          git config user.name "${NAME}"
+          git config user.email "${EMAIL}"
+          git tag "${NEW_TAG}"
+          git push --tags
