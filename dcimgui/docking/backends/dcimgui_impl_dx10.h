@@ -58,10 +58,10 @@ CIMGUI_IMPL_API void cImGui_ImplDX10_UpdateTexture(ImTextureData* tex);
 // (Please open an issue if you feel you need access to more data)
 struct ImGui_ImplDX10_RenderState_t
 {
-    ID3D10Device*       Device;
-    ID3D10SamplerState* SamplerLinear;
-    ID3D10SamplerState* SamplerNearest;
-    ID3D10Buffer*       VertexConstantBuffer;
+    ID3D10Device* Device;
+    ID3D10Buffer* VertexConstantBuffer;
+    //ID3D10SamplerState*   SamplerLinear;          // Use ImDrawList::AddCallback(ImGui::GetPlatform().DrawCallback_SetSamplerLinear)
+    //ID3D10SamplerState*   SamplerNearest;         // Use ImDrawList::AddCallback(ImGui::GetPlatform().DrawCallback_SetSamplerNearest)
 };
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus

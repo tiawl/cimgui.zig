@@ -20,7 +20,7 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 // This needs to be used along with a Platform Backend (e.g. GLFW, SDL, Win32, custom..)
 
 // Implemented features:
-//  [!] Renderer: User texture binding. Use 'VkDescriptorSet' as texture identifier. Call ImGui_ImplVulkan_AddTexture() to register one. Read the FAQ about ImTextureID/ImTextureRef + https://github.com/ocornut/imgui/pull/914 for discussions.
+//  [!] Renderer: User texture binding. Use a VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE 'VkDescriptorSet' as texture identifier. Call ImGui_ImplVulkan_AddTexture() to register one. Read the FAQ about ImTextureID/ImTextureRef + https://github.com/ocornut/imgui/pull/914 for discussions.
 //  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
 //  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
 //  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
@@ -99,7 +99,8 @@ struct ImVector_VkDynamicState_t { int Size; int Capacity; VkDynamicState* Data;
 #define IMGUI_IMPL_VULKAN_HAS_DYNAMIC_RENDERING
 #endif // #if defined(VK_VERSION_1_3)|| defined(VK_KHR_dynamic_rendering)
 // Backend uses a small number of descriptors per font atlas + as many as additional calls done to ImGui_ImplVulkan_AddTexture().
-#define IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE   (8)      // Minimum per atlas
+#define IMGUI_IMPL_VULKAN_MINIMUM_SAMPLED_IMAGE_POOL_SIZE   (8)      // Minimum per atlas
+#define IMGUI_IMPL_VULKAN_MINIMUM_SAMPLER_POOL_SIZE         (2)      // Minimum for linear + nearest
 
 // Specify settings to create pipeline and swapchain
 struct ImGui_ImplVulkan_PipelineInfo_t
@@ -135,7 +136,7 @@ struct ImGui_ImplVulkan_InitInfo_t
     uint32_t                      QueueFamily;
     VkQueue                       Queue;
     VkDescriptorPool              DescriptorPool;            // See requirements in note above; ignored if using DescriptorPoolSize > 0
-    uint32_t                      DescriptorPoolSize;        // Optional: set to create internal descriptor pool automatically instead of using DescriptorPool.
+    uint32_t                      DescriptorPoolSize;        // Optional: set to create internal ImageView descriptor pool automatically instead of using DescriptorPool.
     uint32_t                      MinImageCount;             // >= 2
     uint32_t                      ImageCount;                // >= MinImageCount
     VkPipelineCache               PipelineCache;             // Optional
@@ -181,12 +182,13 @@ CIMGUI_IMPL_API void cImGui_ImplVulkan_CreateMainPipeline(const ImGui_ImplVulkan
 // (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = nullptr to handle this manually.
 CIMGUI_IMPL_API void cImGui_ImplVulkan_UpdateTexture(ImTextureData* tex);
 
-// Register a texture (VkDescriptorSet == ImTextureID)
-// FIXME: This is experimental in the sense that we are unsure how to best design/tackle this problem
-// Please post to https://github.com/ocornut/imgui/pull/914 if you have suggestions.
-CIMGUI_IMPL_API VkDescriptorSet cImGui_ImplVulkan_AddTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout);
+// Register a texture (VkDescriptorSet for a VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE == ImTextureID)
+CIMGUI_IMPL_API VkDescriptorSet cImGui_ImplVulkan_AddTexture(VkImageView image_view, VkImageLayout image_layout);
 CIMGUI_IMPL_API void       cImGui_ImplVulkan_RemoveTexture(VkDescriptorSet descriptor_set);
 
+#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+CIMGUI_IMPL_API VkDescriptorSet cImGui_ImplVulkan_AddTextureVkSampler(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout); // Ignore VkSampler
+#endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 // Optional: load Vulkan functions with a custom function loader
 // This is only useful with IMGUI_IMPL_VULKAN_NO_PROTOTYPES / VK_NO_PROTOTYPES
 CIMGUI_IMPL_API bool cImGui_ImplVulkan_LoadFunctions(uint32_t api_version, PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data));                                // Implied user_data = nullptr

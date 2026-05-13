@@ -2,7 +2,7 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-// dear imgui, v1.92.7
+// dear imgui, v1.92.8
 // (internal structures/api)
 
 // You may use this file to debug, understand or extend Dear ImGui features but we don't provide any guarantee of forward compatibility.
@@ -348,6 +348,9 @@ typedef ImU16 ImGuiTableDrawChannelIdx;
 #define IMGUI_DEBUG_LOG_DOCKING(...)    do { if (g.DebugLogFlags & ImGuiDebugLogFlags_EventDocking)     IMGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
 #define IMGUI_DEBUG_LOG_VIEWPORT(...)   do { if (g.DebugLogFlags & ImGuiDebugLogFlags_EventViewport)    IMGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
 
+// Debug options (also see ones on top of imgui.cpp)
+//#define IMGUI_DEBUG_BOXSELECT
+
 // Static Asserts
 #define IM_STATIC_ASSERT(_COND)         static_assert(_COND, "")
 
@@ -681,6 +684,8 @@ CIMGUI_API bool   ImRect_ContainsWithPad(const ImRect* self, ImVec2 p, ImVec2 pa
 CIMGUI_API bool   ImRect_Overlaps(const ImRect* self, ImRect r);
 CIMGUI_API void   ImRect_Add(ImRect* self, ImVec2 p);
 CIMGUI_API void   ImRect_AddImRect(ImRect* self, ImRect r);
+CIMGUI_API void   ImRect_AddX(ImRect* self, float x);
+CIMGUI_API void   ImRect_AddY(ImRect* self, float y);
 CIMGUI_API void   ImRect_Expand(ImRect* self, const float amount);
 CIMGUI_API void   ImRect_ExpandImVec2(ImRect* self, ImVec2 amount);
 CIMGUI_API void   ImRect_Translate(ImRect* self, ImVec2 d);
@@ -1010,6 +1015,7 @@ typedef enum
     ImGuiItemStatusFlags_HasClipRect      = 1<<9,   // g.LastItemData.ClipRect is valid.
     ImGuiItemStatusFlags_HasShortcut      = 1<<10,  // g.LastItemData.Shortcut valid. Set by SetNextItemShortcut() -> ItemAdd().
     //ImGuiItemStatusFlags_FocusedByTabbing = 1 << 8,   // Removed IN 1.90.1 (Dec 2023). The trigger is part of g.NavActivateId. See commit 54c1bdeceb.
+    ImGuiItemStatusFlags_EditedInternal   = 1<<11,  // Similar to ImGuiItemStatusFlags_Edited but bypassing ImGuiItemFlags_NoMarkEdited.
 
     // Additional status + semantic for ImGuiTestEngine
 #ifdef IMGUI_ENABLE_TEST_ENGINE
@@ -1211,6 +1217,7 @@ CIMGUI_API float ImGuiMenuColumns_DeclColumns(ImGuiMenuColumns* self, float w_ic
 CIMGUI_API void  ImGuiMenuColumns_CalcNextTotalWidth(ImGuiMenuColumns* self, bool update_offsets);
 
 // Internal temporary state for deactivating InputText() instances.
+// Store as part of ImGuiDeactivatedItemData?
 struct ImGuiInputTextDeactivatedState_t
 {
     ImGuiID       ID;     // widget id owning the text state (which just got deactivated)
@@ -1445,6 +1452,7 @@ struct ImGuiPtrOrIndex_t
 };
 
 // Data used by IsItemDeactivated()/IsItemDeactivatedAfterEdit() functions
+// Also see ImGuiInputTextDeactivatedState which is an extension for this for InputText()
 struct ImGuiDeactivatedItemData_t
 {
     ImGuiID ID;
@@ -1887,6 +1895,7 @@ struct ImGuiBoxSelectState_t
     // Temporary/Transient data
     bool          UnclipMode;         // (Temp/Transient, here in hot area). Set/cleared by the BeginMultiSelect()/EndMultiSelect() owning active box-select.
     ImRect        UnclipRect;         // Rectangle where ItemAdd() clipping may be temporarily disabled. Need support by multi-select supporting widgets.
+    ImRect        UnclipRects[2];     // Per-axis versions.
     ImRect        BoxSelectRectPrev;  // Selection rectangle in absolute coordinates (derived every frame from BoxSelectStartPosRel and MousePos)
     ImRect        BoxSelectRectCurr;
 };
@@ -1907,7 +1916,8 @@ struct ImGuiMultiSelectTempData_t
     ImGuiMultiSelectFlags  Flags;
     ImVec2                 ScopeRectMin;
     ImVec2                 BackupCursorMaxPos;
-    ImGuiSelectionUserData LastSubmittedItem;   // Copy of last submitted item data, used to merge output ranges.
+    //ImGuiSelectionUserData CurrSubmittedItem; // Copy of last submitted item data, used to merge output ranges.
+    //ImGuiSelectionUserData PrevSubmittedItem; // Copy of previous submitted item data, used to merge output ranges.
     ImGuiID                BoxSelectId;
     ImGuiKeyChord          KeyMods;
     ImS8                   LoopRequestSetAll;   // -1: no operation, 0: clear all, 1: select all.
@@ -1990,7 +2000,7 @@ typedef enum
     ImGuiDockNodeState_HostWindowVisible,
 } ImGuiDockNodeState;
 
-// sizeof() 156~192
+// sizeof() 176~216
 struct ImGuiDockNode_t
 {
     ImGuiID                 ID;
@@ -2007,8 +2017,8 @@ struct ImGuiDockNode_t
     ImVec2                  Size;                  // Current size
     ImVec2                  SizeRef;               // [Split node only] Last explicitly written-to size (overridden when using a splitter affecting the node), used to calculate Size.
     ImGuiAxis               SplitAxis;             // [Split node only] Split axis (X or Y)
-    ImGuiWindowClass        WindowClass;           // [Root node only]
     ImU32                   LastBgColor;
+    ImGuiWindowClass        WindowClass;           // [Root node only]
 
     ImGuiWindow*            HostWindow;
     ImGuiWindow*            VisibleWindow;         // Generally point to window which is ID is == SelectedTabID, but when CTRL+Tabbing this can be a different window.
@@ -2109,6 +2119,7 @@ struct ImGuiViewportP_t
     // The library never uses those fields, they are merely storage to facilitate backend implementation.
     void*              RendererUserData;                // void* to hold custom data structure for the renderer (e.g. swap chain, framebuffers etc.). generally set by your Renderer_CreateWindow function.
     void*              PlatformUserData;                // void* to hold custom data structure for the OS / platform (e.g. windowing info, render context). generally set by your Platform_CreateWindow function.
+    void*              PlatformIconData;                // void* to hold custom data structure for the OS / platform to specify an icon. Currently unused for exposed to allow experiments.
     void*              PlatformHandle;                  // void* to hold higher-level, platform window handle (e.g. HWND for Win32 backend, Uint32 WindowID for SDL, GLFWWindow* for GLFW), for FindViewportByPlatformHandle().
     void*              PlatformHandleRaw;               // void* to hold lower-level, platform-native window handle (always HWND on Win32 platform, unused for other platforms).
     bool               PlatformWindowCreated;           // Platform window has been created (Platform_CreateWindow() has been called). This is false during the first frame where a viewport is being created.
@@ -2387,6 +2398,7 @@ struct ImGuiContext_t
     float                          CurrentDpiScale;                     // Current window/viewport DpiScale == CurrentViewport->DpiScale
     ImDrawListSharedData           DrawListSharedData;
     ImGuiID                        WithinEndChildID;                    // Set within EndChild()
+    ImGuiID                        WithinEndPopupID;                    // Set within EndPopup()
     void*                          TestEngine;                          // Test engine user data
 
     // Inputs
@@ -3369,7 +3381,7 @@ CIMGUI_API ImGuiWindow* ImGui_FindBottomMostVisibleWindowWithinBeginStack(ImGuiW
 CIMGUI_API void ImGui_SetNextWindowRefreshPolicy(ImGuiWindowRefreshFlags flags);
 
 // Fonts, drawing
-CIMGUI_API void        ImGui_RegisterUserTexture(ImTextureData* tex);                       // Register external texture. EXPERIMENTAL: DO NOT USE YET.
+CIMGUI_API void        ImGui_RegisterUserTexture(ImTextureData* tex);                       // Register external texture. EXPERIMENTAL.
 CIMGUI_API void        ImGui_UnregisterUserTexture(ImTextureData* tex);
 CIMGUI_API void        ImGui_RegisterFontAtlas(ImFontAtlas* atlas);
 CIMGUI_API void        ImGui_UnregisterFontAtlas(ImFontAtlas* atlas);
@@ -3491,7 +3503,8 @@ CIMGUI_API void ImGui_LogRenderedTextEx(const ImVec2* ref_pos, const char* text,
 CIMGUI_API void ImGui_LogSetNextTextDecoration(const char* prefix, const char* suffix);
 
 // Childs
-CIMGUI_API bool ImGui_BeginChildEx(const char* name, ImGuiID id, ImVec2 size_arg, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags);
+CIMGUI_API bool         ImGui_BeginChildEx(const char* name, ImGuiID id, ImVec2 size_arg, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags);
+CIMGUI_API ImGuiWindow* ImGui_FindFrontMostVisibleChildWindow(ImGuiWindow* window);
 
 // Popups, Modals
 CIMGUI_API bool             ImGui_BeginPopupEx(ImGuiID id, ImGuiWindowFlags extra_window_flags);
@@ -3594,8 +3607,8 @@ CIMGUI_API bool          ImGui_IsActiveIdUsingNavDir(ImGuiDir dir);
 CIMGUI_API ImGuiID            ImGui_GetKeyOwner(ImGuiKey key);
 CIMGUI_API void               ImGui_SetKeyOwner(ImGuiKey key, ImGuiID owner_id, ImGuiInputFlags flags /* = 0 */);
 CIMGUI_API void               ImGui_SetKeyOwnersForKeyChord(ImGuiKeyChord key, ImGuiID owner_id, ImGuiInputFlags flags /* = 0 */);
-CIMGUI_API void               ImGui_SetItemKeyOwnerImGuiInputFlags(ImGuiKey key, ImGuiInputFlags flags);  // Set key owner to last item if it is hovered or active. Equivalent to 'if (IsItemHovered() || IsItemActive()) { SetKeyOwner(key, GetItemID());'.
-CIMGUI_API bool               ImGui_TestKeyOwner(ImGuiKey key, ImGuiID owner_id);                         // Test that key is either not owned, either owned by 'owner_id'
+CIMGUI_API bool               ImGui_SetItemKeyOwnerImGuiInputFlags(ImGuiKey key, ImGuiInputFlags flags);
+CIMGUI_API bool               ImGui_TestKeyOwner(ImGuiKey key, ImGuiID owner_id);      // Test that key is either not owned, either owned by 'owner_id'
 CIMGUI_API ImGuiKeyOwnerData* ImGui_GetKeyOwnerData(ImGuiContext* ctx, ImGuiKey key);
 
 // [EXPERIMENTAL] High-Level: Input Access functions w/ support for Key/Input Ownership
@@ -3703,6 +3716,7 @@ CIMGUI_API void           ImGui_DockBuilderFinish(ImGuiID node_id);
 // We don't use the ID Stack for this as it is common to want them separate.
 CIMGUI_API void    ImGui_PushFocusScope(ImGuiID id);
 CIMGUI_API void    ImGui_PopFocusScope(void);
+CIMGUI_API bool    ImGui_IsInNavFocusRoute(ImGuiID focus_scope_id);
 CIMGUI_API ImGuiID ImGui_GetCurrentFocusScope(void);  // Focus scope we are outputting into, set by PushFocusScope()
 
 // Drag and Drop
@@ -3713,7 +3727,7 @@ CIMGUI_API bool ImGui_BeginDragDropTargetViewportEx(ImGuiViewport* viewport, con
 CIMGUI_API void ImGui_ClearDragDrop(void);
 CIMGUI_API bool ImGui_IsDragDropPayloadBeingAccepted(void);
 CIMGUI_API void ImGui_RenderDragDropTargetRectForItem(ImRect bb);
-CIMGUI_API void ImGui_RenderDragDropTargetRectEx(ImDrawList* draw_list, ImRect bb);
+CIMGUI_API void ImGui_RenderDragDropTargetRectEx(ImDrawList* draw_list, ImRect bb, float rounding);
 
 // Typing-Select API
 // (provide Windows Explorer style "select items by typing partial name" + "cycle through items by typing same letter" feature)
@@ -3773,6 +3787,7 @@ CIMGUI_API void                    ImGui_TableSetupDrawChannels(ImGuiTable* tabl
 CIMGUI_API void                    ImGui_TableUpdateLayout(ImGuiTable* table);
 CIMGUI_API void                    ImGui_TableUpdateBorders(ImGuiTable* table);
 CIMGUI_API void                    ImGui_TableUpdateColumnsWeightFromWidth(ImGuiTable* table);
+CIMGUI_API void                    ImGui_TableApplyExternalUnclipRect(ImGuiTable* table, ImRect* rect);
 CIMGUI_API void                    ImGui_TableDrawBorders(ImGuiTable* table);
 CIMGUI_API void                    ImGui_TableDrawDefaultContextMenu(ImGuiTable* table, ImGuiTableFlags flags_for_section_to_display);
 CIMGUI_API bool                    ImGui_TableBeginContextMenuPopup(ImGuiTable* table);
@@ -4198,6 +4213,7 @@ CIMGUI_API void cImFontAtlasTextureBlockFill(ImTextureData* dst_tex, int dst_x, 
 CIMGUI_API void cImFontAtlasTextureBlockCopy(ImTextureData* src_tex, int src_x, int src_y, ImTextureData* dst_tex, int dst_x, int dst_y, int w, int h);
 CIMGUI_API void cImFontAtlasTextureBlockQueueUpload(ImFontAtlas* atlas, ImTextureData* tex, int x, int y, int w, int h);
 
+CIMGUI_API void        cImTextureDataQueueUpload(ImTextureData* tex, int x, int y, int w, int h);
 CIMGUI_API int         cImTextureDataGetFormatBytesPerPixel(ImTextureFormat format);
 CIMGUI_API const char* cImTextureDataGetStatusName(ImTextureStatus status);
 CIMGUI_API const char* cImTextureDataGetFormatName(ImTextureFormat format);

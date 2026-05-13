@@ -75,10 +75,7 @@ CIMGUI_IMPL_API void cImGui_ImplSDLGPU3_UpdateTexture(ImTextureData* tex);
 // (Please open an issue if you feel you need access to more data)
 struct ImGui_ImplSDLGPU3_RenderState_t
 {
-    SDL_GPUDevice*  Device;
-    SDL_GPUSampler* SamplerLinear;   // Bilinear filtering sampler
-    SDL_GPUSampler* SamplerNearest;  // Nearest/point filtering sampler
-    SDL_GPUSampler* SamplerCurrent;  // Current sampler (may be changed by callback)
+    SDL_GPUDevice* Device;
 };
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
