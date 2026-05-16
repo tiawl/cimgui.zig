@@ -299,7 +299,7 @@ pub fn build(builder: *std.Build) !void {
     var pkg_builder = try VerboseBuilder.init(builder, build_zig_zon, buildFn, updateFn);
 
     if (list(&pkg_builder)) return;
-    try pkg_builder.fetch(build_zig_zon);
+    try pkg_builder.fetch(build_zig_zon, pkg_builder.ptrCwd());
     try pkg_builder.update();
     try pkg_builder.build();
 }
