@@ -32,8 +32,8 @@
             .hash = "toolbox-2.0.2-kRAu4O6aAAAxP6SQ-xIfkIQO8x5RwYAA_zaGG2eYzDA7",
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=toolbox-2.1.0#2eb8c8d31ce25592ac741f33c9cd9d5cbda4bb7f",
-            .hash = "glfw_zig-1.0.0-NrvYo0HRGQA-zQpm9A79DqWm9aAck-_geH2XtqiTdpWs",
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=X11.zig-libXi-1.8.3#51f8fe1a0df9967c5a70bb4c557a729a8999e08a",
+            .hash = "glfw_zig-1.0.0-NrvYoz_RGQCkG66DaikwieeG_pRVGzSwTr4oAcI9cTMb",
         },
     },
     .minimum_zig_version = "0.16.0",
