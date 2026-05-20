@@ -6,10 +6,6 @@
             .url = "git+https://github.com/castholm/SDL.git#21c6b79840d123e94a9f183f4b0fa1731668f48d",
             .hash = "sdl-0.5.0+3.4.8-SDL--k4DpgH323IfF6cEaGzKUdtUQv1azbBmmcv0RMAu",
         },
-        .zigglgen = .{
-            .url = "git+https://github.com/castholm/zigglgen#7e55ad15655fc4d602ed3bcbe7fb487592063156",
-            .hash = "zigglgen-0.5.0-ziggltzDLwA0Gk0Pj6QMij1j6Z_jkvGEtGKBM6-YlI_s",
-        },
         .@"imgui-master" = .{
             .url = "git+https://github.com/ocornut/imgui?ref=v1.92.8#8936b58fe26e8c3da834b8f60b06511d537b4c63",
             .hash = "N-V-__8AAGksdwBW9WS5PeUEDj4h55ps1ItuvJNZWfw86hyN",

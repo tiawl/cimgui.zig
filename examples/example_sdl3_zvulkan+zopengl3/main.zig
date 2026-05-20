@@ -1,0 +1,30 @@
+// The command line to run it with zVulkan backend:
+// $ ./zig-out/bin/example_sdl3_zvulkan+zopengl3
+// The command line to run it with zOpenGL3 backend:
+// $ env RENDERER=zOpenGL3 ./zig-out/bin/example_sdl3_zvulkan+zopengl3
+
+const std = @import("std");
+const common = @import("common");
+const build = struct {
+    const Platform = @TypeOf(@import("build_types").dummy_platform);
+    const Renderer = @TypeOf(@import("build_types").dummy_renderer);
+    const options = @import("build_options");
+};
+
+pub fn main(init: std.process.Init) !void {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+
+    const platform: build.Platform = .SDL3;
+    const default_renderer: build.Renderer = .zVulkan;
+    switch (std.meta.stringToEnum(build.Renderer, init.environ_map.get("RENDERER") orelse @tagName(default_renderer)) orelse return error.UnknownRendererBackend) {
+        inline default_renderer, .zOpenGL3 => |renderer| {
+            try common.init(platform, renderer, allocator, build.options.name ++ ": " ++ @tagName(renderer) ++ " backend used", common.window.width, common.window.height, build.options.name);
+            defer common.deinit(platform, renderer, allocator);
+
+            try common.loop(platform, renderer, allocator);
+        },
+        else => return error.Renderer,
+    }
+}

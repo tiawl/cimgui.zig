@@ -12,7 +12,7 @@ pub fn main() !void {
     const allocator = arena.allocator();
 
     const platform: build.Platform = .SDL3;
-    const renderer: build.Renderer = .Vulkan;
+    const renderer: build.Renderer = .zOpenGL3;
     try common.init(platform, renderer, allocator, build.options.name, common.window.width, common.window.height, build.options.name);
     defer common.deinit(platform, renderer, allocator);
 

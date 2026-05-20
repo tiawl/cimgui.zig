@@ -16,8 +16,21 @@ The intention under this fork is to package [ocornut/imgui][1] for [Zig][2]. So:
 ## How to use it
 
 The goal of this repository is not to provide a [Zig][2] binding for [ocornut/imgui][1]. The point of this repository is to abstract the [ocornut/imgui][1] compilation process with [Zig][2] (which is not easy to maintain) to let you focus on your application. So you can use **cimgui.zig**:
-- as raw (see the [examples directory](https://github.com/tiawl/cimgui.zig/blob/stable/examples)),
+- as raw (see the `examples` directory),
 - as a daily updated interface for your [Zig][2] binding of [ocornut/imgui][1]
+
+### `examples` directory
+
+`examples/example_*` directories follow this naming convention: `example_<platforms>_<renderers>`
+
+Each backend in `<platforms>` and `<renderers>` is split with a `+` character if more than one backend.
+
+Backends prefixed with a `z` character stands for popular Zig Bindings. Currently:
+* `zopengl3` refers to [castholm/zigglgen][8],
+* `zglfw` refers to [IridescenceTech/zglfw][9],
+* `zvulkan` refers to [Snektron/vulkan-zig][10]
+
+The whole examples code is refactored in `examples/common` directory for easier maintainance and better test coverage.
 
 ### cimgui.zig as a library
 
@@ -83,11 +96,6 @@ pub fn build(b: *std.Build) void {
 +    const c_module = translate_c.createModule();
 +    c_module.linkLibrary(cimgui_lib);
 
-    // The following conditional is only necessary for OpenGL backends:
-+    if (cimgui_lib.root_module.import_table.get("gl")) |gl_module| {
-+        exe.root_module.addImport("gl", gl_module);
-+    }
-
     // Where `exe` represents your executable/library to link to
 +    exe.root_module.addImport("c", c_module);
 
@@ -101,14 +109,14 @@ And that's it ! You're ready to go ! See the `examples` directory on how to move
 
 The backends are separated in two categories: the platforms (handling windows, events, ...) and the renderers (draw to screen, ..).
 
-### Platform
+### Platforms
   - [GLFW][4]
   - [SDL3][6]
-  - [SDLGPU3][6] (technically a renderer but needs linkage against OpenGL/Vulkan)
 
 ### Renderers
   - [Vulkan][5]
-  - [OpenGL][7]
+  - [OpenGL3][7]
+  - [SDLGPU3][6]
   - Metal
 
 > As you can see, these backends do not support all of those supported by ImGUI. Adding a backend is a bit of work because of the needed *maintenance*. Please do not ask for backends to be added if you don't feel like adding them yourselves !
@@ -163,3 +171,6 @@ The parts of this repository originated from this repository are dedicated to th
 [5]:https://github.com/KhronosGroup/Vulkan-Headers
 [6]:https://wiki.libsdl.org/SDL3/FrontPage
 [7]:https://www.opengl.org/
+[8]:https://github.com/castholm/zigglgen
+[9]:https://github.com/IridescenceTech/zglfw
+[10]:https://github.com/Snektron/vulkan-zig

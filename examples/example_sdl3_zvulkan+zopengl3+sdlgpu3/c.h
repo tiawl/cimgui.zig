@@ -1,0 +1,13 @@
+#define SDL_DISABLE_OLD_NAMES
+#include "SDL3/SDL.h"
+#include "SDL3/SDL_revision.h"
+#define SDL_MAIN_HANDLED
+#include "SDL3/SDL_main.h"
+#include "SDL3/SDL_vulkan.h"
+#include "SDL3/SDL_opengl.h"
+#include "vulkan/vulkan.h"
+#include "dcimgui.h"
+#include "backends/dcimgui_impl_sdl3.h"
+#include "backends/dcimgui_impl_vulkan.h"
+#include "backends/dcimgui_impl_opengl3.h"
+#include "backends/dcimgui_impl_sdlgpu3.h"
