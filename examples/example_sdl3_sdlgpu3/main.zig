@@ -1,4 +1,5 @@
 const std = @import("std");
+const c = @import("c");
 const build = struct {
     const Platform = @TypeOf(@import("build_types").dummy_platform);
     const Renderer = @TypeOf(@import("build_types").dummy_renderer);
@@ -12,7 +13,7 @@ pub fn main() !void {
     const allocator = arena.allocator();
 
     const platform: build.Platform = .SDL3;
-    const renderer: build.Renderer = .Vulkan;
+    const renderer: build.Renderer = .SDLGPU3;
     try common.init(platform, renderer, allocator, build.options.name, common.window.width, common.window.height, build.options.name);
     defer common.deinit(platform, renderer, allocator);
 
