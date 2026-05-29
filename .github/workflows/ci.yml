@@ -118,4 +118,6 @@ jobs:
         run: |
           set -x
           source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
-          zig build -Dupdate -Dverbose
+          renderers="{$(zig build -Dlist-renderers -Dseparator=,)}"
+          platforms="{$(zig build -Dlist-platforms -Dseparator=,)}"
+          eval "zig build -Dupdate -Dverbose -Drenderers=${renderers} -Dplatforms=${platforms}"

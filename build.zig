@@ -150,11 +150,17 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
     } else if (renderers.len > 0 and no_renderer) {
         return error.ConflictingOptions;
     }
+
+    const vulkan_dep = pkg_builder.verboseDependency("vulkan_zig");
+    const vulkan_artifact = pkg_builder.artifact(vulkan_dep, "vulkan");
+    const glfw_dep = pkg_builder.verboseDependency("glfw_zig");
+    const glfw_artifact = pkg_builder.artifact(glfw_dep, "glfw");
+    const sdl_dep = pkg_builder.dependency("sdl");
+    const sdl_artifact = pkg_builder.artifact(sdl_dep, "SDL3");
+
     for (renderers) |renderer| {
         switch (renderer) {
             .Vulkan => {
-                const vulkan_dep = pkg_builder.verboseDependency("vulkan_zig");
-                const vulkan_artifact = pkg_builder.artifact(vulkan_dep, "vulkan");
                 if (std.mem.indexOfScalar(Platform, platforms, .GLFW) == null) {
                     pkg_builder.linkLibrary(lib, vulkan_artifact);
                     pkg_builder.installLibraryHeaders(lib, vulkan_artifact);
@@ -174,6 +180,9 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
                 pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_opengl3_loader.h" }, &.{ "backends", "imgui_impl_opengl3_loader.h" });
             },
             .SDLGPU3 => {
+                pkg_builder.linkLibrary(lib, sdl_artifact);
+                pkg_builder.installLibraryHeaders(lib, sdl_artifact);
+
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdlgpu3.cpp" }, flags.items);
                 pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdlgpu3.cpp" }, flags.items);
                 pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdlgpu3.h" }, &.{ "backends", "imgui_impl_sdlgpu3.h" });
@@ -210,9 +219,6 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
     for (platforms) |platform| {
         switch (platform) {
             .GLFW => {
-                const glfw_dep = pkg_builder.verboseDependency("glfw_zig");
-                const glfw_artifact = pkg_builder.artifact(glfw_dep, "glfw");
-
                 pkg_builder.addIncludePathsFromLib(@TypeOf(lib.*), lib, glfw_artifact);
                 pkg_builder.linkLibrary(lib, glfw_artifact);
                 pkg_builder.installLibraryHeaders(lib, glfw_artifact);
@@ -228,8 +234,6 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
                 }
             },
             .SDL3 => {
-                const sdl_dep = pkg_builder.dependency("sdl");
-                const sdl_artifact = pkg_builder.artifact(sdl_dep, "SDL3");
                 pkg_builder.linkLibrary(lib, sdl_artifact);
                 pkg_builder.installLibraryHeaders(lib, sdl_artifact);
 
