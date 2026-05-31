@@ -132,8 +132,8 @@ fn list(pkg_builder: *VerboseBuilder) bool {
         } else {
             for (std.enums.values(Platform)) |backend| joinBackend(pkg_builder, &buf, @tagName(backend), separator_opt);
         }
-        stdout.print("{s}\n", .{buf}) catch @panic("OOM");
-        stdout.flush() catch @panic("OOM");
+        stdout.print("{s}\n", .{buf}) catch {};
+        stdout.flush() catch {};
         return true;
     }
     return false;

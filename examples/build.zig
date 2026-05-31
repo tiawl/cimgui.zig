@@ -513,9 +513,11 @@ pub fn build(builder: *std.Build) !void {
     const verbose = builder.option(bool, "verbose", "Verbose mode") orelse true;
     const docking = builder.option(bool, "docking", "use master or docking ocornut/imgui branch ?") orelse false;
 
-    var examples_dir = try builder.build_root.handle.openDir(builder.graph.io, ".", .{
+    var examples_dir = if (@hasField(std.Build, "build_root")) try builder.build_root.handle.openDir(builder.graph.io, ".", .{
         .iterate = true,
-    });
+    }) else if (@hasField(std.Build, "root")) try builder.root.root_dir.handle.openDir(builder.graph.io, ".", .{
+        .iterate = true,
+    }) else unreachable;
     defer examples_dir.close(builder.graph.io);
 
     const zigglgen_module = zigglgen.generateBindingsModule(builder, .{

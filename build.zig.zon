@@ -3,8 +3,8 @@
     .version = "1.0.0",
     .dependencies = .{
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL.git#21c6b79840d123e94a9f183f4b0fa1731668f48d",
-            .hash = "sdl-0.5.0+3.4.8-SDL--k4DpgH323IfF6cEaGzKUdtUQv1azbBmmcv0RMAu",
+            .url = "git+https://github.com/tiawl-forks/SDL#053b0a1dd231a15dcab4572b902474a58919c48d",
+            .hash = "sdl-0.5.0+3.4.8-SDL--vADpgEwm_HQV4hf2-_vY_zH6G6yfuMVonp0DjOg",
         },
         .@"imgui-master" = .{
             .url = "git+https://github.com/ocornut/imgui?ref=v1.92.8#8936b58fe26e8c3da834b8f60b06511d537b4c63",
@@ -19,17 +19,17 @@
             .url = "git+https://github.com/dearimgui/dear_bindings#c9ff64913915df41c0f4beef485b98a1c685eda5",
             .hash = "N-V-__8AAPErCQARgFL-uXKTjXbwnJv4IPOIC8kr-yJrFXEr",
         },
-        .vulkan_zig = .{
-            .url = "git+https://github.com/tiawl/vulkan.zig?ref=toolbox-2.1.1#605d668f5b3f083ad470a2d1e1bdcbdfe98d2132",
-            .hash = "vulkan_zig-1.0.0-p2wg3oxkfwEvgUPedNSZ16zSpgwaCIkvMkWaVcKtHNep",
-        },
         .toolbox = .{
-            .url = "git+https://github.com/tiawl/toolbox?ref=2.1.1#f9c42e274574d0518fa4b02a8e5a632ff9ca5ae9",
-            .hash = "toolbox-2.0.2-kRAu4JGbAAB1xu5gpTyIKsJmYLvY0mZhHqU7INbnZZBP",
+            .url = "git+https://github.com/tiawl/toolbox#fc549b5a96a06a2bf60412325590f3a197e42d5b",
+            .hash = "toolbox-2.0.2-kRAu4JmuAADvw_EqfJ8mnziRoJg6AFihhbxJ1Qk4y1eR",
+        },
+        .vulkan_zig = .{
+            .url = "git+https://github.com/tiawl/vulkan.zig#ecaf10dbb85bd213cca34b3fad27bf3b572d0897",
+            .hash = "vulkan_zig-1.0.0-p2wg3oJkfwHKflAni-8f9iCmEBJDO-K-i6Tz_X3F1gJU",
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=toolbox-2.1.1#1296a3a5d6a648234c91ebf514542d0e77355e4a",
-            .hash = "glfw_zig-1.0.0-NrvYo0HRGQDBWyzz4yk-H9q7ERVU2IBpOzejAOrMQGAn",
+            .url = "git+https://github.com/tiawl/glfw.zig#03563cf95be7e329c70d8c63d63e8d470db1e7d7",
+            .hash = "glfw_zig-1.0.0-NrvYowHRGQBYgA6jv5xhMBeRrO24BfUTqt6UjLpGAhR6",
         },
     },
     .minimum_zig_version = "0.16.0",

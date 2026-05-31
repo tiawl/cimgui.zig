@@ -7,8 +7,8 @@
             .path = "..",
         },
         .zigglgen = .{
-            .url = "git+https://github.com/castholm/zigglgen#7e55ad15655fc4d602ed3bcbe7fb487592063156",
-            .hash = "zigglgen-0.5.0-ziggltzDLwA0Gk0Pj6QMij1j6Z_jkvGEtGKBM6-YlI_s",
+            .url = "git+https://github.com/tiawl-forks/zigglgen#249361b0a6df2ee1ca7505c32f14a20358fa77c9",
+            .hash = "zigglgen-0.5.0-zigglmjELwC_CAX_TWwH_fdNcp2l2d_XfUWMjet3uHEc",
         },
         .zglfw = .{
             .url = "git+https://github.com/IridescenceTech/zglfw#188d33b5abdb24768905dec1dad6b3ffd60fc324",
