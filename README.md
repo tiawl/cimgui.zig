@@ -92,7 +92,7 @@ pub fn build(b: *std.Build) void {
 +    });
 +
 +    const cimgui_lib = cimgui_dep.artifact("cimgui");
-+    addIncludePathsToTranslateC(translate_c, cimgui_artifact);
++    addIncludePathsToTranslateC(translate_c, cimgui_lib);
 +    const c_module = translate_c.createModule();
 +    c_module.linkLibrary(cimgui_lib);
 
