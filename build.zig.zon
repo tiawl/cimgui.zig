@@ -39,5 +39,7 @@
         "build.zig.zon",
         "build",
         "dcimgui",
+        "examples/build.zig",
+        "examples/build.zig.zon",
     },
 }
