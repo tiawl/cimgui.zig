@@ -7,16 +7,16 @@
             .path = "..",
         },
         .zigglgen = .{
-            .url = "git+https://github.com/tiawl-forks/zigglgen#249361b0a6df2ee1ca7505c32f14a20358fa77c9",
-            .hash = "zigglgen-0.5.0-zigglmjELwC_CAX_TWwH_fdNcp2l2d_XfUWMjet3uHEc",
+            .url = "git+https://github.com/tiawl-forks/zigglgen#77ab29e1ba5128c0a3d8523fd45379b2641e6086",
+            .hash = "zigglgen-0.5.0-ziggls3ELwDprzbCqO8jfYbMIFWi2Dl3uGeFC13aaZE_",
         },
         .zglfw = .{
             .url = "git+https://github.com/IridescenceTech/zglfw#188d33b5abdb24768905dec1dad6b3ffd60fc324",
             .hash = "zglfw-0.1.0-BghZXaTUAAAkCOlD_2akK4k1zIzo6HIXelVZu39yr_MO",
         },
         .vulkan = .{
-            .url = "git+https://github.com/Snektron/vulkan-zig#b496a6a561ffbbeb530b0f9ed4e059f88c0723a5",
-            .hash = "vulkan-0.0.0-r7Ytx7N9AwD7IZt5_XNHtkJ4G9qY0pCH-cpcOsbL8wzD",
+            .url = "git+https://github.com/tiawl-forks/vulkan-zig#e9534f7f79313d660b3528ca91a27627e8533028",
+            .hash = "vulkan-0.0.0-r7Ytxxh-AwAefEj8k53s5BvgUmfSWPPndyAZ0JjLvWXI",
         },
     },
     .paths = .{
