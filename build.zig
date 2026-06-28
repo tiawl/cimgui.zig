@@ -249,9 +249,10 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
 
 fn buildFn(pkg_builder: *VerboseBuilder) !void {
     const docking = pkg_builder.option(bool, false, "docking", "master or docking ocornut/imgui branch ?");
+    const link_libc = pkg_builder.option(bool, true, "libc", "link libC ?");
 
     const lib = pkg_builder.addLibrary("cimgui");
-    pkg_builder.linkLibCpp(lib);
+    if (link_libc) pkg_builder.linkLibCpp(lib);
 
     pkg_builder.addInclude(lib, &.{ "dcimgui", if (docking) "docking" else "master" });
 
