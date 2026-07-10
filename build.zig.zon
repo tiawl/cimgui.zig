@@ -28,8 +28,8 @@
             .hash = "vulkan_zig-1.0.0-p2wg3vEugQEYWerYV2shmLXqnxxgOaCHg2znTyGc7RIe",
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=vulkan.zig-v1.4.356#38eac21e80aa3d89efa0a33b56147012dc694e15",
-            .hash = "glfw_zig-1.0.0-NrvYo4nRGQB0yc1xihCUQwXCS4dSlFcXmgzAxNyEXqFO",
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=wayland.zig-1.25.91#412023dc1f7dfdcd5e1e888dc2ce8931627a05bd",
+            .hash = "glfw_zig-1.0.0-NrvYo4PRGQAyDJz-1spa90Xut4C7T_n84knUVSugIf4o",
         },
     },
     .minimum_zig_version = "0.16.0",
