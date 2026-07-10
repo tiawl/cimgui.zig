@@ -41,5 +41,6 @@
         "dcimgui",
         "examples/build.zig",
         "examples/build.zig.zon",
+        "LICENSE",
     },
 }
