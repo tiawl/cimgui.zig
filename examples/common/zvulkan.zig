@@ -119,7 +119,7 @@ var pipeline_cache: vk.PipelineCache = .null_handle;
 var window_data: ImGui_ImplVulkanH_Window = .{};
 var min_image_count: u32 = 2;
 var swap_chain_rebuild: bool = false;
-var swap_chain_image_usage = vk.ImageUsageFlags{ .color_attachment_bit = true };
+var swap_chain_image_usage = vk.ImageUsageFlags{ .color_attachment = true };
 
 const api_version = vk.API_VERSION_1_2;
 
@@ -193,7 +193,7 @@ fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c
     defer allocator.free(families);
     var i: u32 = 0;
     for (families) |fproperties| {
-        if (fproperties.queue_flags.graphics_bit) {
+        if (fproperties.queue_flags.graphics) {
             queue_family = i;
             break;
         }
@@ -235,7 +235,7 @@ fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c
         },
     };
     var desc_pool_create_info = vk.DescriptorPoolCreateInfo{
-        .flags = .{ .free_descriptor_set_bit = true },
+        .flags = .{ .free_descriptor_set = true },
         .max_sets = 0,
     };
     for (pool_sizes) |pool_size| desc_pool_create_info.max_sets += pool_size.descriptor_count;
@@ -295,7 +295,7 @@ pub fn initImguiContext(comptime p: build.Platform) !void {
         .PipelineInfoMain = .{
             .RenderPass = window_data.RenderPass,
             .Subpass = 0,
-            .MSAASamples = vk.SampleCountFlags{ .@"1_bit" = true },
+            .MSAASamples = vk.SampleCountFlags{ .@"1" = true },
         },
         .CheckVkResultFn = checkResult,
     };
@@ -360,7 +360,7 @@ fn frameRender(draw_data: *c.ImDrawData) !void {
     try device_proxy.resetFences(&.{fd.Fence});
     try device_proxy.resetCommandPool(fd.CommandPool, .{});
     var command_buffer_begin_info = vk.CommandBufferBeginInfo{};
-    command_buffer_begin_info.flags.one_time_submit_bit = true;
+    command_buffer_begin_info.flags.one_time_submit = true;
     try device_proxy.beginCommandBuffer(fd.CommandBuffer, &command_buffer_begin_info);
 
     var render_pass_begin_info = vk.RenderPassBeginInfo{
@@ -384,7 +384,7 @@ fn frameRender(draw_data: *c.ImDrawData) !void {
     cImGui_ImplVulkan_RenderDrawData(draw_data, fd.CommandBuffer);
 
     device_proxy.cmdEndRenderPass(fd.CommandBuffer);
-    const wait_stage: vk.PipelineStageFlags = .{ .color_attachment_output_bit = true };
+    const wait_stage: vk.PipelineStageFlags = .{ .color_attachment_output = true };
     var submit_info = vk.SubmitInfo{};
     submit_info.wait_semaphore_count = 1;
     submit_info.p_wait_semaphores = &.{image_acquired_semaphore};
