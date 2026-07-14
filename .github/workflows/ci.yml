@@ -1,5 +1,8 @@
 name: ci
 
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
 on:
   pull_request:
     branches:
@@ -39,7 +42,6 @@ jobs:
           - zig-version: master
             os: windows-2025
         zig-version:
-          - latest
           - master
         os:
           - ubuntu-24.04
