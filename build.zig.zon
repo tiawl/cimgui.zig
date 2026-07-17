@@ -24,12 +24,12 @@
             .hash = "toolbox-2.0.2-kRAu4DK2AAAi9_AlZ6ep1giQz3RMg2BvgN9DB_BPlUT0",
         },
         .vulkan_zig = .{
-            .url = "git+https://github.com/tiawl/vulkan.zig?ref=toolbox-2.2.1#46fdf0a0262a77ff4e7e50943017e7529a893915",
-            .hash = "vulkan_zig-1.0.0-p2wg3r8zgQFr3NwKNXmkAWsJYGNDsB22QjR65Kf8FIws",
+            .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.357#09b8eac493e387fbaf7101c2e45f03044646d89d",
+            .hash = "vulkan_zig-1.0.0-p2wg3ujagQG2IYljtDu8iXNZSLCWJCuruMrUsJj7yUpe",
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=wayland.zig-1.26.0#5ad469f2fb9c728baf687990a6fa6e4c1aaf1aef",
-            .hash = "glfw_zig-1.0.0-NrvYo1XWGQBWGUiqiw_OpLyIuApWZV4_7-zlK2Nb6-GG",
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=vulkan.zig-v1.4.357#ead47779fd72b9522a3723c88f794f27e5750bc1",
+            .hash = "glfw_zig-1.0.0-NrvYo1DWGQC78j-lNGauN1QUhH0vuIR8BMBWyWM6WUEq",
         },
     },
     .minimum_zig_version = "0.16.0",
