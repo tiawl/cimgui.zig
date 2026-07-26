@@ -135,4 +135,9 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplOpenGL3_UpdateTexture(cimgui::ImTextureD
     ::ImGui_ImplOpenGL3_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
 }
 
+CIMGUI_IMPL_API cimgui::ImGui_ImplOpenGL3_RenderState* cimgui::cImGui_ImplOpenGL3_GetRenderState(void)
+{
+    return reinterpret_cast<::cimgui::ImGui_ImplOpenGL3_RenderState*>(::ImGui_ImplOpenGL3_GetRenderState());
+}
+
 #endif // #ifndef IMGUI_DISABLE
