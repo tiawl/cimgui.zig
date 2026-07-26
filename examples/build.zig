@@ -508,7 +508,7 @@ fn addIncludePathsToTranslateC(translate_c: *std.Build.Step.TranslateC, lib: *st
 
 pub fn build(builder: *std.Build) !void {
     const target = builder.standardTargetOptions(.{});
-    const optimize = .Debug;
+    const optimize: std.lang.Optimize = .debug;
 
     const verbose = builder.option(bool, "verbose", "Verbose mode") orelse true;
     const docking = builder.option(bool, "docking", "use master or docking ocornut/imgui branch ?") orelse false;

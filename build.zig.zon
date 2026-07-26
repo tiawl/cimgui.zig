@@ -7,12 +7,12 @@
             .hash = "sdl-0.5.0+3.4.8-SDL--vADpgEwm_HQV4hf2-_vY_zH6G6yfuMVonp0DjOg",
         },
         .@"imgui-master" = .{
-            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.8#8936b58fe26e8c3da834b8f60b06511d537b4c63",
-            .hash = "N-V-__8AAGksdwBW9WS5PeUEDj4h55ps1ItuvJNZWfw86hyN",
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.9#01380c579715e62fb9a8d6ec0502c4ea83bfde6e",
+            .hash = "N-V-__8AAJT8eQCO4t12DCLtOUb0mK_4-ZW-bRxW5qJw8E15",
         },
         .@"imgui-docking" = .{
-            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.8-docking#b61e56346a92cfcaf1f43a545ca37b0b32239654",
-            .hash = "N-V-__8AAKmrgQA-iEFHovAwDtF8olu0VkgmKg_3T15wRPzJ",
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.9-docking#9b4eb24cee2071e61dc1f9ef3e5228097cdde720",
+            .hash = "N-V-__8AAA2rhAAGAswqbsSa7TVU5rXz3MrT9oagiebwuPfy",
             .branch = "docking",
         },
         .dcimgui = .{

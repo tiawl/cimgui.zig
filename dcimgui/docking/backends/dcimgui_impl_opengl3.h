@@ -3,6 +3,8 @@
 // https://github.com/dearimgui/dear_bindings
 
 // dear imgui: Renderer Backend for modern OpenGL with shaders / programmatic pipeline
+// Auto-generated forward declarations for C header
+typedef struct ImGui_ImplOpenGL3_RenderState_t ImGui_ImplOpenGL3_RenderState;
 // ImDrawIdx: vertex index. [Compile-time configurable type]
 // - To use 16-bit indices + allow large meshes: backend need to set 'io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset' and handle ImDrawCmd::VtxOffset (recommended).
 // - To use 32-bit indices: override with '#define ImDrawIdx unsigned int' in your imconfig.h file.
@@ -81,6 +83,18 @@ CIMGUI_IMPL_API void cImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex);
 #endif // #if defined(__EMSCRIPTEN__)|| defined(__amigaos4__)
 #endif // #if (defined(__APPLE__)&&(TARGET_OS_IOS || TARGET_OS_TV))||(defined(__ANDROID__))
 #endif // #if !defined(IMGUI_IMPL_OPENGL_ES2) &&!defined(IMGUI_IMPL_OPENGL_ES3)
+// [BETA] Selected render state data shared with callbacks.
+// This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplOpenGL3_RenderDrawData() call.
+// (Please open an issue if you feel you need access to more data)
+struct ImGui_ImplOpenGL3_RenderState_t
+{
+    bool         UseBindSampler;
+    bool         UseTexParameterFilter;
+    unsigned int CurrentSampler;             // (GLuint) Used if UseBindSampler == true, otherwise always 0
+    unsigned int CurrentTexParameterFilter;  // (GLuint) Used if UseTexParameterToSetSampler == true
+};
+
+CIMGUI_IMPL_API ImGui_ImplOpenGL3_RenderState* cImGui_ImplOpenGL3_GetRenderState(void);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block

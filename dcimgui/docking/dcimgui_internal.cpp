@@ -692,6 +692,11 @@ CIMGUI_API float  cimgui::cImRound64(float f)
     return ::ImRound64(f);
 }
 
+CIMGUI_API float  cimgui::cImCeilFast(float f)
+{
+    return ::ImCeilFast(f);
+}
+
 CIMGUI_API int    cimgui::cImModPositive(int a, int b)
 {
     return ::ImModPositive(a, b);
@@ -1005,6 +1010,21 @@ CIMGUI_API const char* cimgui::ImGuiTextIndex_get_line_end(cimgui::ImGuiTextInde
 CIMGUI_API void        cimgui::ImGuiTextIndex_append(cimgui::ImGuiTextIndex* self, const char* base, int old_size, int new_size)
 {
     reinterpret_cast<::ImGuiTextIndex*>(self)->append(base, old_size, new_size);
+}
+
+CIMGUI_API bool cimgui::ImGuiPackedDate_IsValid(cimgui::ImGuiPackedDate* self)
+{
+    return reinterpret_cast<::ImGuiPackedDate*>(self)->IsValid();
+}
+
+CIMGUI_API int  cimgui::ImGuiPackedDate_Unpack(const cimgui::ImGuiPackedDate* self)
+{
+    return reinterpret_cast<const ::ImGuiPackedDate*>(self)->Unpack();
+}
+
+CIMGUI_API void cimgui::ImGuiPackedDate_SubtractMonths(cimgui::ImGuiPackedDate* self, int m)
+{
+    reinterpret_cast<::ImGuiPackedDate*>(self)->SubtractMonths(m);
 }
 
 CIMGUI_API cimgui::ImGuiStoragePair* cimgui::cImLowerBound(cimgui::ImGuiStoragePair* in_begin, cimgui::ImGuiStoragePair* in_end, ImGuiID key)
@@ -1334,6 +1354,371 @@ CIMGUI_API cimgui::ImRect cimgui::ImGuiWindow_MenuBarRect(const cimgui::ImGuiWin
 CIMGUI_API cimgui::ImGuiTableColumnSettings* cimgui::ImGuiTableSettings_GetColumnSettings(cimgui::ImGuiTableSettings* self)
 {
     return reinterpret_cast<::cimgui::ImGuiTableColumnSettings*>(reinterpret_cast<::ImGuiTableSettings*>(self)->GetColumnSettings());
+}
+
+CIMGUI_API void  cimgui::ImGui_TableOpenContextMenu(void)
+{
+    ::ImGui::TableOpenContextMenu();
+}
+
+CIMGUI_API void  cimgui::ImGui_TableOpenContextMenuEx(int column_n)
+{
+    ::ImGui::TableOpenContextMenu(column_n);
+}
+
+CIMGUI_API void  cimgui::ImGui_TableSetColumnWidth(int column_n, float width)
+{
+    ::ImGui::TableSetColumnWidth(column_n, width);
+}
+
+CIMGUI_API void  cimgui::ImGui_TableSetColumnSortDirection(int column_n, cimgui::ImGuiSortDirection sort_direction, bool append_to_sort_specs)
+{
+    ::ImGui::TableSetColumnSortDirection(column_n, static_cast<::ImGuiSortDirection>(sort_direction), append_to_sort_specs);
+}
+
+CIMGUI_API int   cimgui::ImGui_TableGetHoveredRow(void)
+{
+    return ::ImGui::TableGetHoveredRow();
+}
+
+CIMGUI_API float cimgui::ImGui_TableGetHeaderRowHeight(void)
+{
+    return ::ImGui::TableGetHeaderRowHeight();
+}
+
+CIMGUI_API float cimgui::ImGui_TableGetHeaderAngledMaxLabelWidth(void)
+{
+    return ::ImGui::TableGetHeaderAngledMaxLabelWidth();
+}
+
+CIMGUI_API void  cimgui::ImGui_TablePushBackgroundChannel(void)
+{
+    ::ImGui::TablePushBackgroundChannel();
+}
+
+CIMGUI_API void  cimgui::ImGui_TablePopBackgroundChannel(void)
+{
+    ::ImGui::TablePopBackgroundChannel();
+}
+
+CIMGUI_API void  cimgui::ImGui_TablePushColumnChannel(int column_n)
+{
+    ::ImGui::TablePushColumnChannel(column_n);
+}
+
+CIMGUI_API void  cimgui::ImGui_TablePopColumnChannel(void)
+{
+    ::ImGui::TablePopColumnChannel();
+}
+
+CIMGUI_API void  cimgui::ImGui_TableAngledHeadersRowEx(ImGuiID row_id, float angle, float max_label_width, const cimgui::ImGuiTableHeaderData* data, int data_count)
+{
+    ::ImGui::TableAngledHeadersRowEx(row_id, angle, max_label_width, reinterpret_cast<const ::ImGuiTableHeaderData*>(data), data_count);
+}
+
+CIMGUI_API cimgui::ImGuiTable*     cimgui::ImGui_GetCurrentTable(void)
+{
+    return reinterpret_cast<::cimgui::ImGuiTable*>(::ImGui::GetCurrentTable());
+}
+
+CIMGUI_API cimgui::ImGuiTable*     cimgui::ImGui_TableFindByID(ImGuiID id)
+{
+    return reinterpret_cast<::cimgui::ImGuiTable*>(::ImGui::TableFindByID(id));
+}
+
+CIMGUI_API bool                    cimgui::ImGui_BeginTableWithID(const char* name, ImGuiID id, int columns_count, ImGuiTableFlags flags)
+{
+    return ::ImGui::BeginTableEx(name, id, columns_count, flags);
+}
+
+CIMGUI_API bool                    cimgui::ImGui_BeginTableWithIDEx(const char* name, ImGuiID id, int columns_count, ImGuiTableFlags flags, cimgui::ImVec2 outer_size, float inner_width)
+{
+    return ::ImGui::BeginTableEx(name, id, columns_count, flags, ConvertToCPP_ImVec2(outer_size), inner_width);
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableBeginInitMemory(cimgui::ImGuiTable* table, int columns_count)
+{
+    ::ImGui::TableBeginInitMemory(reinterpret_cast<::ImGuiTable*>(table), columns_count);
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableApplyQueuedRequests(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableApplyQueuedRequests(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableSetupDrawChannels(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableSetupDrawChannels(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableReconcileColumns(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableReconcileColumns(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableUpdateLayout(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableUpdateLayout(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableUpdateBorders(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableUpdateBorders(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableUpdateColumnsWeightFromWidth(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableUpdateColumnsWeightFromWidth(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableApplyExternalUnclipRect(cimgui::ImGuiTable* table, cimgui::ImRect* rect)
+{
+    ::ImGui::TableApplyExternalUnclipRect(reinterpret_cast<::ImGuiTable*>(table), reinterpret_cast<::ImRect&>(*rect));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableDrawBorders(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableDrawBorders(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableDrawDefaultContextMenu(cimgui::ImGuiTable* table, ImGuiTableFlags flags_for_section_to_display)
+{
+    ::ImGui::TableDrawDefaultContextMenu(reinterpret_cast<::ImGuiTable*>(table), flags_for_section_to_display);
+}
+
+CIMGUI_API bool                    cimgui::ImGui_TableBeginContextMenuPopup(cimgui::ImGuiTable* table)
+{
+    return ::ImGui::TableBeginContextMenuPopup(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableMergeDrawChannels(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableMergeDrawChannels(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API cimgui::ImGuiTableInstanceData* cimgui::ImGui_TableGetInstanceData(cimgui::ImGuiTable* table, int instance_no)
+{
+    return reinterpret_cast<::cimgui::ImGuiTableInstanceData*>(::ImGui::TableGetInstanceData(reinterpret_cast<::ImGuiTable*>(table), instance_no));
+}
+
+CIMGUI_API ImGuiID                 cimgui::ImGui_TableGetInstanceID(cimgui::ImGuiTable* table, int instance_no)
+{
+    return ::ImGui::TableGetInstanceID(reinterpret_cast<::ImGuiTable*>(table), instance_no);
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableFixDisplayOrder(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableFixDisplayOrder(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableSortSpecsSanitize(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableSortSpecsSanitize(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableSortSpecsBuild(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableSortSpecsBuild(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableInitColumnDefaults(cimgui::ImGuiTable* table, cimgui::ImGuiTableColumn* column, ImGuiTableColumnFlags init_mask)
+{
+    ::ImGui::TableInitColumnDefaults(reinterpret_cast<::ImGuiTable*>(table), reinterpret_cast<::ImGuiTableColumn*>(column), init_mask);
+}
+
+CIMGUI_API cimgui::ImGuiSortDirection cimgui::ImGui_TableGetColumnNextSortDirection(cimgui::ImGuiTableColumn* column)
+{
+    return static_cast<::cimgui::ImGuiSortDirection>(::ImGui::TableGetColumnNextSortDirection(reinterpret_cast<::ImGuiTableColumn*>(column)));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableFixColumnSortDirection(cimgui::ImGuiTable* table, cimgui::ImGuiTableColumn* column)
+{
+    ::ImGui::TableFixColumnSortDirection(reinterpret_cast<::ImGuiTable*>(table), reinterpret_cast<::ImGuiTableColumn*>(column));
+}
+
+CIMGUI_API float                   cimgui::ImGui_TableGetColumnWidthAuto(cimgui::ImGuiTable* table, cimgui::ImGuiTableColumn* column)
+{
+    return ::ImGui::TableGetColumnWidthAuto(reinterpret_cast<::ImGuiTable*>(table), reinterpret_cast<::ImGuiTableColumn*>(column));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableBeginRow(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableBeginRow(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableEndRow(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableEndRow(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableBeginCell(cimgui::ImGuiTable* table, int column_n)
+{
+    ::ImGui::TableBeginCell(reinterpret_cast<::ImGuiTable*>(table), column_n);
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableEndCell(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableEndCell(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API cimgui::ImRect          cimgui::ImGui_TableGetCellBgRect(const cimgui::ImGuiTable* table, int column_n)
+{
+    return ConvertFromCPP_ImRect(::ImGui::TableGetCellBgRect(reinterpret_cast<const ::ImGuiTable*>(table), column_n));
+}
+
+CIMGUI_API const char*             cimgui::ImGui_TableGetColumnNameImGuiTablePtr(const cimgui::ImGuiTable* table, int column_n)
+{
+    return ::ImGui::TableGetColumnName(reinterpret_cast<const ::ImGuiTable*>(table), column_n);
+}
+
+CIMGUI_API ImGuiID                 cimgui::ImGui_TableGetColumnResizeID(cimgui::ImGuiTable* table, int column_n)
+{
+    return ::ImGui::TableGetColumnResizeID(reinterpret_cast<::ImGuiTable*>(table), column_n);
+}
+
+CIMGUI_API ImGuiID                 cimgui::ImGui_TableGetColumnResizeIDEx(cimgui::ImGuiTable* table, int column_n, int instance_no)
+{
+    return ::ImGui::TableGetColumnResizeID(reinterpret_cast<::ImGuiTable*>(table), column_n, instance_no);
+}
+
+CIMGUI_API float                   cimgui::ImGui_TableCalcMaxColumnWidth(const cimgui::ImGuiTable* table, int column_n)
+{
+    return ::ImGui::TableCalcMaxColumnWidth(reinterpret_cast<const ::ImGuiTable*>(table), column_n);
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableSetColumnWidthAutoSingle(cimgui::ImGuiTable* table, int column_n)
+{
+    ::ImGui::TableSetColumnWidthAutoSingle(reinterpret_cast<::ImGuiTable*>(table), column_n);
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableSetColumnWidthAutoAll(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableSetColumnWidthAutoAll(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableSetColumnDisplayOrder(cimgui::ImGuiTable* table, int column_n, int dst_order)
+{
+    ::ImGui::TableSetColumnDisplayOrder(reinterpret_cast<::ImGuiTable*>(table), column_n, dst_order);
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableQueueSetColumnDisplayOrder(cimgui::ImGuiTable* table, int column_n, int dst_order)
+{
+    ::ImGui::TableQueueSetColumnDisplayOrder(reinterpret_cast<::ImGuiTable*>(table), column_n, dst_order);
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableRemove(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableRemove(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableGcCompactTransientBuffers(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableGcCompactTransientBuffers(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableGcCompactTransientBuffersImGuiTableTempDataPtr(cimgui::ImGuiTableTempData* table)
+{
+    ::ImGui::TableGcCompactTransientBuffers(reinterpret_cast<::ImGuiTableTempData*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableGcCompactSettings(void)
+{
+    ::ImGui::TableGcCompactSettings();
+}
+
+CIMGUI_API void                cimgui::ImGui_TableLoadSettings(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableLoadSettings(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                cimgui::ImGui_TableLoadSettingsForColumns(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableLoadSettingsForColumns(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                cimgui::ImGui_TableLoadSettingsForColumn(cimgui::ImGuiTableColumn* column, cimgui::ImGuiTableColumnSettings* column_settings, ImGuiTableFlags load_flags)
+{
+    ::ImGui::TableLoadSettingsForColumn(reinterpret_cast<::ImGuiTableColumn*>(column), reinterpret_cast<::ImGuiTableColumnSettings*>(column_settings), load_flags);
+}
+
+CIMGUI_API void                cimgui::ImGui_TableSaveSettings(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableSaveSettings(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                cimgui::ImGui_TableResetSettings(cimgui::ImGuiTable* table)
+{
+    ::ImGui::TableResetSettings(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API cimgui::ImGuiTableSettings* cimgui::ImGui_TableGetBoundSettings(cimgui::ImGuiTable* table)
+{
+    return reinterpret_cast<::cimgui::ImGuiTableSettings*>(::ImGui::TableGetBoundSettings(reinterpret_cast<::ImGuiTable*>(table)));
+}
+
+CIMGUI_API void                cimgui::ImGui_TableSettingsAddSettingsHandler(void)
+{
+    ::ImGui::TableSettingsAddSettingsHandler();
+}
+
+CIMGUI_API cimgui::ImGuiTableSettings* cimgui::ImGui_TableSettingsCreate(ImGuiID id, int columns_count)
+{
+    return reinterpret_cast<::cimgui::ImGuiTableSettings*>(::ImGui::TableSettingsCreate(id, columns_count));
+}
+
+CIMGUI_API cimgui::ImGuiTableSettings* cimgui::ImGui_TableSettingsFindByID(ImGuiID id)
+{
+    return reinterpret_cast<::cimgui::ImGuiTableSettings*>(::ImGui::TableSettingsFindByID(id));
+}
+
+CIMGUI_API void             cimgui::ImGui_SetWindowClipRectBeforeSetChannel(cimgui::ImGuiWindow* window, cimgui::ImRect clip_rect)
+{
+    ::ImGui::SetWindowClipRectBeforeSetChannel(reinterpret_cast<::ImGuiWindow*>(window), ConvertToCPP_ImRect(clip_rect));
+}
+
+CIMGUI_API void             cimgui::ImGui_BeginColumns(const char* str_id, int count, ImGuiOldColumnFlags flags)
+{
+    ::ImGui::BeginColumns(str_id, count, flags);
+}
+
+CIMGUI_API void             cimgui::ImGui_EndColumns(void)
+{
+    ::ImGui::EndColumns();
+}
+
+CIMGUI_API void             cimgui::ImGui_PushColumnClipRect(int column_index)
+{
+    ::ImGui::PushColumnClipRect(column_index);
+}
+
+CIMGUI_API void             cimgui::ImGui_PushColumnsBackground(void)
+{
+    ::ImGui::PushColumnsBackground();
+}
+
+CIMGUI_API void             cimgui::ImGui_PopColumnsBackground(void)
+{
+    ::ImGui::PopColumnsBackground();
+}
+
+CIMGUI_API ImGuiID          cimgui::ImGui_GetColumnsID(const char* str_id, int count)
+{
+    return ::ImGui::GetColumnsID(str_id, count);
+}
+
+CIMGUI_API cimgui::ImGuiOldColumns* cimgui::ImGui_FindOrCreateColumns(cimgui::ImGuiWindow* window, ImGuiID id)
+{
+    return reinterpret_cast<::cimgui::ImGuiOldColumns*>(::ImGui::FindOrCreateColumns(reinterpret_cast<::ImGuiWindow*>(window), id));
+}
+
+CIMGUI_API float            cimgui::ImGui_GetColumnOffsetFromNorm(const cimgui::ImGuiOldColumns* columns, float offset_norm)
+{
+    return ::ImGui::GetColumnOffsetFromNorm(reinterpret_cast<const ::ImGuiOldColumns*>(columns), offset_norm);
+}
+
+CIMGUI_API float            cimgui::ImGui_GetColumnNormFromOffset(const cimgui::ImGuiOldColumns* columns, float offset)
+{
+    return ::ImGui::GetColumnNormFromOffset(reinterpret_cast<const ::ImGuiOldColumns*>(columns), offset);
 }
 
 CIMGUI_API cimgui::ImGuiIO* cimgui::ImGui_GetIOImGuiContextPtr(cimgui::ImGuiContext* ctx)
@@ -1696,6 +2081,11 @@ CIMGUI_API void                  cimgui::ImGui_ClearIniSettings(void)
     ::ImGui::ClearIniSettings();
 }
 
+CIMGUI_API void                  cimgui::ImGui_CleanupIniSettings(cimgui::ImGuiSettingsCleanupArgs* args)
+{
+    ::ImGui::CleanupIniSettings(reinterpret_cast<::ImGuiSettingsCleanupArgs*>(args));
+}
+
 CIMGUI_API void                  cimgui::ImGui_AddSettingsHandler(const cimgui::ImGuiSettingsHandler* handler)
 {
     ::ImGui::AddSettingsHandler(reinterpret_cast<const ::ImGuiSettingsHandler*>(handler));
@@ -1986,14 +2376,14 @@ CIMGUI_API bool             cimgui::ImGui_BeginPopupMenuEx(ImGuiID id, const cha
     return ::ImGui::BeginPopupMenuEx(id, label, extra_window_flags);
 }
 
-CIMGUI_API void             cimgui::ImGui_OpenPopupEx(ImGuiID id)
+CIMGUI_API bool             cimgui::ImGui_OpenPopupEx(ImGuiID id)
 {
-    ::ImGui::OpenPopupEx(id);
+    return ::ImGui::OpenPopupEx(id);
 }
 
-CIMGUI_API void             cimgui::ImGui_OpenPopupExEx(ImGuiID id, ImGuiPopupFlags popup_flags)
+CIMGUI_API bool             cimgui::ImGui_OpenPopupExEx(ImGuiID id, ImGuiPopupFlags popup_flags)
 {
-    ::ImGui::OpenPopupEx(id, popup_flags);
+    return ::ImGui::OpenPopupEx(id, popup_flags);
 }
 
 CIMGUI_API void             cimgui::ImGui_ClosePopupToLevel(int remaining, bool restore_focus_to_window_under_popup)
@@ -2756,6 +3146,11 @@ CIMGUI_API void                   cimgui::ImGui_MultiSelectItemFooter(ImGuiID id
     ::ImGui::MultiSelectItemFooter(id, p_selected, p_pressed);
 }
 
+CIMGUI_API void                   cimgui::ImGui_MultiSelectItemFooterEx(ImGuiID id, bool* p_selected, bool* p_pressed, ImGuiMultiSelectFlags extra_flags)
+{
+    ::ImGui::MultiSelectItemFooter(id, p_selected, p_pressed, extra_flags);
+}
+
 CIMGUI_API void                   cimgui::ImGui_MultiSelectAddSetAll(cimgui::ImGuiMultiSelectTempData* ms, bool selected)
 {
     ::ImGui::MultiSelectAddSetAll(reinterpret_cast<::ImGuiMultiSelectTempData*>(ms), selected);
@@ -2774,351 +3169,6 @@ CIMGUI_API cimgui::ImGuiBoxSelectState* cimgui::ImGui_GetBoxSelectState(ImGuiID 
 CIMGUI_API cimgui::ImGuiMultiSelectState* cimgui::ImGui_GetMultiSelectState(ImGuiID id)
 {
     return reinterpret_cast<::cimgui::ImGuiMultiSelectState*>(::ImGui::GetMultiSelectState(id));
-}
-
-CIMGUI_API void             cimgui::ImGui_SetWindowClipRectBeforeSetChannel(cimgui::ImGuiWindow* window, cimgui::ImRect clip_rect)
-{
-    ::ImGui::SetWindowClipRectBeforeSetChannel(reinterpret_cast<::ImGuiWindow*>(window), ConvertToCPP_ImRect(clip_rect));
-}
-
-CIMGUI_API void             cimgui::ImGui_BeginColumns(const char* str_id, int count, ImGuiOldColumnFlags flags)
-{
-    ::ImGui::BeginColumns(str_id, count, flags);
-}
-
-CIMGUI_API void             cimgui::ImGui_EndColumns(void)
-{
-    ::ImGui::EndColumns();
-}
-
-CIMGUI_API void             cimgui::ImGui_PushColumnClipRect(int column_index)
-{
-    ::ImGui::PushColumnClipRect(column_index);
-}
-
-CIMGUI_API void             cimgui::ImGui_PushColumnsBackground(void)
-{
-    ::ImGui::PushColumnsBackground();
-}
-
-CIMGUI_API void             cimgui::ImGui_PopColumnsBackground(void)
-{
-    ::ImGui::PopColumnsBackground();
-}
-
-CIMGUI_API ImGuiID          cimgui::ImGui_GetColumnsID(const char* str_id, int count)
-{
-    return ::ImGui::GetColumnsID(str_id, count);
-}
-
-CIMGUI_API cimgui::ImGuiOldColumns* cimgui::ImGui_FindOrCreateColumns(cimgui::ImGuiWindow* window, ImGuiID id)
-{
-    return reinterpret_cast<::cimgui::ImGuiOldColumns*>(::ImGui::FindOrCreateColumns(reinterpret_cast<::ImGuiWindow*>(window), id));
-}
-
-CIMGUI_API float            cimgui::ImGui_GetColumnOffsetFromNorm(const cimgui::ImGuiOldColumns* columns, float offset_norm)
-{
-    return ::ImGui::GetColumnOffsetFromNorm(reinterpret_cast<const ::ImGuiOldColumns*>(columns), offset_norm);
-}
-
-CIMGUI_API float            cimgui::ImGui_GetColumnNormFromOffset(const cimgui::ImGuiOldColumns* columns, float offset)
-{
-    return ::ImGui::GetColumnNormFromOffset(reinterpret_cast<const ::ImGuiOldColumns*>(columns), offset);
-}
-
-CIMGUI_API void  cimgui::ImGui_TableOpenContextMenu(void)
-{
-    ::ImGui::TableOpenContextMenu();
-}
-
-CIMGUI_API void  cimgui::ImGui_TableOpenContextMenuEx(int column_n)
-{
-    ::ImGui::TableOpenContextMenu(column_n);
-}
-
-CIMGUI_API void  cimgui::ImGui_TableSetColumnWidth(int column_n, float width)
-{
-    ::ImGui::TableSetColumnWidth(column_n, width);
-}
-
-CIMGUI_API void  cimgui::ImGui_TableSetColumnSortDirection(int column_n, cimgui::ImGuiSortDirection sort_direction, bool append_to_sort_specs)
-{
-    ::ImGui::TableSetColumnSortDirection(column_n, static_cast<::ImGuiSortDirection>(sort_direction), append_to_sort_specs);
-}
-
-CIMGUI_API int   cimgui::ImGui_TableGetHoveredRow(void)
-{
-    return ::ImGui::TableGetHoveredRow();
-}
-
-CIMGUI_API float cimgui::ImGui_TableGetHeaderRowHeight(void)
-{
-    return ::ImGui::TableGetHeaderRowHeight();
-}
-
-CIMGUI_API float cimgui::ImGui_TableGetHeaderAngledMaxLabelWidth(void)
-{
-    return ::ImGui::TableGetHeaderAngledMaxLabelWidth();
-}
-
-CIMGUI_API void  cimgui::ImGui_TablePushBackgroundChannel(void)
-{
-    ::ImGui::TablePushBackgroundChannel();
-}
-
-CIMGUI_API void  cimgui::ImGui_TablePopBackgroundChannel(void)
-{
-    ::ImGui::TablePopBackgroundChannel();
-}
-
-CIMGUI_API void  cimgui::ImGui_TablePushColumnChannel(int column_n)
-{
-    ::ImGui::TablePushColumnChannel(column_n);
-}
-
-CIMGUI_API void  cimgui::ImGui_TablePopColumnChannel(void)
-{
-    ::ImGui::TablePopColumnChannel();
-}
-
-CIMGUI_API void  cimgui::ImGui_TableAngledHeadersRowEx(ImGuiID row_id, float angle, float max_label_width, const cimgui::ImGuiTableHeaderData* data, int data_count)
-{
-    ::ImGui::TableAngledHeadersRowEx(row_id, angle, max_label_width, reinterpret_cast<const ::ImGuiTableHeaderData*>(data), data_count);
-}
-
-CIMGUI_API cimgui::ImGuiTable*     cimgui::ImGui_GetCurrentTable(void)
-{
-    return reinterpret_cast<::cimgui::ImGuiTable*>(::ImGui::GetCurrentTable());
-}
-
-CIMGUI_API cimgui::ImGuiTable*     cimgui::ImGui_TableFindByID(ImGuiID id)
-{
-    return reinterpret_cast<::cimgui::ImGuiTable*>(::ImGui::TableFindByID(id));
-}
-
-CIMGUI_API bool                    cimgui::ImGui_BeginTableWithID(const char* name, ImGuiID id, int columns_count, ImGuiTableFlags flags)
-{
-    return ::ImGui::BeginTableEx(name, id, columns_count, flags);
-}
-
-CIMGUI_API bool                    cimgui::ImGui_BeginTableWithIDEx(const char* name, ImGuiID id, int columns_count, ImGuiTableFlags flags, cimgui::ImVec2 outer_size, float inner_width)
-{
-    return ::ImGui::BeginTableEx(name, id, columns_count, flags, ConvertToCPP_ImVec2(outer_size), inner_width);
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableBeginInitMemory(cimgui::ImGuiTable* table, int columns_count)
-{
-    ::ImGui::TableBeginInitMemory(reinterpret_cast<::ImGuiTable*>(table), columns_count);
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableBeginApplyRequests(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableBeginApplyRequests(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableSetupDrawChannels(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableSetupDrawChannels(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableUpdateLayout(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableUpdateLayout(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableUpdateBorders(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableUpdateBorders(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableUpdateColumnsWeightFromWidth(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableUpdateColumnsWeightFromWidth(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableApplyExternalUnclipRect(cimgui::ImGuiTable* table, cimgui::ImRect* rect)
-{
-    ::ImGui::TableApplyExternalUnclipRect(reinterpret_cast<::ImGuiTable*>(table), reinterpret_cast<::ImRect&>(*rect));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableDrawBorders(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableDrawBorders(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableDrawDefaultContextMenu(cimgui::ImGuiTable* table, ImGuiTableFlags flags_for_section_to_display)
-{
-    ::ImGui::TableDrawDefaultContextMenu(reinterpret_cast<::ImGuiTable*>(table), flags_for_section_to_display);
-}
-
-CIMGUI_API bool                    cimgui::ImGui_TableBeginContextMenuPopup(cimgui::ImGuiTable* table)
-{
-    return ::ImGui::TableBeginContextMenuPopup(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableMergeDrawChannels(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableMergeDrawChannels(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API cimgui::ImGuiTableInstanceData* cimgui::ImGui_TableGetInstanceData(cimgui::ImGuiTable* table, int instance_no)
-{
-    return reinterpret_cast<::cimgui::ImGuiTableInstanceData*>(::ImGui::TableGetInstanceData(reinterpret_cast<::ImGuiTable*>(table), instance_no));
-}
-
-CIMGUI_API ImGuiID                 cimgui::ImGui_TableGetInstanceID(cimgui::ImGuiTable* table, int instance_no)
-{
-    return ::ImGui::TableGetInstanceID(reinterpret_cast<::ImGuiTable*>(table), instance_no);
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableFixDisplayOrder(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableFixDisplayOrder(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableSortSpecsSanitize(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableSortSpecsSanitize(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableSortSpecsBuild(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableSortSpecsBuild(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API cimgui::ImGuiSortDirection cimgui::ImGui_TableGetColumnNextSortDirection(cimgui::ImGuiTableColumn* column)
-{
-    return static_cast<::cimgui::ImGuiSortDirection>(::ImGui::TableGetColumnNextSortDirection(reinterpret_cast<::ImGuiTableColumn*>(column)));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableFixColumnSortDirection(cimgui::ImGuiTable* table, cimgui::ImGuiTableColumn* column)
-{
-    ::ImGui::TableFixColumnSortDirection(reinterpret_cast<::ImGuiTable*>(table), reinterpret_cast<::ImGuiTableColumn*>(column));
-}
-
-CIMGUI_API float                   cimgui::ImGui_TableGetColumnWidthAuto(cimgui::ImGuiTable* table, cimgui::ImGuiTableColumn* column)
-{
-    return ::ImGui::TableGetColumnWidthAuto(reinterpret_cast<::ImGuiTable*>(table), reinterpret_cast<::ImGuiTableColumn*>(column));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableBeginRow(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableBeginRow(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableEndRow(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableEndRow(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableBeginCell(cimgui::ImGuiTable* table, int column_n)
-{
-    ::ImGui::TableBeginCell(reinterpret_cast<::ImGuiTable*>(table), column_n);
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableEndCell(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableEndCell(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API cimgui::ImRect          cimgui::ImGui_TableGetCellBgRect(const cimgui::ImGuiTable* table, int column_n)
-{
-    return ConvertFromCPP_ImRect(::ImGui::TableGetCellBgRect(reinterpret_cast<const ::ImGuiTable*>(table), column_n));
-}
-
-CIMGUI_API const char*             cimgui::ImGui_TableGetColumnNameImGuiTablePtr(const cimgui::ImGuiTable* table, int column_n)
-{
-    return ::ImGui::TableGetColumnName(reinterpret_cast<const ::ImGuiTable*>(table), column_n);
-}
-
-CIMGUI_API ImGuiID                 cimgui::ImGui_TableGetColumnResizeID(cimgui::ImGuiTable* table, int column_n)
-{
-    return ::ImGui::TableGetColumnResizeID(reinterpret_cast<::ImGuiTable*>(table), column_n);
-}
-
-CIMGUI_API ImGuiID                 cimgui::ImGui_TableGetColumnResizeIDEx(cimgui::ImGuiTable* table, int column_n, int instance_no)
-{
-    return ::ImGui::TableGetColumnResizeID(reinterpret_cast<::ImGuiTable*>(table), column_n, instance_no);
-}
-
-CIMGUI_API float                   cimgui::ImGui_TableCalcMaxColumnWidth(const cimgui::ImGuiTable* table, int column_n)
-{
-    return ::ImGui::TableCalcMaxColumnWidth(reinterpret_cast<const ::ImGuiTable*>(table), column_n);
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableSetColumnWidthAutoSingle(cimgui::ImGuiTable* table, int column_n)
-{
-    ::ImGui::TableSetColumnWidthAutoSingle(reinterpret_cast<::ImGuiTable*>(table), column_n);
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableSetColumnWidthAutoAll(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableSetColumnWidthAutoAll(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableSetColumnDisplayOrder(cimgui::ImGuiTable* table, int column_n, int dst_order)
-{
-    ::ImGui::TableSetColumnDisplayOrder(reinterpret_cast<::ImGuiTable*>(table), column_n, dst_order);
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableQueueSetColumnDisplayOrder(cimgui::ImGuiTable* table, int column_n, int dst_order)
-{
-    ::ImGui::TableQueueSetColumnDisplayOrder(reinterpret_cast<::ImGuiTable*>(table), column_n, dst_order);
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableRemove(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableRemove(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableGcCompactTransientBuffers(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableGcCompactTransientBuffers(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableGcCompactTransientBuffersImGuiTableTempDataPtr(cimgui::ImGuiTableTempData* table)
-{
-    ::ImGui::TableGcCompactTransientBuffers(reinterpret_cast<::ImGuiTableTempData*>(table));
-}
-
-CIMGUI_API void                    cimgui::ImGui_TableGcCompactSettings(void)
-{
-    ::ImGui::TableGcCompactSettings();
-}
-
-CIMGUI_API void                cimgui::ImGui_TableLoadSettings(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableLoadSettings(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                cimgui::ImGui_TableSaveSettings(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableSaveSettings(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API void                cimgui::ImGui_TableResetSettings(cimgui::ImGuiTable* table)
-{
-    ::ImGui::TableResetSettings(reinterpret_cast<::ImGuiTable*>(table));
-}
-
-CIMGUI_API cimgui::ImGuiTableSettings* cimgui::ImGui_TableGetBoundSettings(cimgui::ImGuiTable* table)
-{
-    return reinterpret_cast<::cimgui::ImGuiTableSettings*>(::ImGui::TableGetBoundSettings(reinterpret_cast<::ImGuiTable*>(table)));
-}
-
-CIMGUI_API void                cimgui::ImGui_TableSettingsAddSettingsHandler(void)
-{
-    ::ImGui::TableSettingsAddSettingsHandler();
-}
-
-CIMGUI_API cimgui::ImGuiTableSettings* cimgui::ImGui_TableSettingsCreate(ImGuiID id, int columns_count)
-{
-    return reinterpret_cast<::cimgui::ImGuiTableSettings*>(::ImGui::TableSettingsCreate(id, columns_count));
-}
-
-CIMGUI_API cimgui::ImGuiTableSettings* cimgui::ImGui_TableSettingsFindByID(ImGuiID id)
-{
-    return reinterpret_cast<::cimgui::ImGuiTableSettings*>(::ImGui::TableSettingsFindByID(id));
 }
 
 CIMGUI_API cimgui::ImGuiTabBar* cimgui::ImGui_GetCurrentTabBar(void)
@@ -3321,9 +3371,9 @@ CIMGUI_API void        cimgui::ImGui_RenderNavCursor(cimgui::ImRect bb, ImGuiID 
     ::ImGui::RenderNavCursor(ConvertToCPP_ImRect(bb), id);
 }
 
-CIMGUI_API void        cimgui::ImGui_RenderNavCursorEx(cimgui::ImRect bb, ImGuiID id, ImGuiNavRenderCursorFlags flags)
+CIMGUI_API void        cimgui::ImGui_RenderNavCursorEx(cimgui::ImRect bb, ImGuiID id, ImGuiNavRenderCursorFlags flags, float rounding)
 {
-    ::ImGui::RenderNavCursor(ConvertToCPP_ImRect(bb), id, flags);
+    ::ImGui::RenderNavCursor(ConvertToCPP_ImRect(bb), id, flags, rounding);
 }
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
@@ -3918,9 +3968,9 @@ CIMGUI_API void  cimgui::ImGui_DebugNodeTable(cimgui::ImGuiTable* table)
     ::ImGui::DebugNodeTable(reinterpret_cast<::ImGuiTable*>(table));
 }
 
-CIMGUI_API void  cimgui::ImGui_DebugNodeTableSettings(cimgui::ImGuiTableSettings* settings)
+CIMGUI_API void  cimgui::ImGui_DebugNodeTableSettings(cimgui::ImGuiTableSettings* settings, cimgui::ImGuiTable* table)
 {
-    ::ImGui::DebugNodeTableSettings(reinterpret_cast<::ImGuiTableSettings*>(settings));
+    ::ImGui::DebugNodeTableSettings(reinterpret_cast<::ImGuiTableSettings*>(settings), reinterpret_cast<::ImGuiTable*>(table));
 }
 
 CIMGUI_API void  cimgui::ImGui_DebugNodeInputTextState(cimgui::ImGuiInputTextState* state)
@@ -4260,6 +4310,11 @@ CIMGUI_API void cimgui::cImFontAtlasTextureBlockCopy(cimgui::ImTextureData* src_
 CIMGUI_API void cimgui::cImFontAtlasTextureBlockQueueUpload(cimgui::ImFontAtlas* atlas, cimgui::ImTextureData* tex, int x, int y, int w, int h)
 {
     ::ImFontAtlasTextureBlockQueueUpload(reinterpret_cast<::ImFontAtlas*>(atlas), reinterpret_cast<::ImTextureData*>(tex), x, y, w, h);
+}
+
+CIMGUI_API bool        cimgui::cImTextureDataUpdateNewFrame(cimgui::ImTextureData* tex)
+{
+    return ::ImTextureDataUpdateNewFrame(reinterpret_cast<::ImTextureData*>(tex));
 }
 
 CIMGUI_API void        cimgui::cImTextureDataQueueUpload(cimgui::ImTextureData* tex, int x, int y, int w, int h)
