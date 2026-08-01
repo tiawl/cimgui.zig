@@ -22,7 +22,7 @@ var device: c.VkDevice = undefined;
 var queue_family: ?u32 = null;
 var queue: c.VkQueue = undefined;
 var descriptor_pool: c.VkDescriptorPool = undefined;
-var window_data: c.ImGui_ImplVulkanH_Window = .{};
+var window_data: c.ImGui_ImplVulkanH_Window = undefined;
 var min_image_count: u32 = 2;
 var swap_chain_rebuild: bool = false;
 var swap_chain_image_usage: u32 = c.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -56,14 +56,14 @@ fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c
     const platform_extensions = platform(p).getRequiredInstanceExtensions(&platform_extensions_count);
     for (0..platform_extensions_count) |i| try instance_extensions.append(allocator, std.mem.span(platform_extensions[i]));
 
-    var app_info = c.VkApplicationInfo{};
+    var app_info: c.VkApplicationInfo = undefined;
     app_info.pApplicationName = app_name;
     app_info.applicationVersion = c.VK_MAKE_API_VERSION(0, 0, 0, 0);
     app_info.pEngineName = "No Engine";
     app_info.engineVersion = c.VK_MAKE_API_VERSION(0, 0, 0, 0);
     app_info.apiVersion = api_version;
 
-    var create_info = c.VkInstanceCreateInfo{};
+    var create_info: c.VkInstanceCreateInfo = undefined;
     create_info.sType = c.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     create_info.pApplicationInfo = &app_info;
     create_info.enabledExtensionCount = @intCast(instance_extensions.items.len);
@@ -109,12 +109,12 @@ fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c
     try device_extensions.append(allocator, "VK_KHR_swapchain");
 
     const queue_priority = [_]f32{1.0};
-    var queue_create_info = [1]c.VkDeviceQueueCreateInfo{.{}};
+    var queue_create_info: [1]c.VkDeviceQueueCreateInfo = undefined;
     queue_create_info[0].sType = c.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queue_create_info[0].queueFamilyIndex = queue_family.?;
     queue_create_info[0].queueCount = 1;
     queue_create_info[0].pQueuePriorities = &queue_priority;
-    var device_create_info = c.VkDeviceCreateInfo{};
+    var device_create_info: c.VkDeviceCreateInfo = undefined;
     device_create_info.sType = c.VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     device_create_info.queueCreateInfoCount = queue_create_info.len;
     device_create_info.pQueueCreateInfos = &queue_create_info;
@@ -133,7 +133,7 @@ fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c
             .descriptorCount = c.IMGUI_IMPL_VULKAN_MINIMUM_SAMPLER_POOL_SIZE,
         },
     };
-    var desc_pool_create_info = c.VkDescriptorPoolCreateInfo{};
+    var desc_pool_create_info: c.VkDescriptorPoolCreateInfo = undefined;
     desc_pool_create_info.sType = c.VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     desc_pool_create_info.flags = c.VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
     desc_pool_create_info.maxSets = 0;
@@ -184,7 +184,7 @@ fn cleanupWindow(comptime p: build.Platform) void {
 pub fn initImguiContext(comptime p: build.Platform) !void {
     try platform(p).initForVulkan();
     errdefer platform(p).shutdown();
-    var init_info = c.ImGui_ImplVulkan_InitInfo{};
+    var init_info: c.ImGui_ImplVulkan_InitInfo = undefined;
     init_info.Instance = instance;
     init_info.PhysicalDevice = physical_device;
     init_info.Device = device;
@@ -252,12 +252,12 @@ fn frameRender(comptime p: build.Platform, draw_data: *c.ImDrawData) void {
 
     checkResult(platform(p).vkResetFences(device, instance, 1, &fd.Fence));
     checkResult(platform(p).vkResetCommandPool(device, instance, fd.CommandPool, 0));
-    var command_buffer_begin_info = c.VkCommandBufferBeginInfo{};
+    var command_buffer_begin_info: c.VkCommandBufferBeginInfo = undefined;
     command_buffer_begin_info.sType = c.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     command_buffer_begin_info.flags |= c.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     checkResult(platform(p).vkBeginCommandBuffer(device, instance, fd.CommandBuffer, &command_buffer_begin_info));
 
-    var render_pass_begin_info = c.VkRenderPassBeginInfo{};
+    var render_pass_begin_info: c.VkRenderPassBeginInfo = undefined;
     render_pass_begin_info.sType = c.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     render_pass_begin_info.renderPass = window_data.RenderPass;
     render_pass_begin_info.framebuffer = fd.Framebuffer;
@@ -272,7 +272,7 @@ fn frameRender(comptime p: build.Platform, draw_data: *c.ImDrawData) void {
     platform(p).vkCmdEndRenderPass(device, instance, fd.CommandBuffer);
 
     var wait_stage: c.VkPipelineStageFlags = c.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    var submit_info = c.VkSubmitInfo{};
+    var submit_info: c.VkSubmitInfo = undefined;
     submit_info.sType = c.VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submit_info.waitSemaphoreCount = 1;
     submit_info.pWaitSemaphores = &image_acquired_semaphore;
@@ -289,7 +289,7 @@ fn frameRender(comptime p: build.Platform, draw_data: *c.ImDrawData) void {
 fn framePresent(comptime p: build.Platform) void {
     if (swap_chain_rebuild) return;
     var render_complete_semaphore = window_data.FrameSemaphores.Data[window_data.SemaphoreIndex].RenderCompleteSemaphore;
-    var present_info = c.VkPresentInfoKHR{};
+    var present_info: c.VkPresentInfoKHR = undefined;
     present_info.sType = c.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     present_info.waitSemaphoreCount = 1;
     present_info.pWaitSemaphores = &render_complete_semaphore;

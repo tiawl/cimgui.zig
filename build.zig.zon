@@ -5,6 +5,7 @@
         .sdl = .{
             .url = "git+https://github.com/tiawl-forks/SDL#053b0a1dd231a15dcab4572b902474a58919c48d",
             .hash = "sdl-0.5.0+3.4.8-SDL--vADpgEwm_HQV4hf2-_vY_zH6G6yfuMVonp0DjOg",
+            .lazy = true,
         },
         .@"imgui-master" = .{
             .url = "git+https://github.com/ocornut/imgui?ref=v1.92.9b#f1cc2ae15e53a861a874c3034aae6798fde194ab",
@@ -20,16 +21,18 @@
             .hash = "N-V-__8AAPErCQARgFL-uXKTjXbwnJv4IPOIC8kr-yJrFXEr",
         },
         .toolbox = .{
-            .url = "git+https://github.com/tiawl/toolbox?ref=2.2.1#9500ec195e63ef225dc3e7ee8d9362fe6601e684",
-            .hash = "toolbox-2.0.2-kRAu4DK2AAAi9_AlZ6ep1giQz3RMg2BvgN9DB_BPlUT0",
+            .url = "git+https://github.com/tiawl/toolbox#83ba16ea7fadd2f00ad1b832fc6d1ec5d846ff94",
+            .hash = "toolbox-2.0.2-kRAu4FmsAAC0GvUEIxVa84MDY8TqqPmK5OmeBhbKZSBg",
         },
         .vulkan_zig = .{
             .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.358#5748c4fcd3e87925fd82d54c04bc2de6a05ea35d",
             .hash = "vulkan_zig-1.0.0-p2wg3owIgwG-Pnk8niuSXpW4fIF9RIH-hRs3DF1UnYOE",
+            .lazy = true,
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=vulkan.zig-v1.4.358#3db0e6ea37b431a813a37dd443c8eb648d6850a4",
-            .hash = "glfw_zig-1.0.0-NrvYo1nWGQC5HRbq6FNLLPtk10Y6zP_BljcMI5-uQ3P6",
+            .url = "git+https://github.com/tiawl/glfw.zig#fb7c4bc94a19a3b18efb4a9faa847780e4f865b2",
+            .hash = "glfw_zig-1.0.0-NrvYowEnGgAmROqWxfp7AXaeov9psD_e9ZV9Wo8UN-1e",
+            .lazy = true,
         },
     },
     .minimum_zig_version = "0.16.0",

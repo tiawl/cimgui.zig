@@ -39,7 +39,7 @@ pub fn deinit(comptime p: build.Platform, allocator: std.mem.Allocator) void {
 pub fn initImguiContext(comptime p: build.Platform) !void {
     try platform(p).errify(c.cImGui_ImplSDL3_InitForSDLGPU(platform(p).window));
     errdefer c.cImGui_ImplSDL3_Shutdown();
-    var init_info = c.ImGui_ImplSDLGPU3_InitInfo{};
+    var init_info: c.ImGui_ImplSDLGPU3_InitInfo = undefined;
     init_info.Device = gpu_device;
     init_info.ColorTargetFormat = c.SDL_GetGPUSwapchainTextureFormat(gpu_device, platform(p).window);
     init_info.MSAASamples = c.SDL_GPU_SAMPLECOUNT_1;
@@ -67,7 +67,7 @@ pub fn render(comptime p: build.Platform, clear_color: *const c.ImVec4, draw_dat
     if (swapchain_texture != null and !is_minimized) {
         c.cImGui_ImplSDLGPU3_PrepareDrawData(draw_data, command_buffer);
 
-        var target_info = c.SDL_GPUColorTargetInfo{};
+        var target_info: c.SDL_GPUColorTargetInfo = undefined;
         target_info.texture = swapchain_texture;
         target_info.clear_color = c.SDL_FColor{
             .r = clear_color.x * clear_color.w,
