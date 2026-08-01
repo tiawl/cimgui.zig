@@ -2,7 +2,7 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
-// dear imgui, v1.92.9
+// dear imgui, v1.92.9b
 // (headers)
 
 // Help:
@@ -34,10 +34,10 @@
 // Library Version
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if IMGUI_VERSION_NUM >= 12345')
 #ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
-#define IMGUI_VERSION       "1.92.9"
+#define IMGUI_VERSION       "1.92.9b"
 #endif // #ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
 #ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
-#define IMGUI_VERSION_NUM   19290
+#define IMGUI_VERSION_NUM   19291
 #endif // #ifndef DEAR_BINDINGS_INTERNAL_GLUE_CODE
 #define IMGUI_HAS_TABLE              // Added BeginTable() - from IMGUI_VERSION_NUM >= 18000
 #define IMGUI_HAS_TEXTURES           // Added ImGuiBackendFlags_RendererHasTextures - from IMGUI_VERSION_NUM >= 19198
@@ -3444,7 +3444,7 @@ typedef enum
 
     // Stroke options
     ImDrawFlags_Closed                  = 1<<9,                         // PathStroke(), AddPolyline(): specify that shape should be closed.
-    //ImDrawFlags_Closed                    = 1 << 0, // Prior to 1.92.8 (May 2026), ImDrawFlags_Closed was guaranteed to be == 1<<0 == 1 for legacy compatibility reason. Hardcoded use of 1 or true should be replaced.
+    //ImDrawFlags_Closed                    = 1,      // Prior to 1.92.8 (May 2026), ImDrawFlags_Closed was guaranteed to be == 1<<0 == 1 for legacy compatibility reason. Hardcoded use of 1 or true should be replaced.
 
     ImDrawFlags_InvalidMask_            = ~0x7FFFFFF0,                  // == 0x8000000F,
 } ImDrawFlags_;
