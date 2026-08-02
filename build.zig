@@ -29,7 +29,7 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
     var imgui_builder: VerboseBuilder = undefined;
     const dcimgui_dep = pkg_builder.verboseDependency("dcimgui");
     var dcimgui_builder = VerboseBuilder.initFromDependency(dcimgui_dep);
-    var docking = false;
+    var branch_dir: []const u8 = "master";
 
     try dcimgui_builder.make(&.{"backends"});
 
@@ -39,7 +39,7 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
         while (try imgui_builder.iterate(&.{"."})) |*entry| {
             switch (entry.kind) {
                 .file => if (std.mem.startsWith(u8, entry.name, "im")) {
-                    try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", entry.name }, &imgui_builder, &.{entry.name});
+                    try pkg_builder.copy(&.{ "dcimgui", branch_dir, entry.name }, &imgui_builder, &.{entry.name});
                 },
                 else => {},
             }
@@ -48,7 +48,7 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
         while (try imgui_builder.iterate(&.{"backends"})) |*entry| {
             switch (entry.kind) {
                 .file => if (std.mem.startsWith(u8, entry.name, "im")) {
-                    try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "backends", entry.name }, &imgui_builder, &.{ "backends", entry.name });
+                    try pkg_builder.copy(&.{ "dcimgui", branch_dir, "backends", entry.name }, &imgui_builder, &.{ "backends", entry.name });
                     try dcimgui_builder.remove(&.{ "backends", entry.name });
                     try dcimgui_builder.copy(&.{ "backends", entry.name }, &imgui_builder, &.{ "backends", entry.name });
                 },
@@ -63,12 +63,12 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
         try dcimgui_builder.remove(&.{"imconfig.h"});
         try dcimgui_builder.copy(&.{"imconfig.h"}, &imgui_builder, &.{"imconfig.h"});
         _ = try dcimgui_builder.run(&.{ "python3", "dear_bindings.py", "--output", "dcimgui", "imgui.h" }, dcimgui_builder.ptrCwd().*);
-        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "dcimgui.h" }, &dcimgui_builder, &.{"dcimgui.h"});
-        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "dcimgui.cpp" }, &dcimgui_builder, &.{"dcimgui.cpp"});
+        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui.h" }, &dcimgui_builder, &.{"dcimgui.h"});
+        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui.cpp" }, &dcimgui_builder, &.{"dcimgui.cpp"});
 
         _ = try dcimgui_builder.run(&.{ "python3", "dear_bindings.py", "-o", "dcimgui_internal", "--include", "imgui.h", "imgui_internal.h" }, dcimgui_builder.ptrCwd().*);
-        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "dcimgui_internal.h" }, &dcimgui_builder, &.{"dcimgui_internal.h"});
-        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "dcimgui_internal.cpp" }, &dcimgui_builder, &.{"dcimgui_internal.cpp"});
+        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui_internal.h" }, &dcimgui_builder, &.{"dcimgui_internal.h"});
+        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui_internal.cpp" }, &dcimgui_builder, &.{"dcimgui_internal.cpp"});
 
         while (try dcimgui_builder.iterate(&.{"backends"})) |*entry| {
             switch (entry.kind) {
@@ -84,8 +84,8 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
                         dcimgui_builder.access(&header_template))
                     {
                         _ = try dcimgui_builder.run(&.{ "python3", "dear_bindings.py", "--backend", "--include", "imgui.h", "--imconfig-path", "imconfig.h", "--output", pkg_builder.resolve(&.{ "backends", pkg_builder.fmt("dc{s}", .{backend}) }), pkg_builder.resolve(&.{ "backends", entry.name }) }, dcimgui_builder.ptrCwd().*);
-                        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "backends", pkg_builder.fmt("dc{s}", .{entry.name}) }, &dcimgui_builder, &.{ "backends", pkg_builder.fmt("dc{s}", .{entry.name}) });
-                        try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "backends", pkg_builder.fmt("dc{s}", .{source.?}) }, &dcimgui_builder, &.{ "backends", pkg_builder.fmt("dc{s}", .{source.?}) });
+                        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "backends", pkg_builder.fmt("dc{s}", .{entry.name}) }, &dcimgui_builder, &.{ "backends", pkg_builder.fmt("dc{s}", .{entry.name}) });
+                        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "backends", pkg_builder.fmt("dc{s}", .{source.?}) }, &dcimgui_builder, &.{ "backends", pkg_builder.fmt("dc{s}", .{source.?}) });
                     }
                 },
                 else => {},
@@ -94,12 +94,12 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
 
         while (try pkg_builder.iterate(&.{"copyme"})) |*entry| {
             switch (entry.kind) {
-                .file => try pkg_builder.copy(&.{ "dcimgui", if (docking) "docking" else "master", "backends", entry.name }, pkg_builder, &.{ "copyme", entry.name }),
+                .file => try pkg_builder.copy(&.{ "dcimgui", branch_dir, "backends", entry.name }, pkg_builder, &.{ "copyme", entry.name }),
                 else => {},
             }
         }
 
-        docking = true;
+        branch_dir = "docking";
     }
 }
 
@@ -144,6 +144,7 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
     const platforms = pkg_builder.option([]const Platform, &.{}, "platforms", "Specify the platform backends");
     const no_renderer = pkg_builder.option(bool, false, "no_renderer", "Specify there no need for renderer backend. It returns an error if you use it with `renderers` option.");
     const no_platform = pkg_builder.option(bool, false, "no_platform", "Specify there no need for platform backend. It returns an error if you use it with `platforms` option.");
+    const branch_dir = if (docking) "docking" else "master";
 
     if (renderers.len == 0 and !no_renderer) {
         std.log.warn("Unspecified renderer backend", .{});
@@ -151,42 +152,46 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
         return error.ConflictingOptions;
     }
 
-    const vulkan_dep = pkg_builder.verboseDependency("vulkan_zig");
-    const vulkan_artifact = pkg_builder.artifact(vulkan_dep, "vulkan");
-    const glfw_dep = pkg_builder.verboseDependency("glfw_zig");
-    const glfw_artifact = pkg_builder.artifact(glfw_dep, "glfw");
-    const sdl_dep = pkg_builder.dependency("sdl");
-    const sdl_artifact = pkg_builder.artifact(sdl_dep, "SDL3");
+    var sdl_artifact: *std.Build.Step.Compile = undefined;
+    var sdl_dep_fetched = false;
 
     for (renderers) |renderer| {
         switch (renderer) {
             .Vulkan => {
-                if (std.mem.indexOfScalar(Platform, platforms, .GLFW) == null) {
-                    pkg_builder.linkLibrary(lib, vulkan_artifact);
-                    pkg_builder.installLibraryHeaders(lib, vulkan_artifact);
+                if (pkg_builder.verboseDependencyLazy("vulkan_zig")) |vulkan_dep| {
+                    const vulkan_artifact = pkg_builder.artifact(vulkan_dep, "vulkan");
+                    if (std.mem.indexOfScalar(Platform, platforms, .GLFW) == null) {
+                        pkg_builder.linkLibrary(lib, vulkan_artifact);
+                        pkg_builder.installLibraryHeaders(lib, vulkan_artifact);
+                    }
+                    pkg_builder.addIncludePathsFromLib(@TypeOf(lib.*), lib, vulkan_artifact);
+                    flags.appendAssumeCapacity("-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES");
+                    pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_vulkan.cpp" }, flags.items);
+                    pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_vulkan.cpp" }, flags.items);
+                    pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_vulkan.h" }, &.{ "backends", "imgui_impl_vulkan.h" });
+                    pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_vulkan.h" }, &.{ "backends", "dcimgui_impl_vulkan.h" });
                 }
-                pkg_builder.addIncludePathsFromLib(@TypeOf(lib.*), lib, vulkan_artifact);
-                flags.appendAssumeCapacity("-DIMGUI_IMPL_VULKAN_NO_PROTOTYPES");
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_vulkan.cpp" }, flags.items);
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_vulkan.cpp" }, flags.items);
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_vulkan.h" }, &.{ "backends", "imgui_impl_vulkan.h" });
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_vulkan.h" }, &.{ "backends", "dcimgui_impl_vulkan.h" });
             },
             .OpenGL3 => {
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_opengl3.cpp" }, flags.items);
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_opengl3.cpp" }, flags.items);
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_opengl3.h" }, &.{ "backends", "imgui_impl_opengl3.h" });
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_opengl3.h" }, &.{ "backends", "dcimgui_impl_opengl3.h" });
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_opengl3_loader.h" }, &.{ "backends", "imgui_impl_opengl3_loader.h" });
+                pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_opengl3.cpp" }, flags.items);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_opengl3.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_opengl3.h" }, &.{ "backends", "imgui_impl_opengl3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_opengl3.h" }, &.{ "backends", "dcimgui_impl_opengl3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_opengl3_loader.h" }, &.{ "backends", "imgui_impl_opengl3_loader.h" });
             },
             .SDLGPU3 => {
-                pkg_builder.linkLibrary(lib, sdl_artifact);
-                pkg_builder.installLibraryHeaders(lib, sdl_artifact);
+                if (pkg_builder.dependencyLazy("sdl")) |sdl_dep| {
+                    sdl_artifact = pkg_builder.artifact(sdl_dep, "SDL3");
+                    sdl_dep_fetched = true;
 
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdlgpu3.cpp" }, flags.items);
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdlgpu3.cpp" }, flags.items);
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdlgpu3.h" }, &.{ "backends", "imgui_impl_sdlgpu3.h" });
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdlgpu3.h" }, &.{ "backends", "dcimgui_impl_sdlgpu3.h" });
+                    pkg_builder.linkLibrary(lib, sdl_artifact);
+                    pkg_builder.installLibraryHeaders(lib, sdl_artifact);
+
+                    pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_sdlgpu3.cpp" }, flags.items);
+                    pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_sdlgpu3.cpp" }, flags.items);
+                    pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_sdlgpu3.h" }, &.{ "backends", "imgui_impl_sdlgpu3.h" });
+                    pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_sdlgpu3.h" }, &.{ "backends", "dcimgui_impl_sdlgpu3.h" });
+                }
             },
             .Metal => {
                 if (pkg_builder.getOs() != .macos and pkg_builder.getOs() != .ios) {
@@ -203,10 +208,10 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
                 pkg_builder.linkFramework(lib, "QuartzCore");
 
                 // Add Metal backend sources (compile separately to avoid header conflicts)
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_metal.mm" }, flags.items);
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_metal.mm" }, flags.items);
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_metal.h" }, &.{ "backends", "imgui_impl_metal.h" });
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_metal.h" }, &.{ "backends", "dcimgui_impl_metal.h" });
+                pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_metal.mm" }, flags.items);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_metal.mm" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_metal.h" }, &.{ "backends", "imgui_impl_metal.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_metal.h" }, &.{ "backends", "dcimgui_impl_metal.h" });
             },
         }
     }
@@ -219,28 +224,37 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
     for (platforms) |platform| {
         switch (platform) {
             .GLFW => {
-                pkg_builder.addIncludePathsFromLib(@TypeOf(lib.*), lib, glfw_artifact);
-                pkg_builder.linkLibrary(lib, glfw_artifact);
-                pkg_builder.installLibraryHeaders(lib, glfw_artifact);
+                if (pkg_builder.verboseDependencyLazy("glfw_zig")) |glfw_dep| {
+                    const glfw_artifact = pkg_builder.artifact(glfw_dep, "glfw");
+                    pkg_builder.addIncludePathsFromLib(@TypeOf(lib.*), lib, glfw_artifact);
+                    pkg_builder.linkLibrary(lib, glfw_artifact);
+                    pkg_builder.installLibraryHeaders(lib, glfw_artifact);
 
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_glfw.cpp" }, flags.items);
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_glfw.cpp" }, flags.items);
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_glfw.h" }, &.{ "backends", "imgui_impl_glfw.h" });
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_glfw.h" }, &.{ "backends", "dcimgui_impl_glfw.h" });
+                    pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_glfw.cpp" }, flags.items);
+                    pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_glfw.cpp" }, flags.items);
+                    pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_glfw.h" }, &.{ "backends", "imgui_impl_glfw.h" });
+                    pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_glfw.h" }, &.{ "backends", "dcimgui_impl_glfw.h" });
 
-                pkg_builder.addCMacro(lib, "GLFW_INCLUDE_NONE", "1");
-                if (std.mem.indexOfScalar(Renderer, renderers, .Vulkan) != null) {
-                    pkg_builder.addCMacro(lib, "GLFW_INCLUDE_VULKAN", "1");
+                    pkg_builder.addCMacro(lib, "GLFW_INCLUDE_NONE", "1");
+                    if (std.mem.indexOfScalar(Renderer, renderers, .Vulkan) != null) {
+                        pkg_builder.addCMacro(lib, "GLFW_INCLUDE_VULKAN", "1");
+                    }
                 }
             },
             .SDL3 => {
+                if (!sdl_dep_fetched) {
+                    if (pkg_builder.dependencyLazy("sdl")) |sdl_dep| {
+                        sdl_artifact = pkg_builder.artifact(sdl_dep, "SDL3");
+                    } else continue;
+                }
+
                 pkg_builder.linkLibrary(lib, sdl_artifact);
                 pkg_builder.installLibraryHeaders(lib, sdl_artifact);
 
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdl3.cpp" }, flags.items);
-                pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdl3.cpp" }, flags.items);
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "imgui_impl_sdl3.h" }, &.{ "backends", "imgui_impl_sdl3.h" });
-                pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", "backends", "dcimgui_impl_sdl3.h" }, &.{ "backends", "dcimgui_impl_sdl3.h" });
+                pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_sdl3.cpp" }, flags.items);
+                pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_sdl3.cpp" }, flags.items);
+                pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_sdl3.h" }, &.{ "backends", "imgui_impl_sdl3.h" });
+                pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_sdl3.h" }, &.{ "backends", "dcimgui_impl_sdl3.h" });
             },
         }
     }
@@ -249,28 +263,29 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
 
 fn buildFn(pkg_builder: *VerboseBuilder) !void {
     const docking = pkg_builder.option(bool, false, "docking", "master or docking ocornut/imgui branch ?");
+    const branch_dir = if (docking) "docking" else "master";
     const link_libc = pkg_builder.option(bool, true, "libc", "link libC ?");
 
     const lib = pkg_builder.addLibrary("cimgui");
     if (link_libc) pkg_builder.linkLibCpp(lib);
 
-    pkg_builder.addInclude(lib, &.{ "dcimgui", if (docking) "docking" else "master" });
+    pkg_builder.addInclude(lib, &.{ "dcimgui", branch_dir });
 
-    while (try pkg_builder.iterate(&.{ "dcimgui", if (docking) "docking" else "master" })) |*entry| {
-        if (toolbox.isCHeader(entry.name)) pkg_builder.installHeader(lib, &.{ "dcimgui", if (docking) "docking" else "master", entry.name }, &.{entry.name});
+    while (try pkg_builder.iterate(&.{ "dcimgui", branch_dir })) |*entry| {
+        if (toolbox.isCHeader(entry.name)) pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, entry.name }, &.{entry.name});
     }
 
     var flags_buffer: [16][]const u8 = undefined;
     var flags = std.ArrayListUnmanaged([]const u8).initBuffer(&flags_buffer);
 
-    while (try pkg_builder.iterate(&.{ "dcimgui", if (docking) "docking" else "master" })) |entry| {
+    while (try pkg_builder.iterate(&.{ "dcimgui", branch_dir })) |entry| {
         switch (entry.kind) {
             .file => {
                 if ((std.mem.startsWith(u8, entry.name, "imgui") or
                     std.mem.startsWith(u8, entry.name, "dcimgui")) and
                     toolbox.isCppSource(entry.name))
                 {
-                    pkg_builder.addCSource(lib, &.{ "dcimgui", if (docking) "docking" else "master", entry.name }, flags.items);
+                    pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, entry.name }, flags.items);
                 }
             },
             else => {},

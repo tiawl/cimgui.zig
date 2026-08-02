@@ -18,6 +18,10 @@
             .url = "git+https://github.com/Snektron/vulkan-zig#6994c93a6e882bac855aed606cf97a91e3f71d1f",
             .hash = "vulkan-0.0.0-r7Ytx_6DAwDB1QJAbIew5IzR2PiiAtJENX5kdJHf449X",
         },
+        .translate_c = .{
+            .url = "git+https://codeberg.org/ziglang/translate-c#6f9af6cd3579883ed816f14799474d8ad286a7ef",
+            .hash = "translate_c-0.0.0-Q_BUWgo9BwB-GGtnpZAFbaJxlE5pRA9e7Zz25sI4PujC",
+        },
     },
     .paths = .{
         "",
