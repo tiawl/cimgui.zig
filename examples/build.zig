@@ -581,7 +581,7 @@ pub fn build(builder: *std.Build) !void {
                 .docking = docking,
             });
 
-            c_module = cimgui.createModule(builder, cimgui_dep, builder.pathJoin(&.{ entry.name, "c.h" }));
+            c_module = cimgui.createModule(builder, cimgui_dep, cimgui_dep.artifact("cimgui"), builder.path(builder.pathJoin(&.{ entry.name, "c.h" })));
 
             options = builder.addOptions();
             options.addOption([:0]const u8, "name", try builder.allocator.dupeSentinel(u8, entry.name, 0));
