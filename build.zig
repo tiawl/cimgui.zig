@@ -19,12 +19,11 @@ fn addIncludePathsToTranslateC(translate_c: *TranslateC, lib: *std.Build.Step.Co
 
 var user_translate_c: TranslateC = undefined;
 
-pub fn createModule(builder: *std.Build, dep: *std.Build.Dependency, c_path: []const u8) *std.Build.Module {
-    const lib = dep.artifact("cimgui");
+pub fn createModule(builder: *std.Build, dep: *std.Build.Dependency, lib: *std.Build.Step.Compile, c_path: std.Build.LazyPath) *std.Build.Module {
     const translate_c_dep = dep.builder.dependency("translate_c", .{});
 
     user_translate_c = .init(translate_c_dep, .{
-        .c_source_file = builder.path(c_path),
+        .c_source_file = c_path,
         .target = lib.root_module.resolved_target orelse builder.standardTargetOptions(.{}),
         .optimize = lib.root_module.optimize orelse builder.standardOptimizeOption(.{}),
     });

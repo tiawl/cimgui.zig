@@ -70,8 +70,9 @@ pub fn build(b: *std.Build) void {
 +        // .no_renderer = true, // Default value: false. Comment `.renderers` field if you use this one
 +        // .no_platform = true, // Default value: false. Comment `.platforms` field if you use this one
 +    });
++    const cimgui_lib = cimgui_dep.artifact("cimgui");
 +
-+    const c_mod = cimgui.createModule(b, cimgui_dep, "src/c.h")
++    const c_mod = cimgui.createModule(b, cimgui_dep, cimgui_lib, b.path("src/c.h"));
 
     // Where `exe` represents your executable/library to link to
 +    exe.root_module.addImport("c", c_mod);
