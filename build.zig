@@ -3,6 +3,38 @@ const build_zig_zon = @import("build.zig.zon");
 const examples_build_zig_zon = @import("examples/build.zig.zon");
 const toolbox = @import("toolbox");
 const VerboseBuilder = toolbox.VerboseBuilder;
+const TranslateC = @import("translate_c").Translator;
+
+fn addIncludePathsToTranslateC(translate_c: *TranslateC, lib: *std.Build.Step.Compile) void {
+    for (lib.root_module.include_dirs.items) |*included| {
+        switch (included.*) {
+            .path => translate_c.addIncludePath(included.path),
+            .config_header_step => translate_c.addConfigHeader(included.config_header_step),
+            .path_system => translate_c.addSystemIncludePath(included.path_system),
+            .other_step => addIncludePathsToTranslateC(translate_c, included.other_step),
+            else => unreachable,
+        }
+    }
+}
+
+var user_translate_c: TranslateC = undefined;
+
+pub fn createModule(builder: *std.Build, dep: *std.Build.Dependency, c_path: []const u8) *std.Build.Module {
+    const lib = dep.artifact("cimgui");
+    const translate_c_dep = dep.builder.dependency("translate_c", .{});
+
+    user_translate_c = .init(translate_c_dep, .{
+        .c_source_file = builder.path(c_path),
+        .target = lib.root_module.resolved_target orelse builder.standardTargetOptions(.{}),
+        .optimize = lib.root_module.optimize orelse builder.standardOptimizeOption(.{}),
+    });
+
+    addIncludePathsToTranslateC(&user_translate_c, lib);
+
+    user_translate_c.mod.linkLibrary(lib);
+
+    return user_translate_c.mod;
+}
 
 pub const Renderer = enum {
     Metal,
