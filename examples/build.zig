@@ -6,8 +6,6 @@ const Renderer = cimgui.Renderer;
 
 const zigglgen = @import("zigglgen");
 
-const TranslateC = @import("translate_c").Translator;
-
 fn isPlatformUsed(dirname: []const u8, comptime platform: []const u8) bool {
     return (std.mem.startsWith(u8, dirname, "example_" ++ platform ++ "_") or
         std.mem.startsWith(u8, dirname, "example_" ++ platform ++ "+") or
@@ -496,18 +494,6 @@ fn commonModule(builder: *std.Build, target: std.Build.ResolvedTarget, optimize:
     });
 }
 
-fn addIncludePathsToTranslateC(translate_c: *TranslateC, lib: *std.Build.Step.Compile) void {
-    for (lib.root_module.include_dirs.items) |*included| {
-        switch (included.*) {
-            .path => translate_c.addIncludePath(included.path),
-            .config_header_step => translate_c.addConfigHeader(included.config_header_step),
-            .path_system => translate_c.addSystemIncludePath(included.path_system),
-            .other_step => addIncludePathsToTranslateC(translate_c, included.other_step),
-            else => unreachable,
-        }
-    }
-}
-
 pub fn build(builder: *std.Build) !void {
     const target = builder.standardTargetOptions(.{});
     const optimize: std.lang.Optimize = .debug;
@@ -528,8 +514,6 @@ pub fn build(builder: *std.Build) !void {
         .profile = .core,
         .extensions = &.{},
     });
-
-    const translate_c_dep = builder.dependency("translate_c", .{});
 
     const vulkan_headers_dep = builder.dependency("cimgui_zig", .{
         .target = target,
@@ -571,10 +555,10 @@ pub fn build(builder: *std.Build) !void {
     var platforms: []const Platform = undefined;
     var renderers: []const Renderer = undefined;
     var options: *std.Build.Step.Options = undefined;
-    var translate_c: TranslateC = undefined;
     var cimgui_dep: *std.Build.Dependency = undefined;
-    var cimgui_artifact: *std.Build.Step.Compile = undefined;
+    var c_module: *std.Build.Module = undefined;
     var exe: *std.Build.Step.Compile = undefined;
+    var exe_module: *std.Build.Module = undefined;
     var it = examples_dir.iterate();
     while (try it.next(builder.graph.io)) |*entry| {
         if (entry.kind == .directory and std.mem.startsWith(u8, entry.name, "example_")) {
@@ -585,14 +569,6 @@ pub fn build(builder: *std.Build) !void {
                     continue;
                 }
             }
-
-            translate_c = .init(translate_c_dep, .{
-                .c_source_file = builder.path(builder.pathJoin(&.{
-                    entry.name, "c.h",
-                })),
-                .target = target,
-                .optimize = optimize,
-            });
 
             platforms = try examplePlatforms(builder, entry.name);
             renderers = try exampleRenderers(builder, entry.name);
@@ -605,42 +581,39 @@ pub fn build(builder: *std.Build) !void {
                 .docking = docking,
             });
 
-            cimgui_artifact = cimgui_dep.artifact("cimgui");
-
-            addIncludePathsToTranslateC(&translate_c, cimgui_artifact);
-
-            translate_c.mod.linkLibrary(cimgui_artifact);
+            c_module = cimgui.createModule(builder, cimgui_dep, builder.pathJoin(&.{ entry.name, "c.h" }));
 
             options = builder.addOptions();
             options.addOption([:0]const u8, "name", try builder.allocator.dupeSentinel(u8, entry.name, 0));
 
+            exe_module = builder.createModule(.{
+                .root_source_file = builder.path(builder.pathJoin(&.{
+                    entry.name, "main.zig",
+                })),
+                .target = target,
+                .optimize = optimize,
+                .imports = &.{
+                    .{
+                        .name = "c",
+                        .module = c_module,
+                    },
+                    .{
+                        .name = "build_options",
+                        .module = options.createModule(),
+                    },
+                    .{
+                        .name = "build_types",
+                        .module = build_types_module,
+                    },
+                    .{
+                        .name = "common",
+                        .module = commonModule(builder, target, optimize, build_types_module, c_module, zglfw_module, vulkan_zig_module, zigglgen_module, entry.name),
+                    },
+                },
+            });
             exe = builder.addExecutable(.{
                 .name = entry.name,
-                .root_module = std.Build.Module.create(builder, .{
-                    .root_source_file = builder.path(builder.pathJoin(&.{
-                        entry.name, "main.zig",
-                    })),
-                    .target = target,
-                    .optimize = optimize,
-                    .imports = &.{
-                        .{
-                            .name = "c",
-                            .module = translate_c.mod,
-                        },
-                        .{
-                            .name = "build_options",
-                            .module = options.createModule(),
-                        },
-                        .{
-                            .name = "build_types",
-                            .module = build_types_module,
-                        },
-                        .{
-                            .name = "common",
-                            .module = commonModule(builder, target, optimize, build_types_module, translate_c.mod, zglfw_module, vulkan_zig_module, zigglgen_module, entry.name),
-                        },
-                    },
-                }),
+                .root_module = exe_module,
             });
 
             if (verbose) std.log.debug("{s} built", .{entry.name});

@@ -38,10 +38,10 @@ If you want to add `cimgui.zig` as a library to your project, you can do the fol
 
 Fetch this repository:
 ```sh
-$ zig fetch --save git+https://github.com/tiawl/cimgui.zig.git
+$ zig fetch --save git+https://github.com/tiawl/cimgui.zig
 ```
 
-Add a `c.h` file with the header you need:
+Add a `src/c.h` file with the headers you need:
 ```c
 #define GLFW_INCLUDE_VULKAN 1
 #define GLFW_INCLUDE_NONE 1
@@ -58,28 +58,8 @@ const std = @import("std");
 +const Renderer = cimgui.Renderer;
 +const Platform = cimgui.Platform;
 
-+fn addIncludePathsToTranslateC(translate_c: *std.Build.Step.TranslateC, lib: *std.Build.Step.Compile) void {
-+    for (lib.root_module.include_dirs.items) |*included| {
-+        switch (included.*) {
-+            .path => translate_c.addIncludePath(included.path),
-+            .config_header_step => translate_c.addConfigHeader(included.config_header_step),
-+            .path_system => translate_c.addSystemIncludePath(included.path_system),
-+            .other_step => addIncludePathsToTranslateC(translate_c, included.other_step),
-+            else => unreachable,
-+        }
-+    }
-+}
-
 pub fn build(b: *std.Build) void {
     // -- snip --
-
-+    translate_c = b.addTranslateC(.{
-+        .root_source_file = b.path(b.pathJoin(&.{
-+            entry.name, "c.h",
-+        })),
-+        .target = target,
-+        .optimize = optimize,
-+    });
 
 +    const cimgui_dep = b.dependency("cimgui_zig", .{
 +        .target = target,
@@ -87,17 +67,14 @@ pub fn build(b: *std.Build) void {
 +        .platforms = &[_]Platform{.GLFW},
 +        .renderers = &[_]Renderer{.Vulkan},
 +        // .docking = true, // Default value: false
-+        // .no_renderer = true, // Default value: false. Comment `renderers` field if you use this one
-+        // .no_platform = true, // Default value: false. Comment `platforms` field if you use this one
++        // .no_renderer = true, // Default value: false. Comment `.renderers` field if you use this one
++        // .no_platform = true, // Default value: false. Comment `.platforms` field if you use this one
 +    });
 +
-+    const cimgui_lib = cimgui_dep.artifact("cimgui");
-+    addIncludePathsToTranslateC(translate_c, cimgui_lib);
-+    const c_module = translate_c.createModule();
-+    c_module.linkLibrary(cimgui_lib);
++    const c_mod = cimgui.createModule(b, cimgui_dep, "src/c.h")
 
     // Where `exe` represents your executable/library to link to
-+    exe.root_module.addImport("c", c_module);
++    exe.root_module.addImport("c", c_mod);
 
     // -- snip --
 }
