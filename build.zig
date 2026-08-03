@@ -21,11 +21,17 @@ var user_translate_c: TranslateC = undefined;
 
 pub fn createModule(builder: *std.Build, dep: *std.Build.Dependency, lib: *std.Build.Step.Compile, c_path: std.Build.LazyPath) *std.Build.Module {
     const translate_c_dep = dep.builder.dependency("translate_c", .{});
+    const default_link_libc_opt: @TypeOf(@field(@TypeOf(dep.builder.user_input_options).KV{.key = undefined, .value = undefined}, "value")) = .{
+        .value = .{ .scalar = "true" },
+        .name = "link_libc",
+        .used = true,
+    };
 
     user_translate_c = .init(translate_c_dep, .{
         .c_source_file = c_path,
         .target = lib.root_module.resolved_target orelse builder.standardTargetOptions(.{}),
         .optimize = lib.root_module.optimize orelse builder.standardOptimizeOption(.{}),
+        .link_libc = std.mem.eql(u8, "true", (dep.builder.user_input_options.get("link_libc") orelse default_link_libc_opt).value.scalar),
     });
 
     addIncludePathsToTranslateC(&user_translate_c, lib);
@@ -295,7 +301,7 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
 fn buildFn(pkg_builder: *VerboseBuilder) !void {
     const docking = pkg_builder.option(bool, false, "docking", "master or docking ocornut/imgui branch ?");
     const branch_dir = if (docking) "docking" else "master";
-    const link_libc = pkg_builder.option(bool, true, "libc", "link libC ?");
+    const link_libc = pkg_builder.option(bool, true, "link_libc", "link libC ?");
 
     const lib = pkg_builder.addLibrary("cimgui");
     if (link_libc) pkg_builder.linkLibCpp(lib);
