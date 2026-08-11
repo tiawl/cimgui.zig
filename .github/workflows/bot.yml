@@ -19,7 +19,7 @@ jobs:
           version: 'master'
       - name: Build
         shell: 'bash'
-        run: zig build
+        run: zig build -freference-trace
   update:
     permissions:
       contents: write
@@ -95,7 +95,7 @@ jobs:
           set -x
           rm -rf .zig-cache
           source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
-          zig build -Dfetch -Dverbose
+          zig build -Dfetch -Dverbose -freference-trace
 
       - name: Diff
         if: steps.fetch.conclusion == 'success'
@@ -114,7 +114,7 @@ jobs:
         run: |
           set -x
           source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
-          zig build -Dupdate -Dverbose
+          zig build -Dupdate -Dverbose -freference-trace
 
       - name: Create Pull Request
         if: steps.fetch.conclusion == 'success' && steps.diff.outputs.len != '0'
