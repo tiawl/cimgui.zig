@@ -25,13 +25,13 @@
             .hash = "toolbox-2.0.2-kRAu4FmsAAC0GvUEIxVa84MDY8TqqPmK5OmeBhbKZSBg",
         },
         .vulkan_zig = .{
-            .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.359#222e111dcf20346b6be0c569ed56d3e9baff0841",
-            .hash = "vulkan_zig-1.0.0-p2wg3ifugwGtstECCw2nReLSWuBiOd8juvsiUq3N6Waf",
+            .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.360#51198f68345514c3cc6833827037ce9c5f5b0455",
+            .hash = "vulkan_zig-1.0.0-p2wg3tfzgwE6_G8fgBWUXFOksQrovG0x-uO960WkF8Nv",
             .lazy = true,
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=vulkan.zig-v1.4.359#426b3bd3d6da98b70bbc81ada8b89f927ffee4e7",
-            .hash = "glfw_zig-1.0.0-NrvYowknGgCQvzmKymK6SeYTsSxQxCtZdCs9Cp4ezmlO",
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=vulkan.zig-v1.4.360#231b807c93f5c8752b103aee8bfca2221a24eded",
+            .hash = "glfw_zig-1.0.0-NrvYowknGgDBwnOU1O9JV-BYaCyL1Scj1tT_NEXg6vxG",
             .lazy = true,
         },
         .translate_c = .{
