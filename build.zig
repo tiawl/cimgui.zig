@@ -21,17 +21,15 @@ var user_translate_c: TranslateC = undefined;
 
 pub fn createModule(builder: *std.Build, dep: *std.Build.Dependency, lib: *std.Build.Step.Compile, c_path: std.Build.LazyPath) *std.Build.Module {
     const translate_c_dep = dep.builder.dependency("translate_c", .{});
-    const default_link_libc_opt: @TypeOf(@field(@TypeOf(dep.builder.user_input_options).KV{.key = undefined, .value = undefined}, "value")) = .{
-        .value = .{ .scalar = "true" },
-        .name = "link_libc",
-        .used = true,
+    const default_link_libc_opt: @TypeOf(@field(@TypeOf(dep.builder.user_input_options).KV{ .key = undefined, .value = undefined }, "value")) = .{
+        .scalar = "true",
     };
 
     user_translate_c = .init(translate_c_dep, .{
         .c_source_file = c_path,
         .target = lib.root_module.resolved_target orelse builder.standardTargetOptions(.{}),
         .optimize = lib.root_module.optimize orelse builder.standardOptimizeOption(.{}),
-        .link_libc = std.mem.eql(u8, "true", (dep.builder.user_input_options.get("link_libc") orelse default_link_libc_opt).value.scalar),
+        .link_libc = std.mem.eql(u8, "true", (dep.builder.user_input_options.get("link_libc") orelse default_link_libc_opt).scalar),
     });
 
     addIncludePathsToTranslateC(&user_translate_c, lib);
