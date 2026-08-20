@@ -15,7 +15,7 @@
             .hash = "zglfw-0.1.0-BghZXaTUAAAkCOlD_2akK4k1zIzo6HIXelVZu39yr_MO",
         },
         .vulkan = .{
-            .url = "git+https://github.com/Snektron/vulkan-zig#6994c93a6e882bac855aed606cf97a91e3f71d1f",
+            .url = "git+https://github.com/Snektron/vulkan-zig#f80632864d2354443ecad07d4cb0e549c6c80a09",
             .hash = "vulkan-0.0.0-r7Ytx_6DAwDB1QJAbIew5IzR2PiiAtJENX5kdJHf449X",
         },
     },
