@@ -1,4 +1,7 @@
 const std = @import("std");
+const build_zig_zon = @import("build.zig.zon");
+const toolbox = @import("toolbox");
+const VerboseBuilder = toolbox.VerboseBuilder;
 
 const cimgui = @import("cimgui_zig");
 const Platform = cimgui.Platform;
@@ -495,10 +498,12 @@ fn commonModule(builder: *std.Build, target: std.Build.ResolvedTarget, optimize:
 }
 
 pub fn build(builder: *std.Build) !void {
-    const target = builder.standardTargetOptions(.{});
+    // If you are reading this comment to know how examples are compiled: actually VerboseBuilder and toolbox are only need for maintainance tasks so you shouldn't need it for your project
+    var pkg_builder = try VerboseBuilder.init(builder, @tagName(build_zig_zon.name), null, null);
+    const target = pkg_builder.getTarget();
     const optimize: std.lang.Optimize = .debug;
 
-    const verbose = builder.option(bool, "verbose", "Verbose mode") orelse true;
+    const debug = builder.option(bool, "debug", "debug mode") orelse true;
     const docking = builder.option(bool, "docking", "use master or docking ocornut/imgui branch ?") orelse false;
 
     var examples_dir = if (@hasField(std.Build, "build_root")) try builder.build_root.handle.openDir(builder.graph.io, ".", .{
@@ -616,9 +621,11 @@ pub fn build(builder: *std.Build) !void {
                 .root_module = exe_module,
             });
 
-            if (verbose) std.log.debug("{s} built", .{entry.name});
+            if (debug) std.log.debug("{s} built", .{entry.name});
 
             builder.installArtifact(exe);
         }
     }
+
+    try pkg_builder.fetch(@TypeOf(build_zig_zon.dependencies), build_zig_zon.dependencies, pkg_builder.ptrCwd());
 }

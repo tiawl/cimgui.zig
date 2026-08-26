@@ -96,6 +96,7 @@ jobs:
           rm -rf .zig-cache
           source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
           zig build -Dfetch -Dverbose -freference-trace
+          env -C "${GITHUB_WORKSPACE}/examples" zig build -Dfetch -Dverbose -freference-trace
 
       - name: Diff
         if: steps.fetch.conclusion == 'success'

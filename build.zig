@@ -1,6 +1,5 @@
 const std = @import("std");
 const build_zig_zon = @import("build.zig.zon");
-const examples_build_zig_zon = @import("examples/build.zig.zon");
 const toolbox = @import("toolbox");
 const VerboseBuilder = toolbox.VerboseBuilder;
 const TranslateC = @import("translate_c").Translator;
@@ -337,9 +336,6 @@ pub fn build(builder: *std.Build) !void {
 
     if (list(&pkg_builder)) return;
     try pkg_builder.fetch(@TypeOf(build_zig_zon.dependencies), build_zig_zon.dependencies, pkg_builder.ptrCwd());
-    var examples_dir = try pkg_builder.openDir(&.{"examples"});
-    defer pkg_builder.closeDir(examples_dir);
-    try pkg_builder.fetch(@TypeOf(examples_build_zig_zon.dependencies), examples_build_zig_zon.dependencies, &examples_dir);
     try pkg_builder.update();
     try pkg_builder.build();
 }
