@@ -3,7 +3,7 @@ const c = @import("c");
 const vk = @import("zvulkan");
 const glfw = @import("common/vulkan/glfw");
 
-extern fn glfwGetInstanceProcAddress(instance: vk.Instance, procname: [*:0]const u8) vk.PfnVoidFunction;
+extern fn glfwGetInstanceProcAddress(instance: ?vk.Instance, procname: [*:0]const u8) vk.PfnVoidFunction;
 extern fn glfwCreateWindowSurface(instance: vk.Instance, window: *c.GLFWwindow, allocation_callbacks: ?*const vk.AllocationCallbacks, surface: *vk.SurfaceKHR) vk.Result;
 
 pub const getInstanceProcAddress = glfwGetInstanceProcAddress;

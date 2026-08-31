@@ -28,7 +28,7 @@ extern fn cImGui_ImplVulkanH_DestroyWindow(instance: vk.Instance, device: vk.Dev
 
 const ImGui_ImplVulkanH_Frame = extern struct {
     CommandPool: vk.CommandPool = .null_handle,
-    CommandBuffer: vk.CommandBuffer = .null_handle,
+    CommandBuffer: ?vk.CommandBuffer = null,
     Fence: vk.Fence = .null_handle,
     Backbuffer: vk.Image = .null_handle,
     BackbufferView: vk.ImageView = .null_handle,
@@ -88,11 +88,11 @@ const ImGui_ImplVulkan_PipelineInfo = extern struct {
 
 const ImGui_ImplVulkan_InitInfo = extern struct {
     ApiVersion: u32 = 0,
-    Instance: vk.Instance = .null_handle,
-    PhysicalDevice: vk.PhysicalDevice = .null_handle,
-    Device: vk.Device = .null_handle,
+    Instance: ?vk.Instance = null,
+    PhysicalDevice: ?vk.PhysicalDevice = null,
+    Device: ?vk.Device = null,
     QueueFamily: u32 = 0,
-    Queue: vk.Queue = .null_handle,
+    Queue: ?vk.Queue = null,
     DescriptorPool: vk.DescriptorPool = .null_handle,
     DescriptorPoolSize: u32 = 0,
     MinImageCount: u32 = 0,
@@ -107,13 +107,13 @@ const ImGui_ImplVulkan_InitInfo = extern struct {
     CustomShaderFragCreateInfo: vk.ShaderModuleCreateInfo = std.mem.zeroes(vk.ShaderModuleCreateInfo),
 };
 
-var instance: vk.Instance = .null_handle;
+var instance: ?vk.Instance = null;
 var instance_proxy: vk.InstanceProxy = undefined;
-var physical_device: vk.PhysicalDevice = .null_handle;
+var physical_device: ?vk.PhysicalDevice = null;
 var queue_family: ?u32 = null;
-var device: vk.Device = .null_handle;
+var device: ?vk.Device = null;
 var device_proxy: vk.DeviceProxy = undefined;
-var queue: vk.Queue = .null_handle;
+var queue: ?vk.Queue = null;
 var descriptor_pool: vk.DescriptorPool = .null_handle;
 var pipeline_cache: vk.PipelineCache = .null_handle;
 var window_data: ImGui_ImplVulkanH_Window = .{};
@@ -165,11 +165,11 @@ fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c
     create_info.enabled_extension_count = @intCast(instance_extensions.items.len);
     create_info.pp_enabled_extension_names = instance_extensions.items.ptr;
     instance = try base_wrapper.createInstance(&create_info, null);
-    platform(p).loader.instance = &instance;
+    platform(p).loader.instance = &(instance.?);
     const instance_wrapper = try allocator.create(vk.InstanceWrapper);
     errdefer allocator.destroy(instance_proxy.wrapper);
-    instance_wrapper.* = vk.InstanceWrapper.load(instance, base_wrapper.dispatch.vkGetInstanceProcAddr.?);
-    instance_proxy = vk.InstanceProxy.init(instance, instance_wrapper);
+    instance_wrapper.* = vk.InstanceWrapper.load(instance.?, base_wrapper.dispatch.vkGetInstanceProcAddr.?);
+    instance_proxy = vk.InstanceProxy.init(instance.?, instance_wrapper);
 
     const gpus = try instance_proxy.enumeratePhysicalDevicesAlloc(allocator);
     defer allocator.free(gpus);
@@ -189,7 +189,7 @@ fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c
         physical_device = gpus[0];
     }
 
-    const families = try instance_proxy.getPhysicalDeviceQueueFamilyPropertiesAlloc(physical_device, allocator);
+    const families = try instance_proxy.getPhysicalDeviceQueueFamilyPropertiesAlloc(physical_device.?, allocator);
     defer allocator.free(families);
     var i: u32 = 0;
     for (families) |fproperties| {
@@ -216,12 +216,12 @@ fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c
     device_create_info.p_queue_create_infos = &queue_create_info;
     device_create_info.enabled_extension_count = @intCast(device_extensions.items.len);
     device_create_info.pp_enabled_extension_names = device_extensions.items.ptr;
-    device = try instance_proxy.createDevice(physical_device, &device_create_info, null);
-    platform(p).loader.device = &device;
+    device = try instance_proxy.createDevice(physical_device.?, &device_create_info, null);
+    platform(p).loader.device = &(device.?);
     const device_wrapper = try allocator.create(vk.DeviceWrapper);
     errdefer allocator.destroy(device_proxy.wrapper);
-    device_wrapper.* = vk.DeviceWrapper.load(device, instance_proxy.wrapper.dispatch.vkGetDeviceProcAddr.?);
-    device_proxy = vk.DeviceProxy.init(device, device_wrapper);
+    device_wrapper.* = vk.DeviceWrapper.load(device.?, instance_proxy.wrapper.dispatch.vkGetDeviceProcAddr.?);
+    device_proxy = vk.DeviceProxy.init(device.?, device_wrapper);
     queue = device_proxy.getDeviceQueue(queue_family.?, 0);
 
     const pool_sizes = [_]vk.DescriptorPoolSize{
@@ -245,24 +245,24 @@ fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c
 }
 
 fn setupWindow(comptime p: build.Platform) !void {
-    checkResult(platform(p).createWindowSurface(&instance, &window_data.Surface));
-    errdefer platform(p).destroyWindowSurface(&instance, &window_data.Surface);
+    checkResult(platform(p).createWindowSurface(&(instance.?), &window_data.Surface));
+    errdefer platform(p).destroyWindowSurface(&(instance.?), &window_data.Surface);
 
     var width: i32 = undefined;
     var height: i32 = undefined;
     try platform(p).getFramebufferSize(&width, &height);
 
-    if (try instance_proxy.getPhysicalDeviceSurfaceSupportKHR(physical_device, queue_family.?, window_data.Surface) != .true) return error.NoWSISupport;
+    if (try instance_proxy.getPhysicalDeviceSurfaceSupportKHR(physical_device.?, queue_family.?, window_data.Surface) != .true) return error.NoWSISupport;
 
     const requestSurfaceImageFormat = [_]vk.Format{ .b8g8r8a8_unorm, .r8g8b8a8_unorm, .b8g8r8_unorm, .r8g8b8_unorm };
     const ptrRequestSurfaceImageFormat: [*]const vk.Format = &requestSurfaceImageFormat;
     const requestSurfaceColorSpace = vk.ColorSpaceKHR.srgb_nonlinear_khr;
-    window_data.SurfaceFormat = cImGui_ImplVulkanH_SelectSurfaceFormat(physical_device, window_data.Surface, ptrRequestSurfaceImageFormat, requestSurfaceImageFormat.len, requestSurfaceColorSpace);
+    window_data.SurfaceFormat = cImGui_ImplVulkanH_SelectSurfaceFormat(physical_device.?, window_data.Surface, ptrRequestSurfaceImageFormat, requestSurfaceImageFormat.len, requestSurfaceColorSpace);
 
     const present_modes = [_]vk.PresentModeKHR{.fifo_khr};
-    window_data.PresentMode = cImGui_ImplVulkanH_SelectPresentMode(physical_device, window_data.Surface, &present_modes[0], present_modes.len);
+    window_data.PresentMode = cImGui_ImplVulkanH_SelectPresentMode(physical_device.?, window_data.Surface, &present_modes[0], present_modes.len);
 
-    cImGui_ImplVulkanH_CreateOrResizeWindow(instance, physical_device, device, &window_data, queue_family.?, null, width, height, min_image_count, swap_chain_image_usage);
+    cImGui_ImplVulkanH_CreateOrResizeWindow(instance.?, physical_device.?, device.?, &window_data, queue_family.?, null, width, height, min_image_count, swap_chain_image_usage);
 }
 
 fn cleanup(allocator: std.mem.Allocator) void {
@@ -274,19 +274,19 @@ fn cleanup(allocator: std.mem.Allocator) void {
 }
 
 fn cleanupWindow(comptime p: build.Platform) void {
-    platform(p).destroyWindowSurface(&instance, &window_data.Surface);
-    cImGui_ImplVulkanH_DestroyWindow(instance, device, &window_data, null);
+    platform(p).destroyWindowSurface(&(instance.?), &window_data.Surface);
+    cImGui_ImplVulkanH_DestroyWindow(instance.?, device.?, &window_data, null);
 }
 
 pub fn initImguiContext(comptime p: build.Platform) !void {
     try platform(p).initForVulkan();
     errdefer platform(p).shutdown();
     var init_info = ImGui_ImplVulkan_InitInfo{
-        .Instance = instance,
-        .PhysicalDevice = physical_device,
-        .Device = device,
+        .Instance = instance.?,
+        .PhysicalDevice = physical_device.?,
+        .Device = device.?,
         .QueueFamily = queue_family.?,
-        .Queue = queue,
+        .Queue = queue.?,
         .PipelineCache = pipeline_cache,
         .DescriptorPool = descriptor_pool,
         .DescriptorPoolSize = 0,
@@ -318,7 +318,7 @@ fn resizeSwapChain(comptime p: build.Platform) !void {
     try platform(p).getFramebufferSize(&width, &height);
     if (width > 0 and height > 0 and (swap_chain_rebuild or window_data.Width != width or window_data.Height != height)) {
         c.cImGui_ImplVulkan_SetMinImageCount(min_image_count);
-        cImGui_ImplVulkanH_CreateOrResizeWindow(instance, physical_device, device, &window_data, queue_family.?, null, width, height, min_image_count, swap_chain_image_usage);
+        cImGui_ImplVulkanH_CreateOrResizeWindow(instance.?, physical_device.?, device.?, &window_data, queue_family.?, null, width, height, min_image_count, swap_chain_image_usage);
         window_data.FrameIndex = 0;
         swap_chain_rebuild = false;
     }
@@ -361,7 +361,7 @@ fn frameRender(draw_data: *c.ImDrawData) !void {
     try device_proxy.resetCommandPool(fd.CommandPool, .{});
     var command_buffer_begin_info = vk.CommandBufferBeginInfo{};
     command_buffer_begin_info.flags.one_time_submit = true;
-    try device_proxy.beginCommandBuffer(fd.CommandBuffer, &command_buffer_begin_info);
+    try device_proxy.beginCommandBuffer(fd.CommandBuffer.?, &command_buffer_begin_info);
 
     var render_pass_begin_info = vk.RenderPassBeginInfo{
         .render_pass = window_data.RenderPass,
@@ -379,23 +379,23 @@ fn frameRender(draw_data: *c.ImDrawData) !void {
         .clear_value_count = 1,
         .p_clear_values = &.{window_data.ClearValue},
     };
-    device_proxy.cmdBeginRenderPass(fd.CommandBuffer, &render_pass_begin_info, .@"inline");
+    device_proxy.cmdBeginRenderPass(fd.CommandBuffer.?, &render_pass_begin_info, .@"inline");
 
-    cImGui_ImplVulkan_RenderDrawData(draw_data, fd.CommandBuffer);
+    cImGui_ImplVulkan_RenderDrawData(draw_data, fd.CommandBuffer.?);
 
-    device_proxy.cmdEndRenderPass(fd.CommandBuffer);
+    device_proxy.cmdEndRenderPass(fd.CommandBuffer.?);
     const wait_stage: vk.PipelineStageFlags = .{ .color_attachment_output = true };
     var submit_info = vk.SubmitInfo{};
     submit_info.wait_semaphore_count = 1;
     submit_info.p_wait_semaphores = &.{image_acquired_semaphore};
     submit_info.p_wait_dst_stage_mask = &.{wait_stage};
     submit_info.command_buffer_count = 1;
-    submit_info.p_command_buffers = &.{fd.CommandBuffer};
+    submit_info.p_command_buffers = &.{fd.CommandBuffer.?};
     submit_info.signal_semaphore_count = 1;
     submit_info.p_signal_semaphores = &.{render_complete_semaphore};
 
-    try device_proxy.endCommandBuffer(fd.CommandBuffer);
-    try device_proxy.queueSubmit(queue, &.{submit_info}, fd.Fence);
+    try device_proxy.endCommandBuffer(fd.CommandBuffer.?);
+    try device_proxy.queueSubmit(queue.?, &.{submit_info}, fd.Fence);
 }
 
 fn framePresent() !void {
@@ -408,7 +408,7 @@ fn framePresent() !void {
         .p_swapchains = &.{window_data.Swapchain},
         .p_image_indices = &.{window_data.FrameIndex},
     };
-    const result = device_proxy.queuePresentKHR(queue, &present_info) catch |err| switch (err) {
+    const result = device_proxy.queuePresentKHR(queue.?, &present_info) catch |err| switch (err) {
         error.OutOfDateKHR => {
             swap_chain_rebuild = true;
             return;

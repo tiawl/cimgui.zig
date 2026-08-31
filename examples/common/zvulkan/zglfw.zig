@@ -2,7 +2,7 @@ const std = @import("std");
 const vk = @import("zvulkan");
 const zglfw = @import("common/vulkan/zglfw");
 
-extern fn glfwGetInstanceProcAddress(instance: vk.Instance, procname: [*:0]const u8) vk.PfnVoidFunction;
+extern fn glfwGetInstanceProcAddress(instance: ?vk.Instance, procname: [*:0]const u8) vk.PfnVoidFunction;
 extern fn glfwCreateWindowSurface(instance: vk.Instance, window: *zglfw.zglfw.Window, allocation_callbacks: ?*const vk.AllocationCallbacks, surface: *vk.SurfaceKHR) vk.Result;
 
 pub const getInstanceProcAddress = glfwGetInstanceProcAddress;

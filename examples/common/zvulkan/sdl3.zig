@@ -36,7 +36,7 @@ const Loader = struct {
     device: *vk.Device,
 
     fn loadGlobal(name: [*c]const u8) vk.PfnVoidFunction {
-        return getInstanceProcAddress(.null_handle, name);
+        return getInstanceProcAddress(null, name);
     }
 
     fn loadInstance(self: *const @This(), name: [*c]const u8) vk.PfnVoidFunction {
