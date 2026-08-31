@@ -69,8 +69,8 @@ jobs:
         run: |
           set -x
           unset ZIG_LOCAL_CACHE_DIR
-          env -C "${GITHUB_WORKSPACE}/examples" zig build -freference-trace
-          env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking -freference-trace
+          env -C "${GITHUB_WORKSPACE}/examples" zig build -freference-trace --verbose
+          env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking -freference-trace --verbose
   maintainance:
     strategy:
       matrix:
@@ -120,8 +120,8 @@ jobs:
         run: |
           set -x
           source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
-          renderers="$(zig build -Dlist-renderers -Dseparator=, -freference-trace)"
+          renderers="$(zig build -Dlist-renderers -Dseparator=, -freference-trace --verbose)"
           renderers="${renderers:+"-Drenderers={${renderers}}"}"
-          platforms="$(zig build -Dlist-platforms -Dseparator=, -freference-trace)"
+          platforms="$(zig build -Dlist-platforms -Dseparator=, -freference-trace --verbose)"
           platforms="${platforms:+"-Dplatforms={${platforms}}"}"
-          eval "zig build -Dupdate -Dverbose ${renderers} ${platforms} -freference-trace"
+          eval "zig build -Dupdate -Dverbose ${renderers} ${platforms} -freference-trace --verbose"

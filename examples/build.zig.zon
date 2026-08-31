@@ -15,8 +15,8 @@
             .hash = "zglfw-0.1.0-BghZXaTUAAAkCOlD_2akK4k1zIzo6HIXelVZu39yr_MO",
         },
         .vulkan = .{
-            .url = "git+https://github.com/Snektron/vulkan-zig#a6ca07453ba82e6fbdd910c2e364ae3ee77d7f81",
-            .hash = "vulkan-0.0.0-r7Ytx4mEAwA-B_7J6joJcsXYXL-wDb1CKLCrv-culpfR",
+            .url = "git+https://github.com/Snektron/vulkan-zig#f9688c6f4ebcb930f67044698ddd1322442e714b",
+            .hash = "vulkan-0.0.0-r7Ytx4yGAwDZf0XsT6_L1ol_XUAkyOgOyBqamf8begA0",
         },
         .toolbox = .{
             .url = "git+https://github.com/tiawl/toolbox?ref=2.2.3#636e101608d28351756367ac8197ca3e6ef1bddb",

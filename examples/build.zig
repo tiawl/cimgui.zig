@@ -498,8 +498,11 @@ fn commonModule(builder: *std.Build, target: std.Build.ResolvedTarget, optimize:
 }
 
 pub fn build(builder: *std.Build) !void {
-    // If you are reading this comment to know how examples are compiled: actually VerboseBuilder and toolbox are only need for maintainance tasks so you shouldn't need it for your project
     var pkg_builder = try VerboseBuilder.init(builder, @tagName(build_zig_zon.name), null, null);
+
+    try pkg_builder.fetch(@TypeOf(build_zig_zon.dependencies), build_zig_zon.dependencies, pkg_builder.ptrCwd());
+
+    // If you are reading this comment to know how examples are compiled: actually VerboseBuilder and toolbox are only need for maintainance tasks so you shouldn't need it for your project
     const target = pkg_builder.getTarget();
     const optimize: std.lang.Optimize = .debug;
 
@@ -626,6 +629,4 @@ pub fn build(builder: *std.Build) !void {
             builder.installArtifact(exe);
         }
     }
-
-    try pkg_builder.fetch(@TypeOf(build_zig_zon.dependencies), build_zig_zon.dependencies, pkg_builder.ptrCwd());
 }
