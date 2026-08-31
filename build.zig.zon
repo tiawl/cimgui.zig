@@ -39,7 +39,7 @@
             .hash = "translate_c-0.0.0-Q_BUWo5NBwBs3K0a-B1XbxEF3gFdTb75VgOE0FL-2qKL",
         },
     },
-    .minimum_zig_version = "0.17.0-dev.1516+8a4b5424d",
+    .minimum_zig_version = "0.17.0-dev.1941+71115f0ab",
     .fingerprint = 0x4e4978d2929b7bd9,
     .paths = .{
         "build.zig",
