@@ -17,8 +17,8 @@
             .branch = "docking",
         },
         .dcimgui = .{
-            .url = "git+https://github.com/dearimgui/dear_bindings#c9ff64913915df41c0f4beef485b98a1c685eda5",
-            .hash = "N-V-__8AAPErCQARgFL-uXKTjXbwnJv4IPOIC8kr-yJrFXEr",
+            .url = "git+https://github.com/dearimgui/dear_bindings#5413f1ebd559b3566cb23d19ff462645798d7654",
+            .hash = "N-V-__8AAMksCQBdZRARUH91ZGDMDBz2NIsllexFQnFNOVbG",
         },
         .toolbox = .{
             .url = "git+https://github.com/tiawl/toolbox?ref=2.2.4#da4c8c4a903b306bc5e49938d41ac90bca969a72",

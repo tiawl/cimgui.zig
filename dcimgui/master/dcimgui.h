@@ -2348,7 +2348,7 @@ CIMGUI_API void ImVector_Destruct(void* vector);   // Destruct an ImVector<> (of
 
 #if defined(IMGUI_HAS_IMSTR)
 #if IMGUI_HAS_IMSTR
-CIMGUI_API ImStr ImStr_FromCharStr(const char* b);  // Build an ImStr from a regular const char* (no data is copied, so you need to make sure the original char* isn't altered as long as you are using the ImStr).
+CIMGUI_API ImStrv ImStrv_FromCharStr(const char* b);  // Build an ImStrv from a regular const char* (no data is copied, so you need to make sure the original char* isn't altered as long as you are using the ImStrv).
 #endif // #if IMGUI_HAS_IMSTR
 #endif // #if defined(IMGUI_HAS_IMSTR)
 
