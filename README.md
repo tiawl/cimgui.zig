@@ -62,8 +62,8 @@ pub fn build(b: *std.Build) void {
 +    const cimgui_dep = b.dependency("cimgui_zig", .{
 +        .target = target,
 +        .optimize = optimize,
-+        .platforms = &[_]Platform{.GLFW},
-+        .renderers = &[_]Renderer{.Vulkan},
++        .platforms = &[_]Platform{.glfw},
++        .renderers = &[_]Renderer{.vulkan},
 +        // .features = &[_]Feature{ .internal, .docking }, // Default value: &[_]Feature{.internal}
 +        // .no_renderer = true, // Default value: false. Comment `.renderers` field if you use this one
 +        // .no_platform = true, // Default value: false. Comment `.platforms` field if you use this one
