@@ -8,7 +8,7 @@ const sdl3 = @import("common/sdl3");
 
 fn platform(comptime backend: build.Platform) type {
     return switch (backend) {
-        .SDL3 => sdl3,
+        .sdl3 => sdl3,
         else => unreachable,
     };
 }

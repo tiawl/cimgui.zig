@@ -11,8 +11,8 @@ pub fn main() !void {
     defer arena.deinit();
     const allocator = arena.allocator();
 
-    const platform: build.Platform = .zGLFW;
-    const renderer: build.Renderer = .zVulkan;
+    const platform: build.Platform = .zglfw;
+    const renderer: build.Renderer = .zvulkan;
     try common.init(platform, renderer, allocator, build.options.name, common.window.width, common.window.height, build.options.name);
     defer common.deinit(platform, renderer, allocator);
 

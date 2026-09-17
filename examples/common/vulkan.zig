@@ -10,9 +10,9 @@ const zglfw = @import("common/vulkan/zglfw");
 
 fn platform(comptime backend: build.Platform) type {
     return switch (backend) {
-        .GLFW => glfw,
-        .SDL3 => sdl3,
-        .zGLFW => zglfw,
+        .glfw => glfw,
+        .sdl3 => sdl3,
+        .zglfw => zglfw,
     };
 }
 

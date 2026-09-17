@@ -21,8 +21,8 @@ const zopengl3 = struct {
 
 fn renderer(comptime backend: build.Renderer) type {
     return switch (backend) {
-        .Vulkan, .zVulkan => vk,
-        .zOpenGL3 => zopengl3,
+        .vulkan, .zvulkan => vk,
+        .zopengl3 => zopengl3,
         else => unreachable,
     };
 }

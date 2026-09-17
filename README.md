@@ -1,6 +1,3 @@
-> [!WARNING]
-> If you are using the `docking` branch it won't be updated anymore and there won't be more `*-docking` tags. Please use the `-Ddocking` option [instead](https://github.com/tiawl/cimgui.zig/tree/stable?tab=readme-ov-file#cimguizig-as-a-library).
-
 # cimgui.zig
 
 This is a fork of [ocornut/imgui][1] packaged for [Zig][2]
@@ -57,6 +54,7 @@ const std = @import("std");
 +const cimgui = @import("cimgui_zig");
 +const Renderer = cimgui.Renderer;
 +const Platform = cimgui.Platform;
++const Feature = cimgui.Feature;
 
 pub fn build(b: *std.Build) void {
     // -- snip --
@@ -66,7 +64,7 @@ pub fn build(b: *std.Build) void {
 +        .optimize = optimize,
 +        .platforms = &[_]Platform{.GLFW},
 +        .renderers = &[_]Renderer{.Vulkan},
-+        // .docking = true, // Default value: false
++        // .features = &[_]Feature{ .internal, .docking }, // Default value: &[_]Feature{.internal}
 +        // .no_renderer = true, // Default value: false. Comment `.renderers` field if you use this one
 +        // .no_platform = true, // Default value: false. Comment `.platforms` field if you use this one
 +    });
@@ -111,15 +109,18 @@ These additional options have been implemented to cover main usecases:
 ```
   -Drenderers=[enum_list]      Specify the renderer backends
                                  Supported Values:
-                                   Metal
-                                   OpenGL3
-                                   SDLGPU3
-                                   Vulkan
+                                   metal
+                                   opengl3
+                                   sdlgpu3
+                                   vulkan
   -Dplatforms=[enum_list]      Specify the platform backends
                                  Supported Values:
-                                   GLFW
-                                   SDL3
-  -Ddocking=[bool]             master or docking ocornut/imgui branch ?
+                                   glfw
+                                   sdl3
+  -Dfeatures=[enum_list]       Specify the needed features
+                                 Supported Values:
+                                   docking
+                                   internal
   -Dno_renderer=[bool]         Specify there no need for renderer backend. It returns an error if you use it with `renderers` option.
   -Dno_platform=[bool]         Specify there no need for platform backend. It returns an error if you use it with `platforms` option.
   -Dlink_libc=[bool]           link libC ?
