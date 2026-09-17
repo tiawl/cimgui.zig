@@ -12,8 +12,8 @@ pub fn main() !void {
     defer arena.deinit();
     const allocator = arena.allocator();
 
-    const platform: build.Platform = .SDL3;
-    const renderer: build.Renderer = .SDLGPU3;
+    const platform: build.Platform = .sdl3;
+    const renderer: build.Renderer = .sdlgpu3;
     try common.init(platform, renderer, allocator, build.options.name, common.window.width, common.window.height, build.options.name);
     defer common.deinit(platform, renderer, allocator);
 

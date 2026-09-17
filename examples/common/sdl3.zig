@@ -32,9 +32,9 @@ const zopengl3 = struct {
 
 fn renderer(comptime backend: build.Renderer) type {
     return switch (backend) {
-        .Vulkan, .zVulkan => vk,
-        .SDLGPU3 => sdlgpu3,
-        .zOpenGL3 => zopengl3,
+        .vulkan, .zvulkan => vk,
+        .sdlgpu3 => sdlgpu3,
+        .zopengl3 => zopengl3,
         else => unreachable,
     };
 }

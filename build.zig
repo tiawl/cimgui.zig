@@ -39,15 +39,20 @@ pub fn createModule(builder: *std.Build, dep: *std.Build.Dependency, lib: *std.B
 }
 
 pub const Renderer = enum {
-    Metal,
-    OpenGL3,
-    SDLGPU3,
-    Vulkan,
+    metal,
+    opengl3,
+    sdlgpu3,
+    vulkan,
 };
 
 pub const Platform = enum {
-    GLFW,
-    SDL3,
+    glfw,
+    sdl3,
+};
+
+pub const Feature = enum {
+    docking,
+    internal,
 };
 
 fn updateFn(pkg_builder: *VerboseBuilder) !void {
@@ -157,9 +162,9 @@ fn list(pkg_builder: *VerboseBuilder) bool {
         if (list_renderers_opt) {
             for (std.enums.values(Renderer)) |backend| {
                 switch (pkg_builder.getOs()) {
-                    .windows => if (backend == .Metal) continue,
+                    .windows => if (backend == .metal) continue,
                     .macos => {},
-                    else => if (backend == .Metal) continue,
+                    else => if (backend == .metal) continue,
                 }
                 joinBackend(pkg_builder, &buf, @tagName(backend), separator_opt);
             }
@@ -173,12 +178,12 @@ fn list(pkg_builder: *VerboseBuilder) bool {
     return false;
 }
 
-pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, docking: bool, flags: *std.ArrayListUnmanaged([]const u8)) !void {
+pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, features: []const Feature, flags: *std.ArrayListUnmanaged([]const u8)) !void {
     const renderers = pkg_builder.option([]const Renderer, &.{}, "renderers", "Specify the renderer backends");
     const platforms = pkg_builder.option([]const Platform, &.{}, "platforms", "Specify the platform backends");
     const no_renderer = pkg_builder.option(bool, false, "no_renderer", "Specify there no need for renderer backend. It returns an error if you use it with `renderers` option.");
     const no_platform = pkg_builder.option(bool, false, "no_platform", "Specify there no need for platform backend. It returns an error if you use it with `platforms` option.");
-    const branch_dir = if (docking) "docking" else "master";
+    const branch_dir = if (std.mem.findScalar(Feature, features, .docking) != null) "docking" else "master";
 
     if (renderers.len == 0 and !no_renderer) {
         std.log.warn("Unspecified renderer backend", .{});
@@ -191,10 +196,10 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
 
     for (renderers) |renderer| {
         switch (renderer) {
-            .Vulkan => {
+            .vulkan => {
                 if (pkg_builder.verboseDependencyLazy("vulkan_zig")) |vulkan_dep| {
                     const vulkan_artifact = pkg_builder.artifact(vulkan_dep, "vulkan");
-                    if (std.mem.indexOfScalar(Platform, platforms, .GLFW) == null) {
+                    if (std.mem.findScalar(Platform, platforms, .glfw) == null) {
                         pkg_builder.linkLibrary(lib, vulkan_artifact);
                         pkg_builder.installLibraryHeaders(lib, vulkan_artifact);
                     }
@@ -206,14 +211,14 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
                     pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_vulkan.h" }, &.{ "backends", "dcimgui_impl_vulkan.h" });
                 }
             },
-            .OpenGL3 => {
+            .opengl3 => {
                 pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_opengl3.cpp" }, flags.items);
                 pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_opengl3.cpp" }, flags.items);
                 pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_opengl3.h" }, &.{ "backends", "imgui_impl_opengl3.h" });
                 pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_opengl3.h" }, &.{ "backends", "dcimgui_impl_opengl3.h" });
                 pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_opengl3_loader.h" }, &.{ "backends", "imgui_impl_opengl3_loader.h" });
             },
-            .SDLGPU3 => {
+            .sdlgpu3 => {
                 if (pkg_builder.dependencyLazy("sdl")) |sdl_dep| {
                     sdl_artifact = pkg_builder.artifact(sdl_dep, "SDL3");
                     sdl_dep_fetched = true;
@@ -227,7 +232,7 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
                     pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_sdlgpu3.h" }, &.{ "backends", "dcimgui_impl_sdlgpu3.h" });
                 }
             },
-            .Metal => {
+            .metal => {
                 if (pkg_builder.getOs() != .macos and pkg_builder.getOs() != .ios) {
                     std.log.err("Metal renderer is only available on macOS/iOS", .{});
                     return error.UnsupportedTarget;
@@ -257,7 +262,7 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
     }
     for (platforms) |platform| {
         switch (platform) {
-            .GLFW => {
+            .glfw => {
                 if (pkg_builder.verboseDependencyLazy("glfw_zig")) |glfw_dep| {
                     const glfw_artifact = pkg_builder.artifact(glfw_dep, "glfw");
                     pkg_builder.addIncludePathsFromLib(@TypeOf(lib.*), lib, glfw_artifact);
@@ -270,12 +275,12 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
                     pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "dcimgui_impl_glfw.h" }, &.{ "backends", "dcimgui_impl_glfw.h" });
 
                     pkg_builder.addCMacro(lib, "GLFW_INCLUDE_NONE", "1");
-                    if (std.mem.indexOfScalar(Renderer, renderers, .Vulkan) != null) {
+                    if (std.mem.findScalar(Renderer, renderers, .vulkan) != null) {
                         pkg_builder.addCMacro(lib, "GLFW_INCLUDE_VULKAN", "1");
                     }
                 }
             },
-            .SDL3 => {
+            .sdl3 => {
                 if (!sdl_dep_fetched) {
                     if (pkg_builder.dependencyLazy("sdl")) |sdl_dep| {
                         sdl_artifact = pkg_builder.artifact(sdl_dep, "SDL3");
@@ -296,8 +301,9 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
 }
 
 fn buildFn(pkg_builder: *VerboseBuilder) !void {
-    const docking = pkg_builder.option(bool, false, "docking", "master or docking ocornut/imgui branch ?");
-    const branch_dir = if (docking) "docking" else "master";
+    const features = pkg_builder.option([]const Feature, &.{.internal}, "features", "Specify the needed features");
+    const branch_dir = if (std.mem.findScalar(Feature, features, .docking) != null) "docking" else "master";
+    const skip_internal = std.mem.findScalar(Feature, features, .internal) == null;
     const link_libc = pkg_builder.option(bool, true, "link_libc", "link libC ?");
 
     const lib = pkg_builder.addLibrary("cimgui");
@@ -306,7 +312,10 @@ fn buildFn(pkg_builder: *VerboseBuilder) !void {
     pkg_builder.addInclude(lib, &.{ "dcimgui", branch_dir });
 
     while (try pkg_builder.iterate(&.{ "dcimgui", branch_dir })) |*entry| {
-        if (toolbox.isCHeader(entry.name)) pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, entry.name }, &.{entry.name});
+        if (toolbox.isCHeader(entry.name)) {
+            if (std.mem.endsWith(u8, std.fs.path.stem(entry.name), "imgui_internal") and skip_internal) continue;
+            pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, entry.name }, &.{entry.name});
+        }
     }
 
     var flags_buffer: [16][]const u8 = undefined;
@@ -319,6 +328,7 @@ fn buildFn(pkg_builder: *VerboseBuilder) !void {
                     std.mem.startsWith(u8, entry.name, "dcimgui")) and
                     toolbox.isCppSource(entry.name))
                 {
+                    if (std.mem.endsWith(u8, std.fs.path.stem(entry.name), "imgui_internal") and skip_internal) continue;
                     pkg_builder.addCSource(lib, &.{ "dcimgui", branch_dir, entry.name }, flags.items);
                 }
             },
@@ -326,7 +336,7 @@ fn buildFn(pkg_builder: *VerboseBuilder) !void {
         }
     }
 
-    try buildBackends(pkg_builder, lib, docking, &flags);
+    try buildBackends(pkg_builder, lib, features, &flags);
 
     pkg_builder.installArtifact(lib);
 }

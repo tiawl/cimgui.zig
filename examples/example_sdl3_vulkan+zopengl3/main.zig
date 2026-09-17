@@ -16,10 +16,10 @@ pub fn main(init: std.process.Init) !void {
     defer arena.deinit();
     const allocator = arena.allocator();
 
-    const platform: build.Platform = .SDL3;
-    const default_renderer: build.Renderer = .Vulkan;
+    const platform: build.Platform = .sdl3;
+    const default_renderer: build.Renderer = .vulkan;
     switch (std.meta.stringToEnum(build.Renderer, init.environ_map.get("RENDERER") orelse @tagName(default_renderer)) orelse return error.UnknownRendererBackend) {
-        inline default_renderer, .zOpenGL3 => |renderer| {
+        inline default_renderer, .zopengl3 => |renderer| {
             try common.init(platform, renderer, allocator, build.options.name ++ ": " ++ @tagName(renderer) ++ " backend used", common.window.width, common.window.height, build.options.name);
             defer common.deinit(platform, renderer, allocator);
 

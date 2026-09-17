@@ -16,20 +16,20 @@ const zvk = @import("common/zvulkan");
 
 fn renderer(comptime backend: build.Renderer) type {
     return switch (backend) {
-        .Vulkan => vk,
-        .zVulkan => zvk,
-        .SDLGPU3 => sdlgpu3,
-        .OpenGL3 => opengl3,
-        .zOpenGL3 => zopengl3,
+        .vulkan => vk,
+        .zvulkan => zvk,
+        .sdlgpu3 => sdlgpu3,
+        .opengl3 => opengl3,
+        .zopengl3 => zopengl3,
         else => unreachable,
     };
 }
 
 fn platform(comptime backend: build.Platform) type {
     return switch (backend) {
-        .GLFW => glfw,
-        .SDL3 => sdl3,
-        .zGLFW => zglfw,
+        .glfw => glfw,
+        .sdl3 => sdl3,
+        .zglfw => zglfw,
     };
 }
 

@@ -6,6 +6,7 @@ const VerboseBuilder = toolbox.VerboseBuilder;
 const cimgui = @import("cimgui_zig");
 const Platform = cimgui.Platform;
 const Renderer = cimgui.Renderer;
+const Feature = cimgui.Feature;
 
 const zigglgen = @import("zigglgen");
 
@@ -27,19 +28,19 @@ fn isRendererUsed(dirname: []const u8, comptime renderer: []const u8) bool {
 
 fn examplePlatforms(builder: *std.Build, dirname: []const u8) ![]const Platform {
     var platforms = std.array_list.Managed(Platform).init(builder.allocator);
-    if (isPlatformUsed(dirname, "glfw")) try platforms.append(.GLFW);
-    if (isPlatformUsed(dirname, "sdl3")) try platforms.append(.SDL3);
-    if (isPlatformUsed(dirname, "zglfw")) try platforms.append(.GLFW);
+    if (isPlatformUsed(dirname, "glfw")) try platforms.append(.glfw);
+    if (isPlatformUsed(dirname, "sdl3")) try platforms.append(.sdl3);
+    if (isPlatformUsed(dirname, "zglfw")) try platforms.append(.glfw);
     return platforms.toOwnedSlice();
 }
 
 fn exampleRenderers(builder: *std.Build, dirname: []const u8) ![]const Renderer {
     var renderers = std.array_list.Managed(Renderer).init(builder.allocator);
-    if (isRendererUsed(dirname, "vulkan")) try renderers.append(.Vulkan);
-    if (isRendererUsed(dirname, "zopengl3")) try renderers.append(.OpenGL3);
-    if (isRendererUsed(dirname, "zvulkan")) try renderers.append(.Vulkan);
-    if (isRendererUsed(dirname, "sdlgpu3")) try renderers.append(.SDLGPU3);
-    if (isRendererUsed(dirname, "metal")) try renderers.append(.Metal);
+    if (isRendererUsed(dirname, "vulkan")) try renderers.append(.vulkan);
+    if (isRendererUsed(dirname, "zopengl3")) try renderers.append(.opengl3);
+    if (isRendererUsed(dirname, "zvulkan")) try renderers.append(.vulkan);
+    if (isRendererUsed(dirname, "sdlgpu3")) try renderers.append(.sdlgpu3);
+    if (isRendererUsed(dirname, "metal")) try renderers.append(.metal);
     return renderers.toOwnedSlice();
 }
 
@@ -507,7 +508,7 @@ pub fn build(builder: *std.Build) !void {
     const optimize: std.lang.Optimize = .debug;
 
     const debug = builder.option(bool, "debug", "debug mode") orelse true;
-    const docking = builder.option(bool, "docking", "use master or docking ocornut/imgui branch ?") orelse false;
+    const features: []const Feature = if (builder.option(bool, "docking", "use master or docking ocornut/imgui branch ?") orelse false) &.{.internal, .docking} else &.{.internal};
 
     var examples_dir = if (@hasField(std.Build, "build_root")) try builder.build_root.handle.openDir(builder.graph.io, ".", .{
         .iterate = true,
@@ -527,7 +528,7 @@ pub fn build(builder: *std.Build) !void {
         .target = target,
         .optimize = optimize,
         .platforms = &[_]Platform{},
-        .renderers = &[_]Renderer{.Vulkan},
+        .renderers = &[_]Renderer{.vulkan},
         .no_platform = true,
     }).builder.dependency("vulkan_zig", .{
         .target = target,
@@ -547,17 +548,17 @@ pub fn build(builder: *std.Build) !void {
 
     var build_types = builder.addOptions();
     build_types.addOption(extended_platforms: {
-        const zig_platforms = &[_][]const u8{"zGLFW"};
+        const zig_platforms = &[_][]const u8{"zglfw"};
         var values: [std.meta.fieldNames(cimgui.Platform).len + zig_platforms.len]u32 = undefined;
         for (0..values.len) |i| values[i] = i;
         break :extended_platforms @Enum(u32, .exhaustive, std.meta.fieldNames(cimgui.Platform) ++ zig_platforms, &values);
-    }, "dummy_platform", .GLFW);
+    }, "dummy_platform", .glfw);
     build_types.addOption(extended_renderers: {
-        const zig_renderers = &[_][]const u8{ "zVulkan", "zOpenGL3" };
+        const zig_renderers = &[_][]const u8{ "zvulkan", "zopengl3" };
         var values: [std.meta.fieldNames(cimgui.Renderer).len + zig_renderers.len]u32 = undefined;
         for (0..values.len) |i| values[i] = i;
         break :extended_renderers @Enum(u32, .exhaustive, std.meta.fieldNames(cimgui.Renderer) ++ zig_renderers, &values);
-    }, "dummy_renderer", .Vulkan);
+    }, "dummy_renderer", .vulkan);
     const build_types_module = build_types.createModule();
 
     var platforms: []const Platform = undefined;
@@ -586,7 +587,7 @@ pub fn build(builder: *std.Build) !void {
                 .optimize = optimize,
                 .platforms = platforms,
                 .renderers = renderers,
-                .docking = docking,
+                .features = features,
             });
 
             c_module = cimgui.createModule(builder, cimgui_dep, cimgui_dep.artifact("cimgui"), builder.path(builder.pathJoin(&.{ entry.name, "c.h" })));
