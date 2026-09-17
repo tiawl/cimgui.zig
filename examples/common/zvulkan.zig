@@ -125,7 +125,7 @@ const api_version = vk.API_VERSION_1_2;
 
 fn checkResult(result: vk.Result) callconv(std.builtin.CallingConvention.c) void {
     if (result == .success) return;
-    std.debug.panic("[vulkan] Error: VkResult = {d}\n", .{@intFromEnum(result)});
+    std.debug.panic("[vulkan] Error: VkResult = {d}\n", .{@backingInt(result)});
 }
 
 pub fn init(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c]const u8) !void {
