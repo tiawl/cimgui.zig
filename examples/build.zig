@@ -508,7 +508,7 @@ pub fn build(builder: *std.Build) !void {
     const optimize: std.lang.Optimize = .debug;
 
     const debug = builder.option(bool, "debug", "debug mode") orelse true;
-    const features: []const Feature = if (builder.option(bool, "docking", "use master or docking ocornut/imgui branch ?") orelse false) &.{.internal, .docking} else &.{.internal};
+    const features: []const Feature = if (builder.option(bool, "docking", "use master or docking ocornut/imgui branch ?") orelse false) &.{ .internal, .docking } else &.{.internal};
 
     var examples_dir = if (@hasField(std.Build, "build_root")) try builder.build_root.handle.openDir(builder.graph.io, ".", .{
         .iterate = true,
