@@ -97,7 +97,7 @@ static inline ::ImColor ConvertToCPP_ImColor(const cimgui::ImColor& src)
 
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplOpenGL3_Init(void)
 {
-    return ::ImGui_ImplOpenGL3_Init();
+    return ::ImGui_ImplOpenGL3_Init(nullptr);
 }
 
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplOpenGL3_InitEx(const char* glsl_version)

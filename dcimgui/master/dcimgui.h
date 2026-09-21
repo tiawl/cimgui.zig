@@ -2,6 +2,16 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
+// Dear Bindings version as a string
+#ifndef DEAR_BINDINGS_VERSION
+#define DEAR_BINDINGS_VERSION "0.23"
+#endif
+
+// Dear Bindings version as an integer
+#ifndef DEAR_BINDINGS_VERSION_NUMBER
+#define DEAR_BINDINGS_VERSION_NUMBER 23
+#endif
+
 // dear imgui, v1.92.9b
 // (headers)
 
@@ -699,8 +709,8 @@ CIMGUI_API bool ImGui_ComboChar(const char* label, int* current_item, const char
 CIMGUI_API bool ImGui_ComboCharEx(const char* label, int* current_item, const char*const items[], int items_count, int popup_max_height_in_items /* = -1 */);
 CIMGUI_API bool ImGui_Combo(const char* label, int* current_item, const char* items_separated_by_zeros);                                                       // Implied popup_max_height_in_items = -1
 CIMGUI_API bool ImGui_ComboEx(const char* label, int* current_item, const char* items_separated_by_zeros, int popup_max_height_in_items /* = -1 */);           // Separate items with \0 within a string, end item-list with \0\0. e.g. "One\0Two\0Three\0"
-CIMGUI_API bool ImGui_ComboCallback(const char* label, int* current_item, const char* (*getter)(void* user_data, int idx), void* user_data, int items_count);  // Implied popup_max_height_in_items = -1
-CIMGUI_API bool ImGui_ComboCallbackEx(const char* label, int* current_item, const char* (*getter)(void* user_data, int idx), void* user_data, int items_count, int popup_max_height_in_items /* = -1 */);
+CIMGUI_API bool ImGui_ComboObsolete(const char* label, int* current_item, const char* (*getter)(void* user_data, int idx), void* user_data, int items_count);  // Implied popup_max_height_in_items = -1
+CIMGUI_API bool ImGui_ComboObsoleteEx(const char* label, int* current_item, const char* (*getter)(void* user_data, int idx), void* user_data, int items_count, int popup_max_height_in_items /* = -1 */);
 
 // Widgets: Drag Sliders
 // - Ctrl+Click on any drag box to turn them into an input box. Manually input values aren't clamped by default and can go off-bounds. Use ImGuiSliderFlags_AlwaysClamp to always clamp.
@@ -866,8 +876,8 @@ CIMGUI_API bool                ImGui_IsItemToggledSelection(void);              
 CIMGUI_API bool ImGui_BeginListBox(const char* label, ImVec2 size /* = ImVec2(0, 0) */);                                                                         // open a framed scrolling region
 CIMGUI_API void ImGui_EndListBox(void);                                                                                                                          // only call EndListBox() if BeginListBox() returned true!
 CIMGUI_API bool ImGui_ListBox(const char* label, int* current_item, const char*const items[], int items_count, int height_in_items /* = -1 */);
-CIMGUI_API bool ImGui_ListBoxCallback(const char* label, int* current_item, const char* (*getter)(void* user_data, int idx), void* user_data, int items_count);  // Implied height_in_items = -1
-CIMGUI_API bool ImGui_ListBoxCallbackEx(const char* label, int* current_item, const char* (*getter)(void* user_data, int idx), void* user_data, int items_count, int height_in_items /* = -1 */);
+CIMGUI_API bool ImGui_ListBoxObsolete(const char* label, int* current_item, const char* (*getter)(void* user_data, int idx), void* user_data, int items_count);  // Implied height_in_items = -1
+CIMGUI_API bool ImGui_ListBoxObsoleteEx(const char* label, int* current_item, const char* (*getter)(void* user_data, int idx), void* user_data, int items_count, int height_in_items /* = -1 */);
 
 // Widgets: Data Plotting
 // - Consider using ImPlot (https://github.com/epezent/implot) which is much better!
@@ -2346,10 +2356,11 @@ struct ImGuiTableColumnSortSpecs_t
 CIMGUI_API void ImVector_Construct(void* vector);  // Construct a zero-size ImVector<> (of any type). This is primarily useful when calling ImFontGlyphRangesBuilder_BuildRanges()
 CIMGUI_API void ImVector_Destruct(void* vector);   // Destruct an ImVector<> (of any type). Important: Frees the vector memory but does not call destructors on contained objects (if they have them)
 
+CIMGUI_API const char* DearBindings_GetVersion(void);        // Get the Dear Bindings version which generated these bindings as a string.
+CIMGUI_API int         DearBindings_GetVersionNumber(void);  // Get the Dear Bindings version which generated these bindings as an integer.
+
 #if defined(IMGUI_HAS_IMSTR)
-#if IMGUI_HAS_IMSTR
 CIMGUI_API ImStrv ImStrv_FromCharStr(const char* b);  // Build an ImStrv from a regular const char* (no data is copied, so you need to make sure the original char* isn't altered as long as you are using the ImStrv).
-#endif // #if IMGUI_HAS_IMSTR
 #endif // #if defined(IMGUI_HAS_IMSTR)
 
 //-----------------------------------------------------------------------------

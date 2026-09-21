@@ -147,7 +147,7 @@ CIMGUI_IMPL_API bool cimgui::cImGui_ImplSDL3_ProcessEvent(const SDL_Event* event
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplSDL3_SetGamepadMode(cimgui::ImGui_ImplSDL3_GamepadMode mode)
 {
-    ::ImGui_ImplSDL3_SetGamepadMode(static_cast<::ImGui_ImplSDL3_GamepadMode>(mode));
+    ::ImGui_ImplSDL3_SetGamepadMode(static_cast<::ImGui_ImplSDL3_GamepadMode>(mode), static_cast<::SDL_Gamepad**>(nullptr), -1);
 }
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplSDL3_SetGamepadModeEx(cimgui::ImGui_ImplSDL3_GamepadMode mode, cimgui::SDL_Gamepad** manual_gamepads_array, int manual_gamepads_count)

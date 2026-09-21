@@ -2,6 +2,16 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
+// Dear Bindings version as a string
+#ifndef DEAR_BINDINGS_VERSION
+#define DEAR_BINDINGS_VERSION "0.23"
+#endif
+
+// Dear Bindings version as an integer
+#ifndef DEAR_BINDINGS_VERSION_NUMBER
+#define DEAR_BINDINGS_VERSION_NUMBER 23
+#endif
+
 // dear imgui: Renderer Backend for SDL_Renderer for SDL2
 // Auto-generated forward declarations for C header
 typedef struct ImGui_ImplSDLRenderer2_RenderState_t ImGui_ImplSDLRenderer2_RenderState;

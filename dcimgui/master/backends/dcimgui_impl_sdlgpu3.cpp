@@ -118,7 +118,7 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLGPU3_PrepareDrawData(cimgui::ImDrawDa
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLGPU3_RenderDrawData(cimgui::ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass)
 {
-    ::ImGui_ImplSDLGPU3_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data), command_buffer, render_pass);
+    ::ImGui_ImplSDLGPU3_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data), command_buffer, render_pass, nullptr);
 }
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLGPU3_RenderDrawDataEx(cimgui::ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass, SDL_GPUGraphicsPipeline* pipeline)

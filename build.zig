@@ -66,11 +66,11 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
     const imgui_master_dep = pkg_builder.verboseDependency("imgui-master");
     const imgui_docking_dep = pkg_builder.verboseDependency("imgui-docking");
     var imgui_builder: VerboseBuilder = undefined;
-    const dcimgui_dep = pkg_builder.verboseDependency("dcimgui");
-    var dcimgui_builder = VerboseBuilder.initFromDependency(dcimgui_dep);
+    const dear_bindings_dep = pkg_builder.verboseDependency("dear_bindings");
+    var dear_bindings_builder = VerboseBuilder.initFromDependency(dear_bindings_dep);
     var branch_dir: []const u8 = "master";
 
-    try dcimgui_builder.make(&.{"backends"});
+    try dear_bindings_builder.make(&.{"backends"});
 
     for ([_]*std.Build.Dependency{ imgui_master_dep, imgui_docking_dep }) |imgui_dep| {
         imgui_builder = VerboseBuilder.initFromDependency(imgui_dep);
@@ -88,28 +88,28 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
             switch (entry.kind) {
                 .file => if (std.mem.startsWith(u8, entry.name, "im")) {
                     try pkg_builder.copy(&.{ "dcimgui", branch_dir, "backends", entry.name }, &imgui_builder, &.{ "backends", entry.name });
-                    try dcimgui_builder.remove(&.{ "backends", entry.name });
-                    try dcimgui_builder.copy(&.{ "backends", entry.name }, &imgui_builder, &.{ "backends", entry.name });
+                    try dear_bindings_builder.remove(&.{ "backends", entry.name });
+                    try dear_bindings_builder.copy(&.{ "backends", entry.name }, &imgui_builder, &.{ "backends", entry.name });
                 },
                 else => {},
             }
         }
 
-        try dcimgui_builder.remove(&.{"imgui.h"});
-        try dcimgui_builder.copy(&.{"imgui.h"}, &imgui_builder, &.{"imgui.h"});
-        try dcimgui_builder.remove(&.{"imgui_internal.h"});
-        try dcimgui_builder.copy(&.{"imgui_internal.h"}, &imgui_builder, &.{"imgui_internal.h"});
-        try dcimgui_builder.remove(&.{"imconfig.h"});
-        try dcimgui_builder.copy(&.{"imconfig.h"}, &imgui_builder, &.{"imconfig.h"});
-        _ = try dcimgui_builder.run(&.{ "python3", "dear_bindings.py", "--output", "dcimgui", "imgui.h" }, dcimgui_builder.ptrCwd().*);
-        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui.h" }, &dcimgui_builder, &.{"dcimgui.h"});
-        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui.cpp" }, &dcimgui_builder, &.{"dcimgui.cpp"});
+        try dear_bindings_builder.remove(&.{"imgui.h"});
+        try dear_bindings_builder.copy(&.{"imgui.h"}, &imgui_builder, &.{"imgui.h"});
+        try dear_bindings_builder.remove(&.{"imgui_internal.h"});
+        try dear_bindings_builder.copy(&.{"imgui_internal.h"}, &imgui_builder, &.{"imgui_internal.h"});
+        try dear_bindings_builder.remove(&.{"imconfig.h"});
+        try dear_bindings_builder.copy(&.{"imconfig.h"}, &imgui_builder, &.{"imconfig.h"});
+        _ = try dear_bindings_builder.run(&.{ "python3", "dear_bindings.py", "--output", "dcimgui", "imgui.h" }, dear_bindings_builder.ptrCwd().*);
+        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui.h" }, &dear_bindings_builder, &.{"dcimgui.h"});
+        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui.cpp" }, &dear_bindings_builder, &.{"dcimgui.cpp"});
 
-        _ = try dcimgui_builder.run(&.{ "python3", "dear_bindings.py", "-o", "dcimgui_internal", "--include", "imgui.h", "imgui_internal.h" }, dcimgui_builder.ptrCwd().*);
-        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui_internal.h" }, &dcimgui_builder, &.{"dcimgui_internal.h"});
-        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui_internal.cpp" }, &dcimgui_builder, &.{"dcimgui_internal.cpp"});
+        _ = try dear_bindings_builder.run(&.{ "python3", "dear_bindings.py", "-o", "dcimgui_internal", "--include", "imgui.h", "imgui_internal.h" }, dear_bindings_builder.ptrCwd().*);
+        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui_internal.h" }, &dear_bindings_builder, &.{"dcimgui_internal.h"});
+        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "dcimgui_internal.cpp" }, &dear_bindings_builder, &.{"dcimgui_internal.cpp"});
 
-        while (try dcimgui_builder.iterate(&.{"backends"})) |*entry| {
+        while (try dear_bindings_builder.iterate(&.{"backends"})) |*entry| {
             switch (entry.kind) {
                 .file => {
                     const backend = std.fs.path.stem(entry.name);
@@ -119,12 +119,12 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
                     if (toolbox.isCHeader(entry.name) and
                         std.mem.startsWith(u8, entry.name, "imgui") and
                         (source != null) and
-                        dcimgui_builder.access(&source_template) and
-                        dcimgui_builder.access(&header_template))
+                        dear_bindings_builder.access(&source_template) and
+                        dear_bindings_builder.access(&header_template))
                     {
-                        _ = try dcimgui_builder.run(&.{ "python3", "dear_bindings.py", "--backend", "--include", "imgui.h", "--imconfig-path", "imconfig.h", "--output", pkg_builder.resolve(&.{ "backends", pkg_builder.fmt("dc{s}", .{backend}) }), pkg_builder.resolve(&.{ "backends", entry.name }) }, dcimgui_builder.ptrCwd().*);
-                        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "backends", pkg_builder.fmt("dc{s}", .{entry.name}) }, &dcimgui_builder, &.{ "backends", pkg_builder.fmt("dc{s}", .{entry.name}) });
-                        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "backends", pkg_builder.fmt("dc{s}", .{source.?}) }, &dcimgui_builder, &.{ "backends", pkg_builder.fmt("dc{s}", .{source.?}) });
+                        _ = try dear_bindings_builder.run(&.{ "python3", "dear_bindings.py", "--backend", "--include", "imgui.h", "--imconfig-path", "imconfig.h", "--output", pkg_builder.resolve(&.{ "backends", pkg_builder.fmt("dc{s}", .{backend}) }), pkg_builder.resolve(&.{ "backends", entry.name }) }, dear_bindings_builder.ptrCwd().*);
+                        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "backends", pkg_builder.fmt("dc{s}", .{entry.name}) }, &dear_bindings_builder, &.{ "backends", pkg_builder.fmt("dc{s}", .{entry.name}) });
+                        try pkg_builder.copy(&.{ "dcimgui", branch_dir, "backends", pkg_builder.fmt("dc{s}", .{source.?}) }, &dear_bindings_builder, &.{ "backends", pkg_builder.fmt("dc{s}", .{source.?}) });
                     }
                 },
                 else => {},
