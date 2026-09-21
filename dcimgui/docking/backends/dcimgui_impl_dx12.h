@@ -2,6 +2,16 @@
 // **DO NOT EDIT DIRECTLY**
 // https://github.com/dearimgui/dear_bindings
 
+// Dear Bindings version as a string
+#ifndef DEAR_BINDINGS_VERSION
+#define DEAR_BINDINGS_VERSION "0.23"
+#endif
+
+// Dear Bindings version as an integer
+#ifndef DEAR_BINDINGS_VERSION_NUMBER
+#define DEAR_BINDINGS_VERSION_NUMBER 23
+#endif
+
 // dear imgui: Renderer Backend for DirectX12
 // Auto-generated forward declarations for C header
 typedef struct ImGui_ImplDX12_InitInfo_t ImGui_ImplDX12_InitInfo;

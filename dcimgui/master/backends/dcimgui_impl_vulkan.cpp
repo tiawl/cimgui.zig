@@ -112,7 +112,7 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_NewFrame(void)
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_RenderDrawData(cimgui::ImDrawData* draw_data, VkCommandBuffer command_buffer)
 {
-    ::ImGui_ImplVulkan_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data), command_buffer);
+    ::ImGui_ImplVulkan_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data), command_buffer, VK_NULL_HANDLE);
 }
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplVulkan_RenderDrawDataEx(cimgui::ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline)
@@ -156,7 +156,7 @@ CIMGUI_IMPL_API VkDescriptorSet cimgui::cImGui_ImplVulkan_AddTextureVkSampler(Vk
 
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_LoadFunctions(uint32_t api_version, PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data))
 {
-    return ::ImGui_ImplVulkan_LoadFunctions(api_version, loader_func);
+    return ::ImGui_ImplVulkan_LoadFunctions(api_version, loader_func, nullptr);
 }
 
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_LoadFunctionsEx(uint32_t api_version, PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data), void* user_data)
