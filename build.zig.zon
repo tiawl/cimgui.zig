@@ -25,8 +25,8 @@
             .hash = "toolbox-2.0.2-kRAu4CGsAADEIRWl6mGxZkoz4y9BsQfIXA-cRlKCp6Kr",
         },
         .vulkan_zig = .{
-            .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.363#d0f921909a8da5b79fca6979a5af1617d66a534d",
-            .hash = "vulkan_zig-1.0.0-p2wg3jkEjwHbsEEK20qm3hOpuljYOG_ksJPiW5mKG9d6",
+            .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.364#af116e71e4b9de1e21d3da7a48828c85952c259c",
+            .hash = "vulkan_zig-1.0.0-p2wg3hV3jwHUub0etT_nji1JpvsJMz6CLJ_XWxi7eWGK",
             .lazy = true,
         },
         .glfw_zig = .{
@@ -35,8 +35,8 @@
             .lazy = true,
         },
         .translate_c = .{
-            .url = "git+https://codeberg.org/ziglang/translate-c#0944784e197e419433a21d4b28bfc65e48e7d514",
-            .hash = "translate_c-0.0.0-Q_BUWo5NBwBs3K0a-B1XbxEF3gFdTb75VgOE0FL-2qKL",
+            .url = "git+https://codeberg.org/ziglang/translate-c#14d8a0232cee6488377bae62127cf401f4c4bd29",
+            .hash = "translate_c-0.0.0-Q_BUWo5NBwAWyRlnrU_almDUdEYvRuUu39bYZkwop6Ak",
         },
     },
     .minimum_zig_version = "0.17.0-dev.1941+71115f0ab",
