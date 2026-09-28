@@ -4,12 +4,12 @@
 
 // Dear Bindings version as a string
 #ifndef DEAR_BINDINGS_VERSION
-#define DEAR_BINDINGS_VERSION "0.23"
+#define DEAR_BINDINGS_VERSION "0.24"
 #endif
 
 // Dear Bindings version as an integer
 #ifndef DEAR_BINDINGS_VERSION_NUMBER
-#define DEAR_BINDINGS_VERSION_NUMBER 23
+#define DEAR_BINDINGS_VERSION_NUMBER 24
 #endif
 
 // dear imgui: Renderer Backend for SDL_Renderer for SDL3
