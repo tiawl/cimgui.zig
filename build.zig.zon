@@ -35,7 +35,7 @@
             .lazy = true,
         },
         .translate_c = .{
-            .url = "git+https://codeberg.org/ziglang/translate-c#14d8a0232cee6488377bae62127cf401f4c4bd29",
+            .url = "git+https://codeberg.org/ziglang/translate-c#21b644cb486f876a68f3f7b9cd511b45b13700d8",
             .hash = "translate_c-0.0.0-Q_BUWo5NBwAWyRlnrU_almDUdEYvRuUu39bYZkwop6Ak",
         },
     },
