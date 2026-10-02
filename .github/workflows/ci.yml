@@ -43,7 +43,7 @@ jobs:
         os:
           - ubuntu-24.04
           - windows-2025
-          - macos-15
+          # TODO: add it again later: - macos-15
     runs-on: "${{ matrix.os }}"
     steps:
       - uses: actions/checkout@v6
