@@ -75,7 +75,7 @@ jobs:
     strategy:
       matrix:
         zig-version:
-          # TODO: add it again later: - latest
+          - latest
           - master
     runs-on: ubuntu-24.04
     steps:
