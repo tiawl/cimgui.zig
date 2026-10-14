@@ -26,8 +26,8 @@ pub fn createModule(builder: *std.Build, dep: *std.Build.Dependency, lib: *std.B
 
     user_translate_c = .init(translate_c_dep, .{
         .c_source_file = c_path,
-        .target = lib.root_module.resolved_target orelse builder.standardTargetOptions(.{}),
-        .optimize = lib.root_module.optimize orelse builder.standardOptimizeOption(.{}),
+        .target = lib.root_module.resolved_target orelse builder.graph.host,
+        .optimize = lib.root_module.optimize orelse .debug,
         .link_libc = std.mem.eql(u8, "true", (dep.builder.user_input_options.get("link_libc") orelse default_link_libc_opt).scalar),
     });
 
@@ -63,10 +63,10 @@ fn updateFn(pkg_builder: *VerboseBuilder) !void {
     try pkg_builder.make(&.{ "dcimgui", "master" });
     try pkg_builder.make(&.{ "dcimgui", "master", "backends" });
 
-    const imgui_master_dep = pkg_builder.verboseDependency("imgui-master");
-    const imgui_docking_dep = pkg_builder.verboseDependency("imgui-docking");
+    const imgui_master_dep = pkg_builder.verboseDependency("imgui-master", pkg_builder.getOptimize(), pkg_builder.getTarget());
+    const imgui_docking_dep = pkg_builder.verboseDependency("imgui-docking", pkg_builder.getOptimize(), pkg_builder.getTarget());
     var imgui_builder: VerboseBuilder = undefined;
-    const dear_bindings_dep = pkg_builder.verboseDependency("dear_bindings");
+    const dear_bindings_dep = pkg_builder.verboseDependency("dear_bindings", pkg_builder.getOptimize(), pkg_builder.getTarget());
     var dear_bindings_builder = VerboseBuilder.initFromDependency(dear_bindings_dep);
     var branch_dir: []const u8 = "master";
 
@@ -197,7 +197,7 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
     for (renderers) |renderer| {
         switch (renderer) {
             .vulkan => {
-                if (pkg_builder.verboseDependencyLazy("vulkan_zig")) |vulkan_dep| {
+                if (pkg_builder.verboseDependencyLazy("vulkan_zig", pkg_builder.getOptimize(), pkg_builder.getTarget())) |vulkan_dep| {
                     const vulkan_artifact = pkg_builder.artifact(vulkan_dep, "vulkan");
                     if (std.mem.findScalar(Platform, platforms, .glfw) == null) {
                         pkg_builder.linkLibrary(lib, vulkan_artifact);
@@ -219,7 +219,7 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
                 pkg_builder.installHeader(lib, &.{ "dcimgui", branch_dir, "backends", "imgui_impl_opengl3_loader.h" }, &.{ "backends", "imgui_impl_opengl3_loader.h" });
             },
             .sdlgpu3 => {
-                if (pkg_builder.dependencyLazy("sdl")) |sdl_dep| {
+                if (pkg_builder.dependencyLazy("sdl", pkg_builder.getOptimize(), pkg_builder.getTarget())) |sdl_dep| {
                     sdl_artifact = pkg_builder.artifact(sdl_dep, "SDL3");
                     sdl_dep_fetched = true;
 
@@ -263,7 +263,7 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
     for (platforms) |platform| {
         switch (platform) {
             .glfw => {
-                if (pkg_builder.verboseDependencyLazy("glfw_zig")) |glfw_dep| {
+                if (pkg_builder.verboseDependencyLazy("glfw_zig", pkg_builder.getOptimize(), pkg_builder.getTarget())) |glfw_dep| {
                     const glfw_artifact = pkg_builder.artifact(glfw_dep, "glfw");
                     pkg_builder.addIncludePathsFromLib(@TypeOf(lib.*), lib, glfw_artifact);
                     pkg_builder.linkLibrary(lib, glfw_artifact);
@@ -282,7 +282,7 @@ pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile,
             },
             .sdl3 => {
                 if (!sdl_dep_fetched) {
-                    if (pkg_builder.dependencyLazy("sdl")) |sdl_dep| {
+                    if (pkg_builder.dependencyLazy("sdl", pkg_builder.getOptimize(), pkg_builder.getTarget())) |sdl_dep| {
                         sdl_artifact = pkg_builder.artifact(sdl_dep, "SDL3");
                     } else continue;
                 }
@@ -306,7 +306,7 @@ fn buildFn(pkg_builder: *VerboseBuilder) !void {
     const skip_internal = std.mem.findScalar(Feature, features, .internal) == null;
     const link_libc = pkg_builder.option(bool, true, "link_libc", "link libC ?");
 
-    const lib = pkg_builder.addLibrary("cimgui");
+    const lib = pkg_builder.addLibrary("cimgui", pkg_builder.getOptimize(), pkg_builder.getTarget());
     if (link_libc) pkg_builder.linkLibCpp(lib);
 
     pkg_builder.addInclude(lib, &.{ "dcimgui", branch_dir });
