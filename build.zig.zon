@@ -35,8 +35,9 @@
             .lazy = true,
         },
         .translate_c = .{
-            .url = "git+https://codeberg.org/tiawl/translate-c?ref=fix#43272fe55f079c0a34bc4140d28a1f1a471e883f",
+            .url = "git+https://codeberg.org/tiawl/translate-c?ref=0.0.0#43272fe55f079c0a34bc4140d28a1f1a471e883f",
             .hash = "translate_c-0.0.0-Q_BUWqJPBwC86nStjWUUiky19HRGb0Qv3wlZ1TdLwAl1",
+            .branch = "fix",
         },
     },
     .minimum_zig_version = "0.17.0",
