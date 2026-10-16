@@ -15,12 +15,12 @@
             .hash = "zglfw-0.1.0-BghZXaTUAAAkCOlD_2akK4k1zIzo6HIXelVZu39yr_MO",
         },
         .vulkan = .{
-            .url = "git+https://github.com/Snektron/vulkan-zig#f9688c6f4ebcb930f67044698ddd1322442e714b",
-            .hash = "vulkan-0.0.0-r7Ytx4yGAwDZf0XsT6_L1ol_XUAkyOgOyBqamf8begA0",
+            .url = "git+https://github.com/Snektron/vulkan-zig#d7cf6e8e576a34f3d42dea80d4ba6cc285f5f197",
+            .hash = "vulkan-0.0.0-r7YtxzuBAwBL7hohEHEsTEtUUCkp_07e_OnFQC0-kkP3",
         },
         .toolbox = .{
-            .url = "git+https://github.com/tiawl/toolbox?ref=zig-nightly#ccc4fb3b5308d9044fbb0cdb081623ff2e3c33e2",
-            .hash = "toolbox-2.2.6-kRAu4AGbAAATZggDsAt1qoiFAE14iqM5J-46APmctUkP",
+            .url = "git+https://github.com/tiawl/toolbox?ref=2.3.0#b21fce37bf4964add79107c0372ec9100320888c",
+            .hash = "toolbox-2.3.0-kRAu4N2aAAB5Jbej3uwesjzE4zEuAAmHaX1Kiylwevrb",
         },
     },
     .paths = .{
