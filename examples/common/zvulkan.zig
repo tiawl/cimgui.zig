@@ -27,12 +27,12 @@ extern fn cImGui_ImplVulkan_RenderDrawData(draw_data: [*c]c.ImDrawData, command_
 extern fn cImGui_ImplVulkanH_DestroyWindow(instance: vk.Instance, device: vk.Device, window_data: [*c]ImGui_ImplVulkanH_Window, allocator: [*c]const vk.AllocationCallbacks) void;
 
 const ImGui_ImplVulkanH_Frame = extern struct {
-    CommandPool: vk.CommandPool = .null_handle,
+    CommandPool: vk.CommandPool = .null,
     CommandBuffer: ?vk.CommandBuffer = null,
-    Fence: vk.Fence = .null_handle,
-    Backbuffer: vk.Image = .null_handle,
-    BackbufferView: vk.ImageView = .null_handle,
-    Framebuffer: vk.Framebuffer = .null_handle,
+    Fence: vk.Fence = .null,
+    Backbuffer: vk.Image = .null,
+    BackbufferView: vk.ImageView = .null,
+    Framebuffer: vk.Framebuffer = .null,
 };
 
 const ImVector_ImGui_ImplVulkanH_Frame = extern struct {
@@ -42,8 +42,8 @@ const ImVector_ImGui_ImplVulkanH_Frame = extern struct {
 };
 
 const ImGui_ImplVulkanH_FrameSemaphores = extern struct {
-    ImageAcquiredSemaphore: vk.Semaphore = .null_handle,
-    RenderCompleteSemaphore: vk.Semaphore = .null_handle,
+    ImageAcquiredSemaphore: vk.Semaphore = .null,
+    RenderCompleteSemaphore: vk.Semaphore = .null,
 };
 
 const ImVector_ImGui_ImplVulkanH_FrameSemaphores = extern struct {
@@ -54,16 +54,16 @@ const ImVector_ImGui_ImplVulkanH_FrameSemaphores = extern struct {
 
 const ImGui_ImplVulkanH_Window = extern struct {
     UseDynamicRendering: bool = false,
-    Surface: vk.SurfaceKHR = .null_handle,
+    Surface: vk.SurfaceKHR = .null,
     SurfaceFormat: vk.SurfaceFormatKHR = std.mem.zeroes(vk.SurfaceFormatKHR),
     PresentMode: vk.PresentModeKHR = std.mem.zeroes(vk.PresentModeKHR),
     AttachmentDesc: vk.AttachmentDescription = std.mem.zeroes(vk.AttachmentDescription),
     ClearValue: vk.ClearValue = std.mem.zeroes(vk.ClearValue),
     Width: c_int = 0,
     Height: c_int = 0,
-    Swapchain: vk.SwapchainKHR = .null_handle,
-    RenderPass: vk.RenderPass = .null_handle,
-    Pipeline: vk.Pipeline = .null_handle,
+    Swapchain: vk.SwapchainKHR = .null,
+    RenderPass: vk.RenderPass = .null,
+    Pipeline: vk.Pipeline = .null,
     FrameIndex: u32 = 0,
     ImageCount: u32 = 0,
     SemaphoreCount: u32 = 0,
@@ -79,7 +79,7 @@ const ImVector_VkDynamicState = extern struct {
 };
 
 const ImGui_ImplVulkan_PipelineInfo = extern struct {
-    RenderPass: vk.RenderPass = .null_handle,
+    RenderPass: vk.RenderPass = .null,
     Subpass: u32 = 0,
     MSAASamples: vk.SampleCountFlags = std.mem.zeroes(vk.SampleCountFlags),
     ExtraDynamicStates: ImVector_VkDynamicState = std.mem.zeroes(ImVector_VkDynamicState),
@@ -93,11 +93,11 @@ const ImGui_ImplVulkan_InitInfo = extern struct {
     Device: ?vk.Device = null,
     QueueFamily: u32 = 0,
     Queue: ?vk.Queue = null,
-    DescriptorPool: vk.DescriptorPool = .null_handle,
+    DescriptorPool: vk.DescriptorPool = .null,
     DescriptorPoolSize: u32 = 0,
     MinImageCount: u32 = 0,
     ImageCount: u32 = 0,
-    PipelineCache: vk.PipelineCache = .null_handle,
+    PipelineCache: vk.PipelineCache = .null,
     PipelineInfoMain: ImGui_ImplVulkan_PipelineInfo = std.mem.zeroes(ImGui_ImplVulkan_PipelineInfo),
     UseDynamicRendering: bool = false,
     Allocator: [*c]const vk.AllocationCallbacks = null,
@@ -114,8 +114,8 @@ var queue_family: ?u32 = null;
 var device: ?vk.Device = null;
 var device_proxy: vk.DeviceProxy = undefined;
 var queue: ?vk.Queue = null;
-var descriptor_pool: vk.DescriptorPool = .null_handle;
-var pipeline_cache: vk.PipelineCache = .null_handle;
+var descriptor_pool: vk.DescriptorPool = .null;
+var pipeline_cache: vk.PipelineCache = .null;
 var window_data: ImGui_ImplVulkanH_Window = .{};
 var min_image_count: u32 = 2;
 var swap_chain_rebuild: bool = false;
@@ -341,7 +341,7 @@ pub fn render(comptime p: build.Platform, clear_color: *const c.ImVec4, draw_dat
 fn frameRender(draw_data: *c.ImDrawData) !void {
     const image_acquired_semaphore = window_data.FrameSemaphores.Data[window_data.SemaphoreIndex].ImageAcquiredSemaphore;
     const render_complete_semaphore = window_data.FrameSemaphores.Data[window_data.SemaphoreIndex].RenderCompleteSemaphore;
-    const result = device_proxy.acquireNextImageKHR(window_data.Swapchain, std.math.maxInt(u64), image_acquired_semaphore, .null_handle) catch |err| switch (err) {
+    const result = device_proxy.acquireNextImageKHR(window_data.Swapchain, std.math.maxInt(u64), image_acquired_semaphore, .null) catch |err| switch (err) {
         error.OutOfDateKHR => {
             swap_chain_rebuild = true;
             return;
