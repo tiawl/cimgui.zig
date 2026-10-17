@@ -95,9 +95,9 @@ static inline ::ImColor ConvertToCPP_ImColor(const cimgui::ImColor& src)
 
 #ifndef IMGUI_DISABLE
 
-CIMGUI_IMPL_API bool cimgui::cImGui_ImplSDLRenderer3_Init(cimgui::SDL_Renderer* renderer)
+CIMGUI_IMPL_API bool cimgui::cImGui_ImplSDLRenderer3_Init(SDL_Renderer* renderer)
 {
-    return ::ImGui_ImplSDLRenderer3_Init(reinterpret_cast<::SDL_Renderer*>(renderer));
+    return ::ImGui_ImplSDLRenderer3_Init(renderer);
 }
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_Shutdown(void)
@@ -110,9 +110,9 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_NewFrame(void)
     ::ImGui_ImplSDLRenderer3_NewFrame();
 }
 
-CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_RenderDrawData(cimgui::ImDrawData* draw_data, cimgui::SDL_Renderer* renderer)
+CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_RenderDrawData(cimgui::ImDrawData* draw_data, SDL_Renderer* renderer)
 {
-    ::ImGui_ImplSDLRenderer3_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data), reinterpret_cast<::SDL_Renderer*>(renderer));
+    ::ImGui_ImplSDLRenderer3_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data), renderer);
 }
 
 CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_CreateDeviceObjects(void)
@@ -128,6 +128,11 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_DestroyDeviceObjects(void)
 CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLRenderer3_UpdateTexture(cimgui::ImTextureData* tex)
 {
     ::ImGui_ImplSDLRenderer3_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
+}
+
+CIMGUI_IMPL_API cimgui::ImGui_ImplSDLRenderer3_RenderState* cimgui::cImGui_ImplSDLRenderer3_GetRenderState(void)
+{
+    return reinterpret_cast<::cimgui::ImGui_ImplSDLRenderer3_RenderState*>(::ImGui_ImplSDLRenderer3_GetRenderState());
 }
 
 #endif // #ifndef IMGUI_DISABLE

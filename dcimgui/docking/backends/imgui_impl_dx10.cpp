@@ -5,6 +5,7 @@
 //  [X] Renderer: User texture binding. Use 'ID3D10ShaderResourceView*' as texture identifier. Read the FAQ about ImTextureID/ImTextureRef!
 //  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
 //  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access with ImGui_ImplDX10_GetRenderState().
 //  [X] Renderer: Multi-viewport support (multiple windows). Enable with 'io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable'.
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
@@ -18,6 +19,7 @@
 // CHANGELOG
 // (minor and older changes stripped away, please see git history for details)
 //  2026-XX-XX: Platform: Added support for multiple windows via the ImGuiPlatformIO interface.
+//  2026-09-07: Round framebuffer dimensions to the nearest integer instead of truncating them. (#9538, 9515, #8628)
 //  2026-04-23: DirectX10: Added support for standard draw callbacks (in platform_io): DrawCallback_ResetRenderState, DrawCallback_SetSamplerLinear, DrawCallback_SetSamplerNearest. Obsoleting samplers from ImGui_ImplDX10_RenderState. (#9378)
 //  2026-01-19: DirectX10: Added 'SamplerNearest' in ImGui_ImplDX10_RenderState. Renamed 'SamplerDefault' to 'SamplerLinear'. 
 //  2025-09-18: Call platform_io.ClearRendererHandlers() on shutdown.
@@ -101,6 +103,11 @@ static ImGui_ImplDX10_Data* ImGui_ImplDX10_GetBackendData()
     return ImGui::GetCurrentContext() ? (ImGui_ImplDX10_Data*)ImGui::GetIO().BackendRendererUserData : nullptr;
 }
 
+ImGui_ImplDX10_RenderState* ImGui_ImplDX10_GetRenderState()
+{
+    return (ImGui_ImplDX10_RenderState*)ImGui::GetPlatformIO().Renderer_RenderState;
+}
+
 // Forward Declarations
 static void ImGui_ImplDX10_InitMultiViewportSupport();
 static void ImGui_ImplDX10_ShutdownMultiViewportSupport();
@@ -112,8 +119,8 @@ static void ImGui_ImplDX10_SetupRenderState(ImDrawData* draw_data, ID3D10Device*
 
     // Setup viewport
     D3D10_VIEWPORT vp = {};
-    vp.Width = (UINT)(draw_data->DisplaySize.x * draw_data->FramebufferScale.x);
-    vp.Height = (UINT)(draw_data->DisplaySize.y * draw_data->FramebufferScale.y);
+    vp.Width = (UINT)(draw_data->DisplaySize.x * draw_data->FramebufferScale.x + 0.5f);
+    vp.Height = (UINT)(draw_data->DisplaySize.y * draw_data->FramebufferScale.y + 0.5f);
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
     vp.TopLeftX = vp.TopLeftY = 0;
@@ -563,8 +570,7 @@ bool    ImGui_ImplDX10_CreateDeviceObjects()
         bd->pd3dDevice->CreateDepthStencilState(&desc, &bd->pDepthStencilState);
     }
 
-    // Create texture sampler
-    // (Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling)
+    // Create texture sampler (bilinear sampling is required)
     {
         D3D10_SAMPLER_DESC desc;
         ZeroMemory(&desc, sizeof(desc));
@@ -768,10 +774,12 @@ static void ImGui_ImplDX10_SetWindowSize(ImGuiViewport* viewport, ImVec2 size)
     }
 }
 
-static void ImGui_ImplDX10_RenderViewport(ImGuiViewport* viewport, void*)
+static void ImGui_ImplDX10_RenderWindow(ImGuiViewport* viewport, void*)
 {
     ImGui_ImplDX10_Data* bd = ImGui_ImplDX10_GetBackendData();
     ImGui_ImplDX10_ViewportData* vd = (ImGui_ImplDX10_ViewportData*)viewport->RendererUserData;
+    if (vd->RTView == nullptr) // Swap chain creation or resize failed (e.g. device removed)
+        return;
     ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
     bd->pd3dDevice->OMSetRenderTargets(1, &vd->RTView, nullptr);
     if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear))
@@ -792,7 +800,7 @@ void ImGui_ImplDX10_InitMultiViewportSupport()
     platform_io.Renderer_CreateWindow = ImGui_ImplDX10_CreateWindow;
     platform_io.Renderer_DestroyWindow = ImGui_ImplDX10_DestroyWindow;
     platform_io.Renderer_SetWindowSize = ImGui_ImplDX10_SetWindowSize;
-    platform_io.Renderer_RenderWindow = ImGui_ImplDX10_RenderViewport;
+    platform_io.Renderer_RenderWindow = ImGui_ImplDX10_RenderWindow;
     platform_io.Renderer_SwapBuffers = ImGui_ImplDX10_SwapBuffers;
 }
 

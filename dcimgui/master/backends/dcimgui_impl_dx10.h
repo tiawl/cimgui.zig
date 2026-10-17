@@ -4,12 +4,12 @@
 
 // Dear Bindings version as a string
 #ifndef DEAR_BINDINGS_VERSION
-#define DEAR_BINDINGS_VERSION "0.24"
+#define DEAR_BINDINGS_VERSION "0.25"
 #endif
 
 // Dear Bindings version as an integer
 #ifndef DEAR_BINDINGS_VERSION_NUMBER
-#define DEAR_BINDINGS_VERSION_NUMBER 24
+#define DEAR_BINDINGS_VERSION_NUMBER 25
 #endif
 
 // dear imgui: Renderer Backend for DirectX10
@@ -27,6 +27,7 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 //  [X] Renderer: User texture binding. Use 'ID3D10ShaderResourceView*' as texture identifier. Read the FAQ about ImTextureID/ImTextureRef!
 //  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
 //  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access with ImGui_ImplDX10_GetRenderState().
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
@@ -72,6 +73,7 @@ struct ImGui_ImplDX10_RenderState_t
     //ID3D10SamplerState*   SamplerLinear;          // Use ImDrawList::AddCallback(ImGui::GetPlatform().DrawCallback_SetSamplerLinear)
     //ID3D10SamplerState*   SamplerNearest;         // Use ImDrawList::AddCallback(ImGui::GetPlatform().DrawCallback_SetSamplerNearest)
 };
+CIMGUI_IMPL_API ImGui_ImplDX10_RenderState* cImGui_ImplDX10_GetRenderState(void);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block

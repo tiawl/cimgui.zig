@@ -21,12 +21,12 @@ namespace cimgui
 // Dear Bindings version retrieval functionality
 CIMGUI_API const char* cimgui::DearBindings_GetVersion()
 {
-    return "0.24";
+    return "0.25";
 }
 
 CIMGUI_API int cimgui::DearBindings_GetVersionNumber()
 {
-    return 24;
+    return 25;
 }
 
 // Manual helpers
@@ -2991,21 +2991,6 @@ CIMGUI_API bool cimgui::ImGuiPayload_IsDelivery(const cimgui::ImGuiPayload* self
     return reinterpret_cast<const ::ImGuiPayload*>(self)->IsDelivery();
 }
 
-CIMGUI_API bool cimgui::ImGuiTextFilter_ImGuiTextRange_empty(const cimgui::ImGuiTextFilter_ImGuiTextRange* self)
-{
-    return reinterpret_cast<const ::ImGuiTextFilter::ImGuiTextRange*>(self)->empty();
-}
-
-CIMGUI_API void cimgui::ImGuiTextFilter_ImGuiTextRange_split(const cimgui::ImGuiTextFilter_ImGuiTextRange* self, char separator, cimgui::ImVector_ImGuiTextRange* out)
-{
-    reinterpret_cast<const ::ImGuiTextFilter::ImGuiTextRange*>(self)->split(separator, reinterpret_cast<::ImVector<::ImGuiTextFilter::ImGuiTextRange>*>(out));
-}
-
-CIMGUI_API bool cimgui::ImGuiTextFilter_Draw(cimgui::ImGuiTextFilter* self, const char* label, float width)
-{
-    return reinterpret_cast<::ImGuiTextFilter*>(self)->Draw(label, width);
-}
-
 CIMGUI_API bool cimgui::ImGuiTextFilter_PassFilter(const cimgui::ImGuiTextFilter* self, const char* text, const char* text_end)
 {
     return reinterpret_cast<const ::ImGuiTextFilter*>(self)->PassFilter(text, text_end);
@@ -3025,6 +3010,30 @@ CIMGUI_API bool cimgui::ImGuiTextFilter_IsActive(const cimgui::ImGuiTextFilter* 
 {
     return reinterpret_cast<const ::ImGuiTextFilter*>(self)->IsActive();
 }
+
+CIMGUI_API bool cimgui::ImGuiTextFilter_Draw(cimgui::ImGuiTextFilter* self, const char* label)
+{
+    return reinterpret_cast<::ImGuiTextFilter*>(self)->Draw(label);
+}
+
+CIMGUI_API bool cimgui::ImGuiTextFilter_DrawWithHint(cimgui::ImGuiTextFilter* self)
+{
+    return reinterpret_cast<::ImGuiTextFilter*>(self)->DrawWithHint("Filter", "incl -excl");
+}
+
+CIMGUI_API bool cimgui::ImGuiTextFilter_DrawWithHintEx(cimgui::ImGuiTextFilter* self, const char* label, const char* hint)
+{
+    return reinterpret_cast<::ImGuiTextFilter*>(self)->DrawWithHint(label, hint);
+}
+
+#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+
+CIMGUI_API bool cimgui::ImGuiTextFilter_DrawFloat(cimgui::ImGuiTextFilter* self, const char* label, float width)
+{
+    return reinterpret_cast<::ImGuiTextFilter*>(self)->Draw(label, width);
+}
+
+#endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
 CIMGUI_API const char* cimgui::ImGuiTextBuffer_begin(const cimgui::ImGuiTextBuffer* self)
 {
@@ -3294,6 +3303,16 @@ CIMGUI_API void        cimgui::ImDrawList_PopTexture(cimgui::ImDrawList* self)
     reinterpret_cast<::ImDrawList*>(self)->PopTexture();
 }
 
+CIMGUI_API void        cimgui::ImDrawList_PushDrawFlag(cimgui::ImDrawList* self, ImDrawFlags flags, bool enabled)
+{
+    reinterpret_cast<::ImDrawList*>(self)->PushDrawFlag(flags, enabled);
+}
+
+CIMGUI_API void        cimgui::ImDrawList_PopDrawFlag(cimgui::ImDrawList* self)
+{
+    reinterpret_cast<::ImDrawList*>(self)->PopDrawFlag();
+}
+
 CIMGUI_API cimgui::ImVec2 cimgui::ImDrawList_GetClipRectMin(const cimgui::ImDrawList* self)
 {
     return ConvertFromCPP_ImVec2(reinterpret_cast<const ::ImDrawList*>(self)->GetClipRectMin());
@@ -3306,32 +3325,32 @@ CIMGUI_API cimgui::ImVec2 cimgui::ImDrawList_GetClipRectMax(const cimgui::ImDraw
 
 CIMGUI_API void        cimgui::ImDrawList_AddLine(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, ImU32 col)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddLine(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), col, 1.0f);
+    reinterpret_cast<::ImDrawList*>(self)->AddLine(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), col, 1.0f, 0);
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddLineEx(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, ImU32 col, float thickness)
+CIMGUI_API void        cimgui::ImDrawList_AddLineEx(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, ImU32 col, float thickness, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddLine(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), col, thickness);
+    reinterpret_cast<::ImDrawList*>(self)->AddLine(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), col, thickness, flags);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_AddLineH(cimgui::ImDrawList* self, float min_x, float max_x, float y, ImU32 col)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddLineH(min_x, max_x, y, col, 1.0f);
+    reinterpret_cast<::ImDrawList*>(self)->AddLineH(min_x, max_x, y, col, 1.0f, 0);
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddLineHEx(cimgui::ImDrawList* self, float min_x, float max_x, float y, ImU32 col, float thickness)
+CIMGUI_API void        cimgui::ImDrawList_AddLineHEx(cimgui::ImDrawList* self, float min_x, float max_x, float y, ImU32 col, float thickness, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddLineH(min_x, max_x, y, col, thickness);
+    reinterpret_cast<::ImDrawList*>(self)->AddLineH(min_x, max_x, y, col, thickness, flags);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_AddLineV(cimgui::ImDrawList* self, float x, float min_y, float max_y, ImU32 col)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddLineV(x, min_y, max_y, col, 1.0f);
+    reinterpret_cast<::ImDrawList*>(self)->AddLineV(x, min_y, max_y, col, 1.0f, 0);
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddLineVEx(cimgui::ImDrawList* self, float x, float min_y, float max_y, ImU32 col, float thickness)
+CIMGUI_API void        cimgui::ImDrawList_AddLineVEx(cimgui::ImDrawList* self, float x, float min_y, float max_y, ImU32 col, float thickness, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddLineV(x, min_y, max_y, col, thickness);
+    reinterpret_cast<::ImDrawList*>(self)->AddLineV(x, min_y, max_y, col, thickness, flags);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_AddRect(cimgui::ImDrawList* self, cimgui::ImVec2 p_min, cimgui::ImVec2 p_max, ImU32 col)
@@ -3361,12 +3380,12 @@ CIMGUI_API void        cimgui::ImDrawList_AddRectFilledMultiColor(cimgui::ImDraw
 
 CIMGUI_API void        cimgui::ImDrawList_AddQuad(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, cimgui::ImVec2 p4, ImU32 col)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddQuad(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), ConvertToCPP_ImVec2(p4), col, 1.0f);
+    reinterpret_cast<::ImDrawList*>(self)->AddQuad(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), ConvertToCPP_ImVec2(p4), col, 1.0f, 0);
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddQuadEx(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, cimgui::ImVec2 p4, ImU32 col, float thickness)
+CIMGUI_API void        cimgui::ImDrawList_AddQuadEx(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, cimgui::ImVec2 p4, ImU32 col, float thickness, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddQuad(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), ConvertToCPP_ImVec2(p4), col, thickness);
+    reinterpret_cast<::ImDrawList*>(self)->AddQuad(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), ConvertToCPP_ImVec2(p4), col, thickness, flags);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_AddQuadFilled(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, cimgui::ImVec2 p4, ImU32 col)
@@ -3376,12 +3395,12 @@ CIMGUI_API void        cimgui::ImDrawList_AddQuadFilled(cimgui::ImDrawList* self
 
 CIMGUI_API void        cimgui::ImDrawList_AddTriangle(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, ImU32 col)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddTriangle(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), col, 1.0f);
+    reinterpret_cast<::ImDrawList*>(self)->AddTriangle(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), col, 1.0f, 0);
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddTriangleEx(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, ImU32 col, float thickness)
+CIMGUI_API void        cimgui::ImDrawList_AddTriangleEx(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, ImU32 col, float thickness, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddTriangle(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), col, thickness);
+    reinterpret_cast<::ImDrawList*>(self)->AddTriangle(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), col, thickness, flags);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_AddTriangleFilled(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, ImU32 col)
@@ -3391,12 +3410,12 @@ CIMGUI_API void        cimgui::ImDrawList_AddTriangleFilled(cimgui::ImDrawList* 
 
 CIMGUI_API void        cimgui::ImDrawList_AddCircle(cimgui::ImDrawList* self, cimgui::ImVec2 center, float radius, ImU32 col)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddCircle(ConvertToCPP_ImVec2(center), radius, col, 0, 1.0f);
+    reinterpret_cast<::ImDrawList*>(self)->AddCircle(ConvertToCPP_ImVec2(center), radius, col, 0, 1.0f, 0);
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddCircleEx(cimgui::ImDrawList* self, cimgui::ImVec2 center, float radius, ImU32 col, int num_segments, float thickness)
+CIMGUI_API void        cimgui::ImDrawList_AddCircleEx(cimgui::ImDrawList* self, cimgui::ImVec2 center, float radius, ImU32 col, int num_segments, float thickness, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddCircle(ConvertToCPP_ImVec2(center), radius, col, num_segments, thickness);
+    reinterpret_cast<::ImDrawList*>(self)->AddCircle(ConvertToCPP_ImVec2(center), radius, col, num_segments, thickness, flags);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_AddCircleFilled(cimgui::ImDrawList* self, cimgui::ImVec2 center, float radius, ImU32 col, int num_segments)
@@ -3406,12 +3425,12 @@ CIMGUI_API void        cimgui::ImDrawList_AddCircleFilled(cimgui::ImDrawList* se
 
 CIMGUI_API void        cimgui::ImDrawList_AddNgon(cimgui::ImDrawList* self, cimgui::ImVec2 center, float radius, ImU32 col, int num_segments)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddNgon(ConvertToCPP_ImVec2(center), radius, col, num_segments, 1.0f);
+    reinterpret_cast<::ImDrawList*>(self)->AddNgon(ConvertToCPP_ImVec2(center), radius, col, num_segments, 1.0f, 0);
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddNgonEx(cimgui::ImDrawList* self, cimgui::ImVec2 center, float radius, ImU32 col, int num_segments, float thickness)
+CIMGUI_API void        cimgui::ImDrawList_AddNgonEx(cimgui::ImDrawList* self, cimgui::ImVec2 center, float radius, ImU32 col, int num_segments, float thickness, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddNgon(ConvertToCPP_ImVec2(center), radius, col, num_segments, thickness);
+    reinterpret_cast<::ImDrawList*>(self)->AddNgon(ConvertToCPP_ImVec2(center), radius, col, num_segments, thickness, flags);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_AddNgonFilled(cimgui::ImDrawList* self, cimgui::ImVec2 center, float radius, ImU32 col, int num_segments)
@@ -3421,12 +3440,12 @@ CIMGUI_API void        cimgui::ImDrawList_AddNgonFilled(cimgui::ImDrawList* self
 
 CIMGUI_API void        cimgui::ImDrawList_AddEllipse(cimgui::ImDrawList* self, cimgui::ImVec2 center, cimgui::ImVec2 radius, ImU32 col)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddEllipse(ConvertToCPP_ImVec2(center), ConvertToCPP_ImVec2(radius), col, 0.0f, 0, 1.0f);
+    reinterpret_cast<::ImDrawList*>(self)->AddEllipse(ConvertToCPP_ImVec2(center), ConvertToCPP_ImVec2(radius), col, 0.0f, 0, 1.0f, 0);
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddEllipseEx(cimgui::ImDrawList* self, cimgui::ImVec2 center, cimgui::ImVec2 radius, ImU32 col, float rot, int num_segments, float thickness)
+CIMGUI_API void        cimgui::ImDrawList_AddEllipseEx(cimgui::ImDrawList* self, cimgui::ImVec2 center, cimgui::ImVec2 radius, ImU32 col, float rot, int num_segments, float thickness, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddEllipse(ConvertToCPP_ImVec2(center), ConvertToCPP_ImVec2(radius), col, rot, num_segments, thickness);
+    reinterpret_cast<::ImDrawList*>(self)->AddEllipse(ConvertToCPP_ImVec2(center), ConvertToCPP_ImVec2(radius), col, rot, num_segments, thickness, flags);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_AddEllipseFilled(cimgui::ImDrawList* self, cimgui::ImVec2 center, cimgui::ImVec2 radius, ImU32 col)
@@ -3459,14 +3478,14 @@ CIMGUI_API void        cimgui::ImDrawList_AddTextImFontPtrEx(cimgui::ImDrawList*
     reinterpret_cast<::ImDrawList*>(self)->AddText(reinterpret_cast<::ImFont*>(font), font_size, ConvertToCPP_ImVec2(pos), col, text_begin, text_end, wrap_width, reinterpret_cast<const ::ImVec4*>(cpu_fine_clip_rect));
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddBezierCubic(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, cimgui::ImVec2 p4, ImU32 col, float thickness, int num_segments)
+CIMGUI_API void        cimgui::ImDrawList_AddBezierCubic(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, cimgui::ImVec2 p4, ImU32 col, float thickness, int num_segments, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddBezierCubic(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), ConvertToCPP_ImVec2(p4), col, thickness, num_segments);
+    reinterpret_cast<::ImDrawList*>(self)->AddBezierCubic(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), ConvertToCPP_ImVec2(p4), col, thickness, num_segments, flags);
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddBezierQuadratic(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, ImU32 col, float thickness, int num_segments)
+CIMGUI_API void        cimgui::ImDrawList_AddBezierQuadratic(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, cimgui::ImVec2 p3, ImU32 col, float thickness, int num_segments, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddBezierQuadratic(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), col, thickness, num_segments);
+    reinterpret_cast<::ImDrawList*>(self)->AddBezierQuadratic(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), ConvertToCPP_ImVec2(p3), col, thickness, num_segments, flags);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_AddPolyline(cimgui::ImDrawList* self, const cimgui::ImVec2* points, int num_points, ImU32 col, float thickness, ImDrawFlags flags)
@@ -3474,9 +3493,9 @@ CIMGUI_API void        cimgui::ImDrawList_AddPolyline(cimgui::ImDrawList* self, 
     reinterpret_cast<::ImDrawList*>(self)->AddPolyline(reinterpret_cast<const ::ImVec2*>(points), num_points, col, thickness, flags);
 }
 
-CIMGUI_API void        cimgui::ImDrawList_AddConvexPolyFilled(cimgui::ImDrawList* self, const cimgui::ImVec2* points, int num_points, ImU32 col)
+CIMGUI_API void        cimgui::ImDrawList_AddConvexPolyFilled(cimgui::ImDrawList* self, const cimgui::ImVec2* points, int num_points, ImU32 col, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->AddConvexPolyFilled(reinterpret_cast<const ::ImVec2*>(points), num_points, col);
+    reinterpret_cast<::ImDrawList*>(self)->AddConvexPolyFilled(reinterpret_cast<const ::ImVec2*>(points), num_points, col, flags);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_AddConcavePolyFilled(cimgui::ImDrawList* self, const cimgui::ImVec2* points, int num_points, ImU32 col)
@@ -3524,9 +3543,9 @@ CIMGUI_API void        cimgui::ImDrawList_PathLineToMergeDuplicate(cimgui::ImDra
     reinterpret_cast<::ImDrawList*>(self)->PathLineToMergeDuplicate(ConvertToCPP_ImVec2(pos));
 }
 
-CIMGUI_API void        cimgui::ImDrawList_PathFillConvex(cimgui::ImDrawList* self, ImU32 col)
+CIMGUI_API void        cimgui::ImDrawList_PathFillConvex(cimgui::ImDrawList* self, ImU32 col, ImDrawFlags flags)
 {
-    reinterpret_cast<::ImDrawList*>(self)->PathFillConvex(col);
+    reinterpret_cast<::ImDrawList*>(self)->PathFillConvex(col, flags);
 }
 
 CIMGUI_API void        cimgui::ImDrawList_PathFillConcave(cimgui::ImDrawList* self, ImU32 col)
@@ -3688,6 +3707,11 @@ CIMGUI_API void        cimgui::ImDrawList__ResetForNewFrame(cimgui::ImDrawList* 
     reinterpret_cast<::ImDrawList*>(self)->_ResetForNewFrame();
 }
 
+CIMGUI_API void        cimgui::ImDrawList__SetPixelDensity(cimgui::ImDrawList* self, float pixel_density)
+{
+    reinterpret_cast<::ImDrawList*>(self)->_SetPixelDensity(pixel_density);
+}
+
 CIMGUI_API void        cimgui::ImDrawList__ClearFreeMemory(cimgui::ImDrawList* self)
 {
     reinterpret_cast<::ImDrawList*>(self)->_ClearFreeMemory();
@@ -3736,6 +3760,41 @@ CIMGUI_API void        cimgui::ImDrawList__PathArcToFastEx(cimgui::ImDrawList* s
 CIMGUI_API void        cimgui::ImDrawList__PathArcToN(cimgui::ImDrawList* self, cimgui::ImVec2 center, float radius, float a_min, float a_max, int num_segments)
 {
     reinterpret_cast<::ImDrawList*>(self)->_PathArcToN(ConvertToCPP_ImVec2(center), radius, a_min, a_max, num_segments);
+}
+
+CIMGUI_API void        cimgui::ImDrawList__AddRectFilledBaked(cimgui::ImDrawList* self, cimgui::ImVec2 p_min, cimgui::ImVec2 p_max, ImU32 col, float r, cimgui::ImVec4 tex_uvs, ImDrawFlags flags)
+{
+    reinterpret_cast<::ImDrawList*>(self)->_AddRectFilledBaked(ConvertToCPP_ImVec2(p_min), ConvertToCPP_ImVec2(p_max), col, r, ConvertToCPP_ImVec4(tex_uvs), flags);
+}
+
+CIMGUI_API void        cimgui::ImDrawList__AddRectBaked(cimgui::ImDrawList* self, cimgui::ImVec2 p_min, cimgui::ImVec2 p_max, ImU32 col, float r, float t, cimgui::ImVec4 tex_uvs, ImDrawFlags flags)
+{
+    reinterpret_cast<::ImDrawList*>(self)->_AddRectBaked(ConvertToCPP_ImVec2(p_min), ConvertToCPP_ImVec2(p_max), col, r, t, ConvertToCPP_ImVec4(tex_uvs), flags);
+}
+
+CIMGUI_API void        cimgui::ImDrawList__AddLine(cimgui::ImDrawList* self, cimgui::ImVec2 p1, cimgui::ImVec2 p2, ImU32 col, float thickness, ImDrawFlags flags)
+{
+    reinterpret_cast<::ImDrawList*>(self)->_AddLine(ConvertToCPP_ImVec2(p1), ConvertToCPP_ImVec2(p2), col, thickness, flags);
+}
+
+CIMGUI_API void        cimgui::ImDrawList__AddRectTinyRounding(cimgui::ImDrawList* self, cimgui::ImVec2 p_min, cimgui::ImVec2 p_max, ImU32 col, float rounding, float thickness, ImDrawFlags flags)
+{
+    reinterpret_cast<::ImDrawList*>(self)->_AddRectTinyRounding(ConvertToCPP_ImVec2(p_min), ConvertToCPP_ImVec2(p_max), col, rounding, thickness, flags);
+}
+
+CIMGUI_API void        cimgui::ImDrawList__SelectLineTexture(cimgui::ImDrawList* self, float screen_thickness, cimgui::ImVec2* out_uv0, cimgui::ImVec2* out_uv1, float* out_fringe, ImDrawFlags flags)
+{
+    reinterpret_cast<::ImDrawList*>(self)->_SelectLineTexture(screen_thickness, reinterpret_cast<::ImVec2*>(out_uv0), reinterpret_cast<::ImVec2*>(out_uv1), out_fringe, flags);
+}
+
+CIMGUI_API float       cimgui::ImDrawList__CalculateCenterBiasedOffset(cimgui::ImDrawList* self, float thickness)
+{
+    return reinterpret_cast<::ImDrawList*>(self)->_CalculateCenterBiasedOffset(thickness);
+}
+
+CIMGUI_API void        cimgui::ImDrawList__AddPolyline(cimgui::ImDrawList* self, const cimgui::ImVec2* points, int num_points, ImU32 col, float thickness, ImDrawFlags flags, float max_inner_offset)
+{
+    reinterpret_cast<::ImDrawList*>(self)->_AddPolyline(reinterpret_cast<const ::ImVec2*>(points), num_points, col, thickness, flags, max_inner_offset);
 }
 
 CIMGUI_API void cimgui::ImDrawData_Clear(cimgui::ImDrawData* self)
@@ -4139,9 +4198,14 @@ CIMGUI_API void         cimgui::ImFont_ClearOutputData(cimgui::ImFont* self)
     reinterpret_cast<::ImFont*>(self)->ClearOutputData();
 }
 
-CIMGUI_API void         cimgui::ImFont_AddRemapChar(cimgui::ImFont* self, ImWchar from_codepoint, ImWchar to_codepoint)
+CIMGUI_API void         cimgui::ImFont_AddRemapCodepoint(cimgui::ImFont* self, ImWchar from_codepoint, ImWchar to_codepoint)
 {
-    reinterpret_cast<::ImFont*>(self)->AddRemapChar(from_codepoint, to_codepoint);
+    reinterpret_cast<::ImFont*>(self)->AddRemapCodepoint(from_codepoint, to_codepoint);
+}
+
+CIMGUI_API void         cimgui::ImFont_AddRemapCodepointToGlyphIndex(cimgui::ImFont* self, ImWchar from_codepoint, int font_src_idx, int glyph_idx)
+{
+    reinterpret_cast<::ImFont*>(self)->AddRemapCodepointToGlyphIndex(from_codepoint, font_src_idx, glyph_idx);
 }
 
 CIMGUI_API bool         cimgui::ImFont_IsGlyphRangeUnused(cimgui::ImFont* self, unsigned int c_begin, unsigned int c_last)
