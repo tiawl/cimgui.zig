@@ -116,15 +116,6 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplDX12_RenderDrawData(cimgui::ImDrawData* 
     ::ImGui_ImplDX12_RenderDrawData(reinterpret_cast<::ImDrawData*>(draw_data), graphics_command_list);
 }
 
-#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-
-CIMGUI_IMPL_API bool cimgui::cImGui_ImplDX12_InitID3D12DevicePtr(ID3D12Device* device, int num_frames_in_flight, DXGI_FORMAT rtv_format, ID3D12DescriptorHeap* srv_descriptor_heap, D3D12_CPU_DESCRIPTOR_HANDLE font_srv_cpu_desc_handle, D3D12_GPU_DESCRIPTOR_HANDLE font_srv_gpu_desc_handle)
-{
-    return ::ImGui_ImplDX12_Init(device, num_frames_in_flight, rtv_format, srv_descriptor_heap, font_srv_cpu_desc_handle, font_srv_gpu_desc_handle);
-}
-
-#endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplDX12_CreateDeviceObjects(void)
 {
     return ::ImGui_ImplDX12_CreateDeviceObjects();
@@ -138,6 +129,11 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplDX12_InvalidateDeviceObjects(void)
 CIMGUI_IMPL_API void cimgui::cImGui_ImplDX12_UpdateTexture(cimgui::ImTextureData* tex)
 {
     ::ImGui_ImplDX12_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
+}
+
+CIMGUI_IMPL_API cimgui::ImGui_ImplDX12_RenderState* cimgui::cImGui_ImplDX12_GetRenderState(void)
+{
+    return reinterpret_cast<::cimgui::ImGui_ImplDX12_RenderState*>(::ImGui_ImplDX12_GetRenderState());
 }
 
 #endif // #ifndef IMGUI_DISABLE

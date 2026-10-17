@@ -4,12 +4,12 @@
 
 // Dear Bindings version as a string
 #ifndef DEAR_BINDINGS_VERSION
-#define DEAR_BINDINGS_VERSION "0.24"
+#define DEAR_BINDINGS_VERSION "0.25"
 #endif
 
 // Dear Bindings version as an integer
 #ifndef DEAR_BINDINGS_VERSION_NUMBER
-#define DEAR_BINDINGS_VERSION_NUMBER 24
+#define DEAR_BINDINGS_VERSION_NUMBER 25
 #endif
 
 // dear imgui: Renderer Backend for SDL_Renderer for SDL2
@@ -79,6 +79,7 @@ struct ImGui_ImplSDLRenderer2_RenderState_t
 {
     SDL_Renderer* Renderer;
 };
+CIMGUI_IMPL_API ImGui_ImplSDLRenderer2_RenderState* cImGui_ImplSDLRenderer2_GetRenderState(void);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block

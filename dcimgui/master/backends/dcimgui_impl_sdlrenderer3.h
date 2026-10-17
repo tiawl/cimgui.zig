@@ -4,12 +4,12 @@
 
 // Dear Bindings version as a string
 #ifndef DEAR_BINDINGS_VERSION
-#define DEAR_BINDINGS_VERSION "0.24"
+#define DEAR_BINDINGS_VERSION "0.25"
 #endif
 
 // Dear Bindings version as an integer
 #ifndef DEAR_BINDINGS_VERSION_NUMBER
-#define DEAR_BINDINGS_VERSION_NUMBER 24
+#define DEAR_BINDINGS_VERSION_NUMBER 25
 #endif
 
 // dear imgui: Renderer Backend for SDL_Renderer for SDL3
@@ -35,7 +35,7 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 //  [X] Renderer: User texture binding. Use 'SDL_Texture*' as texture identifier. Read the FAQ about ImTextureID/ImTextureRef!
 //  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
 //  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
-//  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access with ImGui_ImplSDLRenderer3_GetRenderState().
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
@@ -53,10 +53,9 @@ extern "C"
 #endif
 #include "dcimgui.h"
 #ifndef IMGUI_DISABLE
-typedef struct SDL_Renderer SDL_Renderer;
-
+// For SDL_ScaleMode which cannot be forward declared.
 typedef struct ImDrawData_t ImDrawData;
-// Follow "Getting Started" link and check examples/ folder to learn about using backends!
+#include <SDL3/SDL_render.h>                                           // Follow "Getting Started" link and check examples/ folder to learn about using backends!
 CIMGUI_IMPL_API bool cImGui_ImplSDLRenderer3_Init(SDL_Renderer* renderer);
 CIMGUI_IMPL_API void cImGui_ImplSDLRenderer3_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplSDLRenderer3_NewFrame(void);
@@ -75,7 +74,9 @@ CIMGUI_IMPL_API void cImGui_ImplSDLRenderer3_UpdateTexture(ImTextureData* tex);
 struct ImGui_ImplSDLRenderer3_RenderState_t
 {
     SDL_Renderer* Renderer;
+    SDL_ScaleMode CurrentScaleMode;  // Current scale mode during render. Set to SDL_SCALEMODE_INVALID to use "SetSamplerFromTex" mode.
 };
+CIMGUI_IMPL_API ImGui_ImplSDLRenderer3_RenderState* cImGui_ImplSDLRenderer3_GetRenderState(void);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus
 } // End of extern "C" block

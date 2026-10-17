@@ -5,7 +5,7 @@
 //  [!] Renderer: User texture binding. Use a VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE 'VkDescriptorSet' as texture identifier. Call ImGui_ImplVulkan_AddTexture() to register one. Read the FAQ about ImTextureID/ImTextureRef + https://github.com/ocornut/imgui/pull/914 for discussions.
 //  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
 //  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
-//  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access with ImGui_ImplVulkan_GetRenderState().
 
 // The aim of imgui_impl_vulkan.h/.cpp is to be usable in your engine without any modification.
 // IF YOU FEEL YOU NEED TO MAKE ANY CHANGE TO THIS CODE, please share them and your feedback at https://github.com/ocornut/imgui/
@@ -27,6 +27,9 @@
 
 // CHANGELOG
 // (minor and older changes stripped away, please see git history for details)
+//  2026-10-06: Added support for dynamic rendering with multiple color attachments (PipelineRenderingCreateInfo.colorAttachmentCount > 1): we render to the first one and leave the others untouched. (#9574)
+//  2026-09-07: Round framebuffer dimensions to the nearest integer instead of truncating them. (#9538, 9515, #8628)
+//  2026-09-03: Added for support for multiple Vulkan contexts with custom loaders. (#6616)
 //  2026-04-23: Added support for standard draw callbacks (in platform_io): DrawCallback_ResetRenderState, DrawCallback_SetSamplerLinear, DrawCallback_SetSamplerNearest. (#9378)
 //  2026-04-22: *BREAKING CHANGE* redesigned to use separate ImageView + Sampler instead of Combined Image Sampler. This change allows us to facilitate changing samplers, in line with other backends.
 //              - When registering custom textures: changed ImGui_ImplVulkan_AddTexture() signature to remove Sampler.
@@ -230,10 +233,28 @@ static bool g_FunctionsLoaded = true;
     IMGUI_VULKAN_FUNC_MAP_MACRO(vkUpdateDescriptorSets) \
     IMGUI_VULKAN_FUNC_MAP_MACRO(vkWaitForFences)
 
+struct ImGui_ImplVulkan_Functions
+{
 // Define function pointers
-#define IMGUI_VULKAN_FUNC_DEF(func) static PFN_##func func;
+#define IMGUI_VULKAN_FUNC_DEF(func) PFN_##func pfn_##func;
 IMGUI_VULKAN_FUNC_MAP(IMGUI_VULKAN_FUNC_DEF)
 #undef IMGUI_VULKAN_FUNC_DEF
+};
+
+// Globally available function pointers used for initialization of the backend data
+static ImGui_ImplVulkan_Functions   ImGuiImplVulkanFuncs;
+
+// Multi Vulkan contexts support: wrap each Vulkan function pointer to properly dispatch it using the current backend data
+static ImGui_ImplVulkan_Functions&  ImGui_ImplVulkan_GetFunctions();
+#define IMGUI_VULKAN_FUNC_WRAPPER(func) \
+    template<typename... Args> \
+    auto func(Args&&... args) -> decltype(ImGui_ImplVulkan_GetFunctions().pfn_##func(args...)) \
+    { \
+        return ImGui_ImplVulkan_GetFunctions().pfn_##func(args...); \
+    }
+IMGUI_VULKAN_FUNC_MAP(IMGUI_VULKAN_FUNC_WRAPPER)
+#undef IMGUI_VULKAN_FUNC_WRAPPER
+
 #endif // IMGUI_IMPL_VULKAN_USE_LOADER
 
 #ifdef IMGUI_IMPL_VULKAN_HAS_DYNAMIC_RENDERING
@@ -299,6 +320,11 @@ struct ImGui_ImplVulkan_Data
 
     // Render buffers for main window
     ImGui_ImplVulkan_WindowRenderBuffers MainWindowRenderBuffers;
+
+    // Vulkan function pointers loaded for this context
+#ifdef IMGUI_IMPL_VULKAN_USE_LOADER
+    ImGui_ImplVulkan_Functions  Functions;
+#endif
 
     ImGui_ImplVulkan_Data()
     {
@@ -434,6 +460,21 @@ static ImGui_ImplVulkan_Data* ImGui_ImplVulkan_GetBackendData()
     return ImGui::GetCurrentContext() ? (ImGui_ImplVulkan_Data*)ImGui::GetIO().BackendRendererUserData : nullptr;
 }
 
+ImGui_ImplVulkan_RenderState* ImGui_ImplVulkan_GetRenderState()
+{
+    return (ImGui_ImplVulkan_RenderState*)ImGui::GetPlatformIO().Renderer_RenderState;
+}
+
+#ifdef IMGUI_IMPL_VULKAN_USE_LOADER
+// Get the Vulkan function pointers used by the current backend.
+// If no backend is available, return the currently loaded global function pointers (ImGuiImplVulkanFuncs).
+static ImGui_ImplVulkan_Functions& ImGui_ImplVulkan_GetFunctions()
+{
+    ImGui_ImplVulkan_Data* bd = ImGui_ImplVulkan_GetBackendData();
+    return bd ? bd->Functions : ImGuiImplVulkanFuncs;
+}
+#endif
+
 static uint32_t ImGui_ImplVulkan_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits)
 {
     ImGui_ImplVulkan_Data* bd = ImGui_ImplVulkan_GetBackendData();
@@ -529,7 +570,7 @@ static void ImGui_ImplVulkan_SetupRenderState(ImDrawData* draw_data, VkPipeline 
     constants[1] = 2.0f / draw_data->DisplaySize.y;
     constants[2] = -1.0f - draw_data->DisplayPos.x * constants[0]; // Translate
     constants[3] = -1.0f - draw_data->DisplayPos.y * constants[1];
-    vkCmdPushConstants(command_buffer, bd->PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(float) * 4, constants);
+    vkCmdPushConstants(command_buffer, bd->PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, (uint32_t)sizeof(float) * 4, constants);
 
     // Setup sampler
     vkCmdBindDescriptorSets(bd->RenderState->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, bd->PipelineLayout, 1, 1, &bd->SamplerLinearDS, 0, nullptr);
@@ -553,8 +594,8 @@ void ImGui_ImplVulkan_DrawCallback_SetSamplerCustom(const ImDrawList*, const ImD
 void ImGui_ImplVulkan_RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline)
 {
     // Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
-    int fb_width = (int)(draw_data->DisplaySize.x * draw_data->FramebufferScale.x);
-    int fb_height = (int)(draw_data->DisplaySize.y * draw_data->FramebufferScale.y);
+    int fb_width = (int)(draw_data->DisplaySize.x * draw_data->FramebufferScale.x + 0.5f);
+    int fb_height = (int)(draw_data->DisplaySize.y * draw_data->FramebufferScale.y + 0.5f);
     if (fb_width <= 0 || fb_height <= 0)
         return;
 
@@ -1022,7 +1063,14 @@ static VkPipeline ImGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAlloc
     ms_info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     ms_info.rasterizationSamples = (info->MSAASamples != 0) ? info->MSAASamples : VK_SAMPLE_COUNT_1_BIT;
 
-    VkPipelineColorBlendAttachmentState color_attachment[1] = {};
+    // Blend into the first color attachment. With dynamic rendering, other color attachments of the rendering are left untouched (requires independentBlend feature).
+    int color_attachment_count = 1;
+#ifdef IMGUI_IMPL_VULKAN_HAS_DYNAMIC_RENDERING
+    if (bd->VulkanInitInfo.UseDynamicRendering && info->PipelineRenderingCreateInfo.colorAttachmentCount > 1)
+        color_attachment_count = (int)info->PipelineRenderingCreateInfo.colorAttachmentCount;
+#endif
+    ImVector<VkPipelineColorBlendAttachmentState> color_attachment;
+    color_attachment.resize(color_attachment_count, VkPipelineColorBlendAttachmentState()); // colorWriteMask = 0
     color_attachment[0].blendEnable = VK_TRUE;
     color_attachment[0].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
     color_attachment[0].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
@@ -1037,8 +1085,8 @@ static VkPipeline ImGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAlloc
 
     VkPipelineColorBlendStateCreateInfo blend_info = {};
     blend_info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    blend_info.attachmentCount = 1;
-    blend_info.pAttachments = color_attachment;
+    blend_info.attachmentCount = (uint32_t)color_attachment.Size;
+    blend_info.pAttachments = color_attachment.Data;
 
     ImVector<VkDynamicState> dynamic_states = info->ExtraDynamicStates;
     dynamic_states.push_back(VK_DYNAMIC_STATE_VIEWPORT);
@@ -1153,8 +1201,7 @@ bool ImGui_ImplVulkan_CreateDeviceObjects()
         check_vk_result(err);
     }
 
-    // Create samplers
-    // Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling.
+    // Create samplers (bilinear sampling is required)
     if (!bd->SamplerLinear || !bd->SamplerNearest)
     {
         VkSamplerCreateInfo info = {};
@@ -1322,8 +1369,8 @@ bool    ImGui_ImplVulkan_LoadFunctions(uint32_t api_version, PFN_vkVoidFunction(
 
 #ifdef IMGUI_IMPL_VULKAN_USE_LOADER
 #define IMGUI_VULKAN_FUNC_LOAD(func) \
-    func = reinterpret_cast<decltype(func)>(loader_func(#func, user_data)); \
-    if (func == nullptr)   \
+    ImGuiImplVulkanFuncs.pfn_##func = reinterpret_cast<PFN_##func>(loader_func(#func, user_data)); \
+    if (ImGuiImplVulkanFuncs.pfn_##func == nullptr)   \
         return false;
     IMGUI_VULKAN_FUNC_MAP(IMGUI_VULKAN_FUNC_LOAD)
 #undef IMGUI_VULKAN_FUNC_LOAD
@@ -1391,6 +1438,9 @@ bool    ImGui_ImplVulkan_Init(ImGui_ImplVulkan_InitInfo* info)
         IM_ASSERT(info->PipelineInfoMain.RenderPass == VK_NULL_HANDLE);
 
     bd->VulkanInitInfo = *info;
+#ifdef IMGUI_IMPL_VULKAN_USE_LOADER
+    bd->Functions = ImGuiImplVulkanFuncs;
+#endif
 
     VkPhysicalDeviceProperties properties;
     vkGetPhysicalDeviceProperties(info->PhysicalDevice, &properties);

@@ -130,4 +130,9 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplDX10_UpdateTexture(cimgui::ImTextureData
     ::ImGui_ImplDX10_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
 }
 
+CIMGUI_IMPL_API cimgui::ImGui_ImplDX10_RenderState* cimgui::cImGui_ImplDX10_GetRenderState(void)
+{
+    return reinterpret_cast<::cimgui::ImGui_ImplDX10_RenderState*>(::ImGui_ImplDX10_GetRenderState());
+}
+
 #endif // #ifndef IMGUI_DISABLE

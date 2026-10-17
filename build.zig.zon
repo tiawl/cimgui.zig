@@ -8,17 +8,17 @@
             .lazy = true,
         },
         .@"imgui-master" = .{
-            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.9b#f1cc2ae15e53a861a874c3034aae6798fde194ab",
-            .hash = "N-V-__8AAMMBegBOAhgLakzOn_LplWvey9lGOtMW64KD0g9J",
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.93.0#c1aaac65e896a45f81f47a4d68f9959e0f86c859",
+            .hash = "N-V-__8AAOJMfgBN3ys-EPrqknViFWY5DjhRU83okJCsGNHW",
         },
         .@"imgui-docking" = .{
-            .url = "git+https://github.com/ocornut/imgui?ref=v1.92.9b-docking#b48d1afbe8ee8b238e2961dc363a949dd7304e23",
-            .hash = "N-V-__8AAMiwhADTFf225fEZAyMZ0m0uy3MKKpZbqgX5260R",
+            .url = "git+https://github.com/ocornut/imgui?ref=v1.93.0-docking#b916186e66aa3c02b72c6ca17455516512ed8049",
+            .hash = "N-V-__8AAIcIiQBQX2RxQFLvaMZafdWRY_FqA7kql4vDWKb0",
             .branch = "docking",
         },
         .dear_bindings = .{
-            .url = "git+https://github.com/dearimgui/dear_bindings?ref=v0.24#ec09a883592857d038e82ec618b079cd260a0919",
-            .hash = "N-V-__8AANN5CQCdg_j_3-NWsPnXUybzMMXxu_udsMmzYP-g",
+            .url = "git+https://github.com/dearimgui/dear_bindings?ref=v0.25#01f759f5b4987e232f94a3a6bb27d87b0873b341",
+            .hash = "N-V-__8AAK-JCQChWBe9wuyT-rNUXbY2YzFQZvlpHUSfpt26",
         },
         .toolbox = .{
             .url = "git+https://github.com/tiawl/toolbox?ref=2.3.0#b21fce37bf4964add79107c0372ec9100320888c",

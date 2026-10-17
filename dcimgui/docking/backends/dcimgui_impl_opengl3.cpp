@@ -135,6 +135,11 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplOpenGL3_UpdateTexture(cimgui::ImTextureD
     ::ImGui_ImplOpenGL3_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
 }
 
+CIMGUI_IMPL_API void cimgui::cImGui_ImplOpenGL3_SetClipOrigin(unsigned int gl_clip_origin)
+{
+    ::ImGui_ImplOpenGL3_SetClipOrigin(gl_clip_origin);
+}
+
 CIMGUI_IMPL_API cimgui::ImGui_ImplOpenGL3_RenderState* cimgui::cImGui_ImplOpenGL3_GetRenderState(void)
 {
     return reinterpret_cast<::cimgui::ImGui_ImplOpenGL3_RenderState*>(::ImGui_ImplOpenGL3_GetRenderState());
