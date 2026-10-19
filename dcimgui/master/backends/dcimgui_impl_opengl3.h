@@ -4,12 +4,12 @@
 
 // Dear Bindings version as a string
 #ifndef DEAR_BINDINGS_VERSION
-#define DEAR_BINDINGS_VERSION "0.24"
+#define DEAR_BINDINGS_VERSION "0.26"
 #endif
 
 // Dear Bindings version as an integer
 #ifndef DEAR_BINDINGS_VERSION_NUMBER
-#define DEAR_BINDINGS_VERSION_NUMBER 24
+#define DEAR_BINDINGS_VERSION_NUMBER 26
 #endif
 
 // dear imgui: Renderer Backend for modern OpenGL with shaders / programmatic pipeline
@@ -29,6 +29,7 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 //  [X] Renderer: User texture binding. Use 'GLuint' OpenGL texture as texture identifier. Read the FAQ about ImTextureID/ImTextureRef!
 //  [x] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset) [Desktop OpenGL only!]
 //  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access with ImGui_ImplOpenGL3_GetRenderState().
 
 // About WebGL/ES:
 // - You need to '#define IMGUI_IMPL_OPENGL_ES2' or '#define IMGUI_IMPL_OPENGL_ES3' to use WebGL or OpenGL ES.
@@ -71,6 +72,9 @@ CIMGUI_IMPL_API void cImGui_ImplOpenGL3_DestroyDeviceObjects(void);
 // (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = nullptr to handle this manually.
 CIMGUI_IMPL_API void cImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex);
 
+// (Advanced) Specify clip origin, same value as glClipControl() or 0 for auto-detection.
+CIMGUI_IMPL_API void cImGui_ImplOpenGL3_SetClipOrigin(unsigned int gl_clip_origin);
+
 // Configuration flags to add in your imconfig file:
 //#define IMGUI_IMPL_OPENGL_ES2     // Enable ES 2 (Auto-detected on Emscripten)
 //#define IMGUI_IMPL_OPENGL_ES3     // Enable ES 3 (Auto-detected on iOS/Android)
@@ -99,10 +103,9 @@ struct ImGui_ImplOpenGL3_RenderState_t
 {
     bool         UseBindSampler;
     bool         UseTexParameterFilter;
-    unsigned int CurrentSampler;             // (GLuint) Used if UseBindSampler == true, otherwise always 0
-    unsigned int CurrentTexParameterFilter;  // (GLuint) Used if UseTexParameterToSetSampler == true
+    unsigned int CurrentSampler;             // (GLuint) Used if UseBindSampler == true (and are available), otherwise always 0
+    unsigned int CurrentTexParameterFilter;  // (GLuint) Used if UseTexParameterFilter == true
 };
-
 CIMGUI_IMPL_API ImGui_ImplOpenGL3_RenderState* cImGui_ImplOpenGL3_GetRenderState(void);
 #endif// #ifndef IMGUI_DISABLE
 #ifdef __cplusplus

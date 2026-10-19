@@ -4,12 +4,12 @@
 
 // Dear Bindings version as a string
 #ifndef DEAR_BINDINGS_VERSION
-#define DEAR_BINDINGS_VERSION "0.24"
+#define DEAR_BINDINGS_VERSION "0.26"
 #endif
 
 // Dear Bindings version as an integer
 #ifndef DEAR_BINDINGS_VERSION_NUMBER
-#define DEAR_BINDINGS_VERSION_NUMBER 24
+#define DEAR_BINDINGS_VERSION_NUMBER 26
 #endif
 
 // dear imgui: Renderer Backend for DirectX12
@@ -28,7 +28,7 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 //  [X] Renderer: User texture binding. Use 'D3D12_GPU_DESCRIPTOR_HANDLE' as texture identifier. Read the FAQ about ImTextureID/ImTextureRef!
 //  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
 //  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
-//  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access with ImGui_ImplDX12_GetRenderState().
 //  [X] Renderer: Multi-viewport support (multiple windows). Enable with 'io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable'.
 
 // The aim of imgui_impl_dx12.h/.cpp is to be usable in your engine without any modification.
@@ -85,12 +85,6 @@ CIMGUI_IMPL_API void cImGui_ImplDX12_Shutdown(void);
 CIMGUI_IMPL_API void cImGui_ImplDX12_NewFrame(void);
 CIMGUI_IMPL_API void cImGui_ImplDX12_RenderDrawData(ImDrawData* draw_data, ID3D12GraphicsCommandList* graphics_command_list);
 
-#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-// Legacy initialization API Obsoleted in 1.91.5
-// - font_srv_cpu_desc_handle and font_srv_gpu_desc_handle are handles to a single SRV descriptor to use for the internal font texture, they must be in 'srv_descriptor_heap'
-// - When we introduced the ImGui_ImplDX12_InitInfo struct we also added a 'ID3D12CommandQueue* CommandQueue' field.
-CIMGUI_IMPL_API bool cImGui_ImplDX12_InitID3D12DevicePtr(ID3D12Device* device, int num_frames_in_flight, DXGI_FORMAT rtv_format, ID3D12DescriptorHeap* srv_descriptor_heap, D3D12_CPU_DESCRIPTOR_HANDLE font_srv_cpu_desc_handle, D3D12_GPU_DESCRIPTOR_HANDLE font_srv_gpu_desc_handle);
-#endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 // Use if you want to reset your rendering device without losing Dear ImGui state.
 CIMGUI_IMPL_API bool cImGui_ImplDX12_CreateDeviceObjects(void);
 CIMGUI_IMPL_API void cImGui_ImplDX12_InvalidateDeviceObjects(void);
@@ -106,6 +100,7 @@ struct ImGui_ImplDX12_RenderState_t
     ID3D12Device*              Device;
     ID3D12GraphicsCommandList* CommandList;
 };
+CIMGUI_IMPL_API ImGui_ImplDX12_RenderState* cImGui_ImplDX12_GetRenderState(void);
 
 #if defined(__clang__)
 #pragma clang diagnostic pop

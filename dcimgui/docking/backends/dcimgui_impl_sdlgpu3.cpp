@@ -141,4 +141,9 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplSDLGPU3_UpdateTexture(cimgui::ImTextureD
     ::ImGui_ImplSDLGPU3_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
 }
 
+CIMGUI_IMPL_API cimgui::ImGui_ImplSDLGPU3_RenderState* cimgui::cImGui_ImplSDLGPU3_GetRenderState(void)
+{
+    return reinterpret_cast<::cimgui::ImGui_ImplSDLGPU3_RenderState*>(::ImGui_ImplSDLGPU3_GetRenderState());
+}
+
 #endif // #ifndef IMGUI_DISABLE

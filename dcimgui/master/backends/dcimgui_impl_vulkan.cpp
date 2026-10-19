@@ -164,6 +164,11 @@ CIMGUI_IMPL_API bool cimgui::cImGui_ImplVulkan_LoadFunctionsEx(uint32_t api_vers
     return ::ImGui_ImplVulkan_LoadFunctions(api_version, loader_func, user_data);
 }
 
+CIMGUI_IMPL_API cimgui::ImGui_ImplVulkan_RenderState* cimgui::cImGui_ImplVulkan_GetRenderState(void)
+{
+    return reinterpret_cast<::cimgui::ImGui_ImplVulkan_RenderState*>(::ImGui_ImplVulkan_GetRenderState());
+}
+
 CIMGUI_IMPL_API void          cimgui::cImGui_ImplVulkanH_CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, cimgui::ImGui_ImplVulkanH_Window* wd, uint32_t queue_family, const VkAllocationCallbacks* allocator, int w, int h, uint32_t min_image_count, VkImageUsageFlags image_usage)
 {
     ::ImGui_ImplVulkanH_CreateOrResizeWindow(instance, physical_device, device, reinterpret_cast<::ImGui_ImplVulkanH_Window*>(wd), queue_family, allocator, w, h, min_image_count, image_usage);
