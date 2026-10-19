@@ -30,8 +30,8 @@
             .lazy = true,
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=toolbox-2.3.0#681bb62f8b56d20814bf2c6ffd0845ba1abc78b3",
-            .hash = "glfw_zig-1.0.0-NrvYo0Y9GgCUwKJyfvWvV41_NDxETzQB-6Dwi-YqT2gt",
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=X11.zig-libX11-1.8.14#93c73a2c9ecbbe026d532327e578e5a57cb8a778",
+            .hash = "glfw_zig-1.0.0-NrvYo0Y9GgCQ3T0bHFTvdI066vBts9znlgr5RHtoe1dW",
             .lazy = true,
         },
         .translate_c = .{
