@@ -4,12 +4,12 @@
 
 // Dear Bindings version as a string
 #ifndef DEAR_BINDINGS_VERSION
-#define DEAR_BINDINGS_VERSION "0.24"
+#define DEAR_BINDINGS_VERSION "0.26"
 #endif
 
 // Dear Bindings version as an integer
 #ifndef DEAR_BINDINGS_VERSION_NUMBER
-#define DEAR_BINDINGS_VERSION_NUMBER 24
+#define DEAR_BINDINGS_VERSION_NUMBER 26
 #endif
 
 // dear imgui: Renderer Backend for OpenGL2 (legacy OpenGL, fixed pipeline)

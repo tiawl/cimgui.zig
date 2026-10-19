@@ -4,12 +4,12 @@
 
 // Dear Bindings version as a string
 #ifndef DEAR_BINDINGS_VERSION
-#define DEAR_BINDINGS_VERSION "0.24"
+#define DEAR_BINDINGS_VERSION "0.26"
 #endif
 
 // Dear Bindings version as an integer
 #ifndef DEAR_BINDINGS_VERSION_NUMBER
-#define DEAR_BINDINGS_VERSION_NUMBER 24
+#define DEAR_BINDINGS_VERSION_NUMBER 26
 #endif
 
 // dear imgui: Renderer for WebGPU
@@ -41,8 +41,8 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 // Implemented features:
 //  [X] Renderer: User texture binding. Use 'WGPUTextureView' as ImTextureID. Read the FAQ about ImTextureID/ImTextureRef!
 //  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
-//  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
 //  [X] Renderer: Texture updates support for dynamic font system (ImGuiBackendFlags_RendererHasTextures).
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access with ImGui_ImplWGPU_GetRenderState().
 // Missing features or Issues:
 //  [ ] Renderer: Multi-viewport support (multiple windows), useful for desktop.
 
@@ -103,6 +103,7 @@ struct ImGui_ImplWGPU_RenderState_t
     WGPUDevice            Device;
     WGPURenderPassEncoder RenderPassEncoder;
 };
+CIMGUI_IMPL_API ImGui_ImplWGPU_RenderState* cImGui_ImplWGPU_GetRenderState(void);
 
 //-------------------------------------------------------------------------
 // Internal Helpers
@@ -117,14 +118,11 @@ CIMGUI_IMPL_API bool cImGui_ImplWGPU_IsSurfaceStatusSubOptimal(WGPUSurfaceGetCur
 CIMGUI_IMPL_API void   cImGui_ImplWGPU_DebugPrintAdapterInfo(WGPUAdapter adapter);
 CIMGUI_IMPL_API const char* cImGui_ImplWGPU_GetBackendTypeName(WGPUBackendType type);
 CIMGUI_IMPL_API const char* cImGui_ImplWGPU_GetAdapterTypeName(WGPUAdapterType type);
-#if defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN)
 CIMGUI_IMPL_API const char* cImGui_ImplWGPU_GetDeviceLostReasonName(WGPUDeviceLostReason type);
 CIMGUI_IMPL_API const char* cImGui_ImplWGPU_GetErrorTypeName(WGPUErrorType type);
-#else
-#if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)
+#if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)&&!defined(__EMSCRIPTEN__)
 CIMGUI_IMPL_API const char* cImGui_ImplWGPU_GetLogLevelName(WGPULogLevel level);
-#endif // #if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)
-#endif // #if defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN)
+#endif // #if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)&&!defined(__EMSCRIPTEN__)
 // (Optional) Helper to create a surface on macOS/Wayland/X11/Window
 #ifndef __EMSCRIPTEN__
 struct ImGui_ImplWGPU_CreateSurfaceInfo_t

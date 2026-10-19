@@ -5,7 +5,7 @@
 //  [X] Renderer: User texture binding. Use 'ID3D11ShaderResourceView*' as texture identifier. Read the FAQ about ImTextureID/ImTextureRef!
 //  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
 //  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
-//  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access with ImGui_ImplDX11_GetRenderState().
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
@@ -103,6 +103,11 @@ static ImGui_ImplDX11_Data* ImGui_ImplDX11_GetBackendData()
     return ImGui::GetCurrentContext() ? (ImGui_ImplDX11_Data*)ImGui::GetIO().BackendRendererUserData : nullptr;
 }
 
+ImGui_ImplDX11_RenderState* ImGui_ImplDX11_GetRenderState()
+{
+    return (ImGui_ImplDX11_RenderState*)ImGui::GetPlatformIO().Renderer_RenderState;
+}
+
 // Functions
 static void ImGui_ImplDX11_SetupRenderState(const ImDrawData* draw_data, ID3D11DeviceContext* device_ctx)
 {
@@ -110,8 +115,8 @@ static void ImGui_ImplDX11_SetupRenderState(const ImDrawData* draw_data, ID3D11D
 
     // Setup viewport
     D3D11_VIEWPORT vp = {};
-    vp.Width = draw_data->DisplaySize.x * draw_data->FramebufferScale.x;
-    vp.Height = draw_data->DisplaySize.y * draw_data->FramebufferScale.y;
+    vp.Width = (float)(int)(draw_data->DisplaySize.x * draw_data->FramebufferScale.x + 0.5f);
+    vp.Height = (float)(int)(draw_data->DisplaySize.y * draw_data->FramebufferScale.y + 0.5f);
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
     vp.TopLeftX = vp.TopLeftY = 0;

@@ -4,12 +4,12 @@
 
 // Dear Bindings version as a string
 #ifndef DEAR_BINDINGS_VERSION
-#define DEAR_BINDINGS_VERSION "0.24"
+#define DEAR_BINDINGS_VERSION "0.26"
 #endif
 
 // Dear Bindings version as an integer
 #ifndef DEAR_BINDINGS_VERSION_NUMBER
-#define DEAR_BINDINGS_VERSION_NUMBER 24
+#define DEAR_BINDINGS_VERSION_NUMBER 26
 #endif
 
 // dear imgui: Renderer Backend for Vulkan
@@ -33,7 +33,7 @@ typedef unsigned short ImDrawIdx;  // Default: 16-bit (for maximum compatibility
 //  [!] Renderer: User texture binding. Use a VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE 'VkDescriptorSet' as texture identifier. Call ImGui_ImplVulkan_AddTexture() to register one. Read the FAQ about ImTextureID/ImTextureRef + https://github.com/ocornut/imgui/pull/914 for discussions.
 //  [X] Renderer: Large meshes support (64k+ vertices) even with 16-bit indices (ImGuiBackendFlags_RendererHasVtxOffset).
 //  [X] Renderer: Texture updates support for dynamic font atlas (ImGuiBackendFlags_RendererHasTextures).
-//  [X] Renderer: Expose selected render state for draw callbacks to use. Access in '(ImGui_ImplXXXX_RenderState*)GetPlatformIO().Renderer_RenderState'.
+//  [X] Renderer: Expose selected render state for draw callbacks to use. Access with ImGui_ImplVulkan_GetRenderState().
 
 // The aim of imgui_impl_vulkan.h/.cpp is to be usable in your engine without any modification.
 // IF YOU FEEL YOU NEED TO MAKE ANY CHANGE TO THIS CODE, please share them and your feedback at https://github.com/ocornut/imgui/
@@ -131,6 +131,7 @@ struct ImGui_ImplVulkan_PipelineInfo_t
 //   - As an convenience, by setting DescriptorPoolSize > 0 the backend will create one for you.
 // - About dynamic rendering:
 //   - When using dynamic rendering, set UseDynamicRendering=true + fill PipelineInfoMain.PipelineRenderingCreateInfo structure.
+//   - PipelineRenderingCreateInfo may describe multiple color attachments: we render to the first one and leave the others untouched. This requires the 'independentBlend' device feature.
 struct ImGui_ImplVulkan_InitInfo_t
 {
     uint32_t                      ApiVersion;          // Fill with API version of Instance, e.g. VK_API_VERSION_1_3 or your value of VkApplicationInfo::apiVersion. May be lower than header version (VK_HEADER_VERSION_COMPLETE)
@@ -207,6 +208,7 @@ struct ImGui_ImplVulkan_RenderState_t
     VkPipeline       Pipeline;
     VkPipelineLayout PipelineLayout;
 };
+CIMGUI_IMPL_API ImGui_ImplVulkan_RenderState* cImGui_ImplVulkan_GetRenderState(void);
 
 //-------------------------------------------------------------------------
 // Internal / Miscellaneous Vulkan Helpers

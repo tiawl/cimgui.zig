@@ -130,6 +130,11 @@ CIMGUI_IMPL_API void cimgui::cImGui_ImplWGPU_UpdateTexture(cimgui::ImTextureData
     ::ImGui_ImplWGPU_UpdateTexture(reinterpret_cast<::ImTextureData*>(tex));
 }
 
+CIMGUI_IMPL_API cimgui::ImGui_ImplWGPU_RenderState* cimgui::cImGui_ImplWGPU_GetRenderState(void)
+{
+    return reinterpret_cast<::cimgui::ImGui_ImplWGPU_RenderState*>(::ImGui_ImplWGPU_GetRenderState());
+}
+
 CIMGUI_IMPL_API bool cimgui::cImGui_ImplWGPU_IsSurfaceStatusError(WGPUSurfaceGetCurrentTextureStatus status)
 {
     return ::ImGui_ImplWGPU_IsSurfaceStatusError(status);
@@ -155,8 +160,6 @@ CIMGUI_IMPL_API const char* cimgui::cImGui_ImplWGPU_GetAdapterTypeName(WGPUAdapt
     return ::ImGui_ImplWGPU_GetAdapterTypeName(type);
 }
 
-#if defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN)
-
 CIMGUI_IMPL_API const char* cimgui::cImGui_ImplWGPU_GetDeviceLostReasonName(WGPUDeviceLostReason type)
 {
     return ::ImGui_ImplWGPU_GetDeviceLostReasonName(type);
@@ -167,18 +170,14 @@ CIMGUI_IMPL_API const char* cimgui::cImGui_ImplWGPU_GetErrorTypeName(WGPUErrorTy
     return ::ImGui_ImplWGPU_GetErrorTypeName(type);
 }
 
-#endif // #if defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN)
-
-#if !(defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN))
-#if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)
+#if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)&&!defined(__EMSCRIPTEN__)
 
 CIMGUI_IMPL_API const char* cimgui::cImGui_ImplWGPU_GetLogLevelName(WGPULogLevel level)
 {
     return ::ImGui_ImplWGPU_GetLogLevelName(level);
 }
 
-#endif // #if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)
-#endif // #if !(defined(IMGUI_IMPL_WEBGPU_BACKEND_DAWN))
+#endif // #if defined(IMGUI_IMPL_WEBGPU_BACKEND_WGPU)&&!defined(__EMSCRIPTEN__)
 
 #ifndef __EMSCRIPTEN__
 
