@@ -178,7 +178,7 @@ fn list(pkg_builder: *VerboseBuilder) bool {
     return false;
 }
 
-pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, features: []const Feature, flags: *std.ArrayListUnmanaged([]const u8)) !void {
+pub fn buildBackends(pkg_builder: *VerboseBuilder, lib: *std.Build.Step.Compile, features: []const Feature, flags: *std.ArrayList([]const u8)) !void {
     const renderers = pkg_builder.option([]const Renderer, &.{}, "renderers", "Specify the renderer backends");
     const platforms = pkg_builder.option([]const Platform, &.{}, "platforms", "Specify the platform backends");
     const no_renderer = pkg_builder.option(bool, false, "no_renderer", "Specify there no need for renderer backend. It returns an error if you use it with `renderers` option.");
@@ -319,7 +319,7 @@ fn buildFn(pkg_builder: *VerboseBuilder) !void {
     }
 
     var flags_buffer: [16][]const u8 = undefined;
-    var flags = std.ArrayListUnmanaged([]const u8).initBuffer(&flags_buffer);
+    var flags = std.ArrayList([]const u8).initBuffer(&flags_buffer);
 
     while (try pkg_builder.iterate(&.{ "dcimgui", branch_dir })) |entry| {
         switch (entry.kind) {

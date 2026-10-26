@@ -3,8 +3,8 @@
     .version = "1.0.0",
     .dependencies = .{
         .sdl = .{
-            .url = "git+https://github.com/tiawl-forks/SDL#053b0a1dd231a15dcab4572b902474a58919c48d",
-            .hash = "sdl-0.5.0+3.4.8-SDL--vADpgEwm_HQV4hf2-_vY_zH6G6yfuMVonp0DjOg",
+            .url = "git+https://github.com/tiawl-forks/sdl#35c39afa637c94726f61ef4ad63a5bfc4d31c93a",
+            .hash = "sdl-0.6.0+3.4.18-SDL--qOgqAGb-vnbP00Dos1DVIGSqxbUqqLHOkOKukPO",
             .lazy = true,
         },
         .@"imgui-master" = .{
@@ -30,14 +30,13 @@
             .lazy = true,
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=X11.zig-libX11-1.8.14#93c73a2c9ecbbe026d532327e578e5a57cb8a778",
-            .hash = "glfw_zig-1.0.0-NrvYo0Y9GgCQ3T0bHFTvdI066vBts9znlgr5RHtoe1dW",
+            .url = "git+https://github.com/tiawl/glfw.zig#8f81ec5a0b23ccdeb4548cc49099eb982529af84",
+            .hash = "glfw_zig-1.0.0-NrvYozQ9GgCwusIaTPsmMTg4LfhajFL_8TTbqmOWGURc",
             .lazy = true,
         },
         .translate_c = .{
-            .url = "git+https://codeberg.org/tiawl/translate-c?ref=0.0.0#43272fe55f079c0a34bc4140d28a1f1a471e883f",
-            .hash = "translate_c-0.0.0-Q_BUWqJPBwC86nStjWUUiky19HRGb0Qv3wlZ1TdLwAl1",
-            .branch = "fix",
+            .url = "git+https://codeberg.org/tiawl/translate-c#4e74f0eabe77f64843470fa071f2ba4b82605997",
+            .hash = "translate_c-0.0.0-Q_BUWt9aBwDJS_Rai4-EqN58l1EBNzsTUlztgCVh6Gat",
         },
     },
     .minimum_zig_version = "0.17.0",
