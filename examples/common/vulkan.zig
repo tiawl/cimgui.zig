@@ -29,7 +29,7 @@ var swap_chain_image_usage: u32 = c.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 const api_version: u32 = c.VK_API_VERSION_1_2;
 
-fn checkResult(result: c.VkResult) callconv(std.builtin.CallingConvention.c) void {
+fn checkResult(result: c.VkResult) callconv(.c) void {
     if (result == c.VK_SUCCESS) return;
     std.debug.panic("[vulkan] Error: VkResult = {d}\n", .{result});
 }
@@ -51,15 +51,15 @@ pub fn deinit(comptime p: build.Platform, allocator: std.mem.Allocator) void {
 }
 
 fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c]const u8) !void {
-    var instance_extensions: std.ArrayList([*:0]const u8) = .empty;
+    var instance_extensions: std.ArrayList([*:0]const c_char) = .empty;
     var platform_extensions_count: u32 = 0;
     const platform_extensions = platform(p).getRequiredInstanceExtensions(&platform_extensions_count);
-    for (0..platform_extensions_count) |i| try instance_extensions.append(allocator, std.mem.span(platform_extensions[i]));
+    for (0..platform_extensions_count) |i| try instance_extensions.append(allocator, @ptrCast(std.mem.span(platform_extensions[i]).ptr));
 
     var app_info: c.VkApplicationInfo = undefined;
-    app_info.pApplicationName = app_name;
+    app_info.pApplicationName = @ptrCast(app_name);
     app_info.applicationVersion = c.VK_MAKE_API_VERSION(0, 0, 0, 0);
-    app_info.pEngineName = "No Engine";
+    app_info.pEngineName = @ptrCast("No Engine");
     app_info.engineVersion = c.VK_MAKE_API_VERSION(0, 0, 0, 0);
     app_info.apiVersion = api_version;
 
@@ -105,8 +105,8 @@ fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c
         i += 1;
     }
 
-    var device_extensions: std.ArrayList([*:0]const u8) = .empty;
-    try device_extensions.append(allocator, "VK_KHR_swapchain");
+    var device_extensions: std.ArrayList([*:0]const c_char) = .empty;
+    try device_extensions.append(allocator, @ptrCast("VK_KHR_swapchain"));
 
     const queue_priority = [_]f32{1.0};
     var queue_create_info: [1]c.VkDeviceQueueCreateInfo = undefined;

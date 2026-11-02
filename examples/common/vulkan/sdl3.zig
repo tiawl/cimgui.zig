@@ -39,21 +39,21 @@ const Loader = struct {
     instance: *c.VkInstance,
     device: *c.VkDevice,
 
-    fn loadGlobal(name: [*c]const u8) c.PFN_vkVoidFunction {
+    fn loadGlobal(name: [*c]const c_char) c.PFN_vkVoidFunction {
         initInstanceProcAddress();
         return getInstanceProcAddress.?(null, name);
     }
 
-    fn loadInstance(self: *const @This(), name: [*c]const u8) c.PFN_vkVoidFunction {
+    fn loadInstance(self: *const @This(), name: [*c]const c_char) c.PFN_vkVoidFunction {
         initInstanceProcAddress();
         return getInstanceProcAddress.?(self.instance.*, name);
     }
 
-    fn loadDevice(self: *const @This(), name: [*c]const u8) c.PFN_vkVoidFunction {
-        return @as(c.PFN_vkGetDeviceProcAddr, @ptrCast(self.loadInstance("vkGetDeviceProcAddr"))).?(self.device.*, name);
+    fn loadDevice(self: *const @This(), name: [*c]const c_char) c.PFN_vkVoidFunction {
+        return @as(c.PFN_vkGetDeviceProcAddr, @ptrCast(self.loadInstance(@ptrCast("vkGetDeviceProcAddr")))).?(self.device.*, name);
     }
 
-    fn load(funcname: [*c]const u8, user_data: ?*anyopaque) callconv(std.builtin.CallingConvention.c) c.PFN_vkVoidFunction {
+    fn load(funcname: [*c]const c_char, user_data: ?*anyopaque) callconv(.c) c.PFN_vkVoidFunction {
         var self: *@This() = @ptrCast(@alignCast(user_data));
         if (self.loadDevice(funcname)) |func| return func;
         if (self.loadInstance(funcname)) |func| return func;
@@ -63,138 +63,138 @@ const Loader = struct {
 };
 
 pub fn vkCreateInstance(info: [*c]const c.VkInstanceCreateInfo, allocator: [*c]const c.VkAllocationCallbacks, instance: [*c]c.VkInstance) c.VkResult {
-    const func: c.PFN_vkCreateInstance = @ptrCast(Loader.loadGlobal("vkCreateInstance").?);
+    const func: c.PFN_vkCreateInstance = @ptrCast(Loader.loadGlobal(@ptrCast("vkCreateInstance")).?);
     loader.instance = instance;
     return func.?(info, allocator, instance);
 }
 
 pub fn vkGetPhysicalDeviceSurfaceSupportKHR(instance: c.VkInstance, physical_device: c.VkPhysicalDevice, index: u32, surface: c.VkSurfaceKHR, supported: [*c]c.VkBool32) c.VkResult {
     _ = instance;
-    const func: c.PFN_vkGetPhysicalDeviceSurfaceSupportKHR = @ptrCast(loader.loadInstance("vkGetPhysicalDeviceSurfaceSupportKHR").?);
+    const func: c.PFN_vkGetPhysicalDeviceSurfaceSupportKHR = @ptrCast(loader.loadInstance(@ptrCast("vkGetPhysicalDeviceSurfaceSupportKHR")).?);
     return func.?(physical_device, index, surface, supported);
 }
 
 pub fn vkGetPhysicalDeviceProperties(instance: c.VkInstance, physical_device: c.VkPhysicalDevice, properties: [*c]c.VkPhysicalDeviceProperties) void {
     _ = instance;
-    const func: c.PFN_vkGetPhysicalDeviceProperties = @ptrCast(loader.loadInstance("vkGetPhysicalDeviceProperties").?);
+    const func: c.PFN_vkGetPhysicalDeviceProperties = @ptrCast(loader.loadInstance(@ptrCast("vkGetPhysicalDeviceProperties")).?);
     func.?(physical_device, properties);
 }
 
 pub fn vkEnumeratePhysicalDevices(instance: c.VkInstance, count: [*c]u32, physical_devices: [*c]c.VkPhysicalDevice) c.VkResult {
-    const func: c.PFN_vkEnumeratePhysicalDevices = @ptrCast(loader.loadInstance("vkEnumeratePhysicalDevices").?);
+    const func: c.PFN_vkEnumeratePhysicalDevices = @ptrCast(loader.loadInstance(@ptrCast("vkEnumeratePhysicalDevices")).?);
     return func.?(instance, count, physical_devices);
 }
 
 pub fn vkGetPhysicalDeviceQueueFamilyProperties(instance: c.VkInstance, physical_device: c.VkPhysicalDevice, count: [*c]u32, properties: [*c]c.VkQueueFamilyProperties) void {
     _ = instance;
-    const func: c.PFN_vkGetPhysicalDeviceQueueFamilyProperties = @ptrCast(loader.loadInstance("vkGetPhysicalDeviceQueueFamilyProperties").?);
+    const func: c.PFN_vkGetPhysicalDeviceQueueFamilyProperties = @ptrCast(loader.loadInstance(@ptrCast("vkGetPhysicalDeviceQueueFamilyProperties")).?);
     func.?(physical_device, count, properties);
 }
 
 pub fn vkCreateDevice(instance: c.VkInstance, physical_device: c.VkPhysicalDevice, info: [*c]const c.VkDeviceCreateInfo, allocator: [*c]const c.VkAllocationCallbacks, device: [*c]c.VkDevice) c.VkResult {
     _ = instance;
-    const func: c.PFN_vkCreateDevice = @ptrCast(loader.loadInstance("vkCreateDevice").?);
+    const func: c.PFN_vkCreateDevice = @ptrCast(loader.loadInstance(@ptrCast("vkCreateDevice")).?);
     loader.device = device;
     return func.?(physical_device, info, allocator, device);
 }
 
 pub fn vkDestroyInstance(instance: c.VkInstance, allocator: [*c]const c.VkAllocationCallbacks) void {
-    const func: c.PFN_vkDestroyInstance = @ptrCast(loader.loadInstance("vkDestroyInstance").?);
+    const func: c.PFN_vkDestroyInstance = @ptrCast(loader.loadInstance(@ptrCast("vkDestroyInstance")).?);
     func.?(instance, allocator);
 }
 
 pub fn vkAcquireNextImageKHR(device: c.VkDevice, instance: c.VkInstance, swapchain: c.VkSwapchainKHR, timeout: u64, semaphore: c.VkSemaphore, fence: c.VkFence, index: [*c]u32) c.VkResult {
     _ = instance;
-    const func: c.PFN_vkAcquireNextImageKHR = @ptrCast(loader.loadDevice("vkAcquireNextImageKHR").?);
+    const func: c.PFN_vkAcquireNextImageKHR = @ptrCast(loader.loadDevice(@ptrCast("vkAcquireNextImageKHR")).?);
     return func.?(device, swapchain, timeout, semaphore, fence, index);
 }
 
 pub fn vkWaitForFences(device: c.VkDevice, instance: c.VkInstance, count: u32, fences: [*c]const c.VkFence, wait: c.VkBool32, timeout: u64) c.VkResult {
     _ = instance;
-    const func: c.PFN_vkWaitForFences = @ptrCast(loader.loadDevice("vkWaitForFences").?);
+    const func: c.PFN_vkWaitForFences = @ptrCast(loader.loadDevice(@ptrCast("vkWaitForFences")).?);
     return func.?(device, count, fences, wait, timeout);
 }
 
 pub fn vkResetFences(device: c.VkDevice, instance: c.VkInstance, count: u32, fences: [*c]const c.VkFence) c.VkResult {
     _ = instance;
-    const func: c.PFN_vkResetFences = @ptrCast(loader.loadDevice("vkResetFences").?);
+    const func: c.PFN_vkResetFences = @ptrCast(loader.loadDevice(@ptrCast("vkResetFences")).?);
     return func.?(device, count, fences);
 }
 
 pub fn vkGetDeviceQueue(device: c.VkDevice, instance: c.VkInstance, family: u32, index: u32, queue: [*c]c.VkQueue) void {
     _ = instance;
-    const func: c.PFN_vkGetDeviceQueue = @ptrCast(loader.loadDevice("vkGetDeviceQueue").?);
+    const func: c.PFN_vkGetDeviceQueue = @ptrCast(loader.loadDevice(@ptrCast("vkGetDeviceQueue")).?);
     func.?(device, family, index, queue);
 }
 
 pub fn vkCreateDescriptorPool(device: c.VkDevice, instance: c.VkInstance, info: [*c]const c.VkDescriptorPoolCreateInfo, allocator: [*c]const c.VkAllocationCallbacks, descriptor_pool: [*c]c.VkDescriptorPool) c.VkResult {
     _ = instance;
-    const func: c.PFN_vkCreateDescriptorPool = @ptrCast(loader.loadDevice("vkCreateDescriptorPool").?);
+    const func: c.PFN_vkCreateDescriptorPool = @ptrCast(loader.loadDevice(@ptrCast("vkCreateDescriptorPool")).?);
     return func.?(device, info, allocator, descriptor_pool);
 }
 
 pub fn vkCmdBeginRenderPass(device: c.VkDevice, instance: c.VkInstance, command_buffer: c.VkCommandBuffer, info: [*c]const c.VkRenderPassBeginInfo, contents: c.VkSubpassContents) void {
     _ = device;
     _ = instance;
-    const func: c.PFN_vkCmdBeginRenderPass = @ptrCast(loader.loadDevice("vkCmdBeginRenderPass").?);
+    const func: c.PFN_vkCmdBeginRenderPass = @ptrCast(loader.loadDevice(@ptrCast("vkCmdBeginRenderPass")).?);
     func.?(command_buffer, info, contents);
 }
 
 pub fn vkCmdEndRenderPass(device: c.VkDevice, instance: c.VkInstance, command_buffer: c.VkCommandBuffer) void {
     _ = device;
     _ = instance;
-    const func: c.PFN_vkCmdEndRenderPass = @ptrCast(loader.loadDevice("vkCmdEndRenderPass").?);
+    const func: c.PFN_vkCmdEndRenderPass = @ptrCast(loader.loadDevice(@ptrCast("vkCmdEndRenderPass")).?);
     func.?(command_buffer);
 }
 
 pub fn vkEndCommandBuffer(device: c.VkDevice, instance: c.VkInstance, command_buffer: c.VkCommandBuffer) c.VkResult {
     _ = device;
     _ = instance;
-    const func: c.PFN_vkEndCommandBuffer = @ptrCast(loader.loadDevice("vkEndCommandBuffer").?);
+    const func: c.PFN_vkEndCommandBuffer = @ptrCast(loader.loadDevice(@ptrCast("vkEndCommandBuffer")).?);
     return func.?(command_buffer);
 }
 
 pub fn vkQueueSubmit(device: c.VkDevice, instance: c.VkInstance, queue: c.VkQueue, count: u32, info: [*c]const c.VkSubmitInfo, fence: c.VkFence) c.VkResult {
     _ = device;
     _ = instance;
-    const func: c.PFN_vkQueueSubmit = @ptrCast(loader.loadDevice("vkQueueSubmit").?);
+    const func: c.PFN_vkQueueSubmit = @ptrCast(loader.loadDevice(@ptrCast("vkQueueSubmit")).?);
     return func.?(queue, count, info, fence);
 }
 
 pub fn vkResetCommandPool(device: c.VkDevice, instance: c.VkInstance, command_pool: c.VkCommandPool, flags: c.VkCommandPoolResetFlags) c.VkResult {
     _ = instance;
-    const func: c.PFN_vkResetCommandPool = @ptrCast(loader.loadDevice("vkResetCommandPool").?);
+    const func: c.PFN_vkResetCommandPool = @ptrCast(loader.loadDevice(@ptrCast("vkResetCommandPool")).?);
     return func.?(device, command_pool, flags);
 }
 
 pub fn vkBeginCommandBuffer(device: c.VkDevice, instance: c.VkInstance, command_buffer: c.VkCommandBuffer, info: [*c]const c.VkCommandBufferBeginInfo) c.VkResult {
     _ = device;
     _ = instance;
-    const func: c.PFN_vkBeginCommandBuffer = @ptrCast(loader.loadDevice("vkBeginCommandBuffer").?);
+    const func: c.PFN_vkBeginCommandBuffer = @ptrCast(loader.loadDevice(@ptrCast("vkBeginCommandBuffer")).?);
     return func.?(command_buffer, info);
 }
 
 pub fn vkQueuePresentKHR(device: c.VkDevice, instance: c.VkInstance, queue: c.VkQueue, info: [*c]const c.VkPresentInfoKHR) c.VkResult {
     _ = device;
     _ = instance;
-    const func: c.PFN_vkQueuePresentKHR = @ptrCast(loader.loadDevice("vkQueuePresentKHR").?);
+    const func: c.PFN_vkQueuePresentKHR = @ptrCast(loader.loadDevice(@ptrCast("vkQueuePresentKHR")).?);
     return func.?(queue, info);
 }
 
 pub fn vkDeviceWaitIdle(device: c.VkDevice, instance: c.VkInstance) c.VkResult {
     _ = instance;
-    const func: c.PFN_vkDeviceWaitIdle = @ptrCast(loader.loadDevice("vkDeviceWaitIdle").?);
+    const func: c.PFN_vkDeviceWaitIdle = @ptrCast(loader.loadDevice(@ptrCast("vkDeviceWaitIdle")).?);
     return func.?(device);
 }
 
 pub fn vkDestroyDescriptorPool(device: c.VkDevice, instance: c.VkInstance, descriptor_pool: c.VkDescriptorPool, allocator: [*c]const c.VkAllocationCallbacks) void {
     _ = instance;
-    const func: c.PFN_vkDestroyDescriptorPool = @ptrCast(loader.loadDevice("vkDestroyDescriptorPool").?);
+    const func: c.PFN_vkDestroyDescriptorPool = @ptrCast(loader.loadDevice(@ptrCast("vkDestroyDescriptorPool")).?);
     func.?(device, descriptor_pool, allocator);
 }
 
 pub fn vkDestroyDevice(device: c.VkDevice, instance: c.VkInstance, allocator: [*c]const c.VkAllocationCallbacks) void {
     _ = instance;
-    const func: c.PFN_vkDestroyDevice = @ptrCast(loader.loadDevice("vkDestroyDevice").?);
+    const func: c.PFN_vkDestroyDevice = @ptrCast(loader.loadDevice(@ptrCast("vkDestroyDevice")).?);
     func.?(device, allocator);
 }

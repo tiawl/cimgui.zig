@@ -27,7 +27,7 @@ fn isRendererUsed(dirname: []const u8, comptime renderer: []const u8) bool {
 }
 
 fn examplePlatforms(builder: *std.Build, dirname: []const u8) ![]const Platform {
-    var platforms = std.array_list.Managed(Platform).init(builder.allocator);
+    var platforms = std.array_list.Managed(Platform).init(builder.graph.arena);
     if (isPlatformUsed(dirname, "glfw")) try platforms.append(.glfw);
     if (isPlatformUsed(dirname, "sdl3")) try platforms.append(.sdl3);
     if (isPlatformUsed(dirname, "zglfw")) try platforms.append(.glfw);
@@ -35,7 +35,7 @@ fn examplePlatforms(builder: *std.Build, dirname: []const u8) ![]const Platform 
 }
 
 fn exampleRenderers(builder: *std.Build, dirname: []const u8) ![]const Renderer {
-    var renderers = std.array_list.Managed(Renderer).init(builder.allocator);
+    var renderers = std.array_list.Managed(Renderer).init(builder.graph.arena);
     if (isRendererUsed(dirname, "vulkan")) try renderers.append(.vulkan);
     if (isRendererUsed(dirname, "zopengl3")) try renderers.append(.opengl3);
     if (isRendererUsed(dirname, "zvulkan")) try renderers.append(.vulkan);
@@ -593,7 +593,7 @@ pub fn build(builder: *std.Build) !void {
             c_module = cimgui.createModule(builder, cimgui_dep, cimgui_dep.artifact("cimgui"), builder.path(builder.pathJoin(&.{ entry.name, "c.h" })));
 
             options = builder.addOptions();
-            options.addOption([:0]const u8, "name", try builder.allocator.dupeSentinel(u8, entry.name, 0));
+            options.addOption([:0]const u8, "name", try builder.graph.arena.dupeSentinel(u8, entry.name, 0));
 
             exe_module = builder.createModule(.{
                 .root_source_file = builder.path(builder.pathJoin(&.{

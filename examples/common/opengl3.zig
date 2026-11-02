@@ -27,7 +27,7 @@ pub fn newFrame() void {
 
 pub fn initImguiContext(comptime p: build.Platform) !void {
     try platform(p).initForOpenGL();
-    _ = c.cImGui_ImplOpenGL3_InitEx(glsl_version);
+    _ = c.cImGui_ImplOpenGL3_InitEx(@ptrCast(glsl_version));
 }
 
 pub fn deinitImguiContext(comptime p: build.Platform) void {

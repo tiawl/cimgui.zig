@@ -6,13 +6,13 @@ const build = struct {
 
 const vk = struct {
     fn createWindow(title: [*c]const u8, width: c_int, height: c_int) ?*c.SDL_Window {
-        return c.SDL_CreateWindow(title, width, height, c.SDL_WINDOW_VULKAN | c.SDL_WINDOW_RESIZABLE | c.SDL_WINDOW_HIGH_PIXEL_DENSITY);
+        return c.SDL_CreateWindow(@ptrCast(title), width, height, c.SDL_WINDOW_VULKAN | c.SDL_WINDOW_RESIZABLE | c.SDL_WINDOW_HIGH_PIXEL_DENSITY);
     }
 };
 
 const sdlgpu3 = struct {
     fn createWindow(title: [*c]const u8, width: c_int, height: c_int) ?*c.SDL_Window {
-        return c.SDL_CreateWindow(title, width, height, c.SDL_WINDOW_RESIZABLE | c.SDL_WINDOW_HIDDEN | c.SDL_WINDOW_HIGH_PIXEL_DENSITY);
+        return c.SDL_CreateWindow(@ptrCast(title), width, height, c.SDL_WINDOW_RESIZABLE | c.SDL_WINDOW_HIDDEN | c.SDL_WINDOW_HIGH_PIXEL_DENSITY);
     }
 };
 
@@ -26,7 +26,7 @@ const zopengl3 = struct {
         _ = c.SDL_GL_SetAttribute(c.SDL_GL_DEPTH_SIZE, 24);
         _ = c.SDL_GL_SetAttribute(c.SDL_GL_STENCIL_SIZE, 8);
 
-        return c.SDL_CreateWindow(title, width, height, c.SDL_WINDOW_OPENGL | c.SDL_WINDOW_RESIZABLE);
+        return c.SDL_CreateWindow(@ptrCast(title), width, height, c.SDL_WINDOW_OPENGL | c.SDL_WINDOW_RESIZABLE);
     }
 };
 
@@ -63,7 +63,7 @@ pub inline fn errify(value: anytype) error{SdlError}!switch (@typeInfo(@TypeOf(v
         else => comptime unreachable,
     } catch |err| switch (err) {
         error.SdlError => {
-            std.log.err("SDL error: {s}", .{c.SDL_GetError()});
+            std.log.err("SDL error: {s}", .{@as([*c]const u8, @ptrCast(c.SDL_GetError()))});
             return err;
         },
         else => unreachable,

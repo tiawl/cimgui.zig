@@ -47,7 +47,7 @@ const Loader = struct {
         return @as(vk.PfnGetDeviceProcAddr, @ptrCast(self.loadInstance("vkGetDeviceProcAddr")))(self.device.*, name);
     }
 
-    fn load(funcname: [*c]const u8, user_data: ?*anyopaque) callconv(std.builtin.CallingConvention.c) vk.PfnVoidFunction {
+    fn load(funcname: [*c]const u8, user_data: ?*anyopaque) callconv(.c) vk.PfnVoidFunction {
         var self: *@This() = @ptrCast(@alignCast(user_data));
         if (self.loadDevice(funcname)) |func| return func;
         if (self.loadInstance(funcname)) |func| return func;

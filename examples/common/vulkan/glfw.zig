@@ -4,7 +4,7 @@ pub const glfw = @import("common/glfw");
 
 pub const getInstanceProcAddress = c.glfwGetInstanceProcAddress;
 
-pub fn loader(name: [*c]const u8, instance: ?*anyopaque) callconv(std.builtin.CallingConvention.c) ?*const fn () callconv(std.builtin.CallingConvention.c) void {
+pub fn loader(name: [*c]const c_char, instance: ?*anyopaque) callconv(.c) ?*const fn () callconv(.c) void {
     return getInstanceProcAddress(@ptrCast(@alignCast(instance)), name);
 }
 
@@ -33,12 +33,12 @@ pub fn initForVulkan() !void {
 pub const shutdown = glfw.shutdown;
 
 fn getInstanceFunc(comptime PFN: type, instance: c.VkInstance, name: [*c]const u8) PFN {
-    return @ptrCast(getInstanceProcAddress(instance, name));
+    return @ptrCast(getInstanceProcAddress(instance, @ptrCast(name)));
 }
 
 fn getDeviceFunc(comptime PFN: type, device: c.VkDevice, instance: c.VkInstance, name: [*c]const u8) PFN {
     const vkGetDeviceProcAddr = getInstanceFunc(c.PFN_vkGetDeviceProcAddr, instance, "vkGetDeviceProcAddr").?;
-    return @ptrCast(vkGetDeviceProcAddr(device, name));
+    return @ptrCast(vkGetDeviceProcAddr(device, @ptrCast(name)));
 }
 
 pub fn vkCreateInstance(info: [*c]const c.VkInstanceCreateInfo, allocator: [*c]const c.VkAllocationCallbacks, instance: [*c]c.VkInstance) c.VkResult {

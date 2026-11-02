@@ -29,8 +29,8 @@ fn renderer(comptime backend: build.Renderer) type {
 
 pub var window: *c.GLFWwindow = undefined;
 
-pub fn errorCallback(err: c_int, description: [*c]const u8) callconv(std.builtin.CallingConvention.c) void {
-    std.debug.print("GLFW Error {d}: {s}\n", .{ err, description });
+pub fn errorCallback(err: c_int, description: [*c]const c_char) callconv(.c) void {
+    std.debug.print("GLFW Error {d}: {s}\n", .{ err, @as([*c]const u8, @ptrCast(description)) });
 }
 
 pub fn createWindow(comptime r: build.Renderer, title: [*c]const u8, width: c_int, height: c_int) !void {
@@ -39,7 +39,7 @@ pub fn createWindow(comptime r: build.Renderer, title: [*c]const u8, width: c_in
     errdefer c.glfwTerminate();
 
     try renderer(r).windowHints();
-    if (c.glfwCreateWindow(width, height, title, null, null)) |*win| {
+    if (c.glfwCreateWindow(width, height, @ptrCast(title), null, null)) |*win| {
         window = win.*;
     } else return error.glfwCreateWindow;
 }

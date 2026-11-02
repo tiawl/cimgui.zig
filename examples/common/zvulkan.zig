@@ -101,7 +101,7 @@ const ImGui_ImplVulkan_InitInfo = extern struct {
     PipelineInfoMain: ImGui_ImplVulkan_PipelineInfo = std.mem.zeroes(ImGui_ImplVulkan_PipelineInfo),
     UseDynamicRendering: bool = false,
     Allocator: [*c]const vk.AllocationCallbacks = null,
-    CheckVkResultFn: ?*const fn (vk.Result) callconv(std.builtin.CallingConvention.c) void = null,
+    CheckVkResultFn: ?*const fn (vk.Result) callconv(.c) void = null,
     MinAllocationSize: vk.DeviceSize = 0,
     CustomShaderVertCreateInfo: vk.ShaderModuleCreateInfo = std.mem.zeroes(vk.ShaderModuleCreateInfo),
     CustomShaderFragCreateInfo: vk.ShaderModuleCreateInfo = std.mem.zeroes(vk.ShaderModuleCreateInfo),
@@ -123,7 +123,7 @@ var swap_chain_image_usage = vk.ImageUsageFlags{ .color_attachment = true };
 
 const api_version = vk.API_VERSION_1_2;
 
-fn checkResult(result: vk.Result) callconv(std.builtin.CallingConvention.c) void {
+fn checkResult(result: vk.Result) callconv(.c) void {
     if (result == .success) return;
     std.debug.panic("[vulkan] Error: VkResult = {d}\n", .{@backingInt(result)});
 }
@@ -148,7 +148,7 @@ fn setup(comptime p: build.Platform, allocator: std.mem.Allocator, app_name: [*c
     var instance_extensions: std.ArrayList([*:0]const u8) = .empty;
     var platform_extensions_count: u32 = 0;
     const platform_extensions = platform(p).getRequiredInstanceExtensions(&platform_extensions_count);
-    for (0..platform_extensions_count) |i| try instance_extensions.append(allocator, std.mem.span(platform_extensions[i]));
+    for (0..platform_extensions_count) |i| try instance_extensions.append(allocator, @ptrCast(std.mem.span(platform_extensions[i]).ptr));
 
     platform(p).initInstanceProcAddress();
     var base_wrapper = vk.BaseWrapper.load(platform(p).getInstanceProcAddress);

@@ -73,7 +73,7 @@ fn destroyWindow(comptime p: build.Platform) void {
 }
 
 fn createImguiContext() !void {
-    _ = c.CIMGUI_CHECKVERSION();
+    // TODO add this later: _ = c.CIMGUI_CHECKVERSION();
     if (c.ImGui_CreateContext(null) == null) return error.ImGuiCreateContext;
     errdefer c.ImGui_DestroyContext(null);
     io = c.ImGui_GetIO();
@@ -113,29 +113,29 @@ fn showSecondDemoWindow(allocator: std.mem.Allocator) !void {
     var f: f32 = 0.0;
     var counter: i32 = 0;
 
-    _ = c.ImGui_Begin("Hello, world!", null, 0);
+    _ = c.ImGui_Begin(@ptrCast("Hello, world!"), null, 0);
     defer c.ImGui_End();
 
-    c.ImGui_Text("This is some useful text.");
-    _ = c.ImGui_Checkbox("Demo Window", &show_demo_window);
-    _ = c.ImGui_Checkbox("Another Window", &show_another_window);
+    c.ImGui_Text(@ptrCast("This is some useful text."));
+    _ = c.ImGui_Checkbox(@ptrCast("Demo Window"), &show_demo_window);
+    _ = c.ImGui_Checkbox(@ptrCast("Another Window"), &show_another_window);
 
-    _ = c.ImGui_SliderFloat("float", &f, 0.0, 1.0);
-    _ = c.ImGui_ColorEdit3("clear color", clear_color_slice.ptr, 0);
+    _ = c.ImGui_SliderFloat(@ptrCast("float"), &f, 0.0, 1.0);
+    _ = c.ImGui_ColorEdit3(@ptrCast("clear color"), clear_color_slice.ptr, 0);
 
-    if (c.ImGui_Button("Button")) counter += 1;
+    if (c.ImGui_Button(@ptrCast("Button"))) counter += 1;
     c.ImGui_SameLine();
-    c.ImGui_Text("counter = %d", counter);
+    c.ImGui_Text(@ptrCast("counter = %d"), counter);
 
-    c.ImGui_Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / io.Framerate, io.Framerate);
+    c.ImGui_Text(@ptrCast("Application average %.3f ms/frame (%.1f FPS)"), 1000.0 / io.Framerate, io.Framerate);
 }
 
 fn showThirdDemoWindow() void {
     if (show_another_window) {
-        _ = c.ImGui_Begin("Another Window", &show_another_window, 0);
+        _ = c.ImGui_Begin(@ptrCast("Another Window"), &show_another_window, 0);
         defer c.ImGui_End();
-        c.ImGui_Text("Hello from another window!");
-        if (c.ImGui_Button("Close Me")) show_another_window = false;
+        c.ImGui_Text(@ptrCast("Hello from another window!"));
+        if (c.ImGui_Button(@ptrCast("Close Me"))) show_another_window = false;
     }
 }
 
