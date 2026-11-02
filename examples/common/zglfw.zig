@@ -37,10 +37,12 @@ fn renderer(comptime backend: build.Renderer) type {
 
 pub var window: *zglfw.Window = undefined;
 
-pub const errorCallback = glfw.errorCallback;
+pub fn errorCallback(err: c_int, description: [*:0]u8) callconv(.c) void {
+    glfw.errorCallback(err, @ptrCast(description));
+}
 
 pub fn createWindow(comptime r: build.Renderer, title: [*c]const u8, width: c_int, height: c_int) !void {
-    _ = zglfw.setErrorCallback(glfw.errorCallback);
+    _ = zglfw.setErrorCallback(errorCallback);
     try zglfw.init();
     errdefer zglfw.terminate();
 

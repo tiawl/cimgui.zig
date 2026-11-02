@@ -8,7 +8,7 @@ extern fn glfwCreateWindowSurface(instance: c.VkInstance, window: *zglfw.Window,
 
 pub const getInstanceProcAddress = glfwGetInstanceProcAddress;
 
-pub fn loader(name: [*c]const u8, instance: ?*anyopaque) callconv(std.builtin.CallingConvention.c) ?*const fn () callconv(std.builtin.CallingConvention.c) void {
+pub fn loader(name: [*c]const u8, instance: ?*anyopaque) callconv(.c) ?*const fn () callconv(.c) void {
     return getInstanceProcAddress(@ptrCast(@alignCast(instance)), name);
 }
 
@@ -39,7 +39,7 @@ fn getInstanceFunc(comptime PFN: type, instance: c.VkInstance, name: [*c]const u
 
 fn getDeviceFunc(comptime PFN: type, device: c.VkDevice, instance: c.VkInstance, name: [*c]const u8) PFN {
     const vkGetDeviceProcAddr = getInstanceFunc(c.PFN_vkGetDeviceProcAddr, instance, "vkGetDeviceProcAddr").?;
-    return @ptrCast(vkGetDeviceProcAddr(device, name));
+    return @ptrCast(vkGetDeviceProcAddr(device, @ptrCast(name)));
 }
 
 pub fn vkCreateInstance(info: [*c]const c.VkInstanceCreateInfo, allocator: [*c]const c.VkAllocationCallbacks, instance: [*c]c.VkInstance) c.VkResult {

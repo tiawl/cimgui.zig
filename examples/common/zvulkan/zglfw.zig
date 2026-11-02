@@ -30,7 +30,7 @@ const Loader = struct {
     instance: *vk.Instance,
     device: *vk.Device,
 
-    fn load(funcname: [*c]const u8, user_data: ?*anyopaque) callconv(std.builtin.CallingConvention.c) ?*const fn () callconv(std.builtin.CallingConvention.c) void {
+    fn load(funcname: [*c]const u8, user_data: ?*anyopaque) callconv(.c) ?*const fn () callconv(.c) void {
         const self: *@This() = @ptrCast(@alignCast(user_data));
         return getInstanceProcAddress(self.instance.*, funcname);
     }
