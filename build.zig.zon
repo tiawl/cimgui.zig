@@ -17,8 +17,8 @@
             .branch = "docking",
         },
         .dear_bindings = .{
-            .url = "git+https://github.com/dearimgui/dear_bindings?ref=v0.26#437a02b043fe1a48ce168d4f61962c361323c1df",
-            .hash = "N-V-__8AAM6PCQA5k3ChbrCxvGbLg2KTPMpNI5glZCPq-QEM",
+            .url = "git+https://github.com/dearimgui/dear_bindings?ref=v0.27#67ede4170679575167aee8c29a5c68931d112d3f",
+            .hash = "N-V-__8AAHqQCQA-rsJ6hsKeBhLSXltUiBLbxpDRNEwivdL1",
         },
         .toolbox = .{
             .url = "git+https://github.com/tiawl/toolbox?ref=2.3.0#b21fce37bf4964add79107c0372ec9100320888c",
@@ -30,8 +30,8 @@
             .lazy = true,
         },
         .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig?ref=vulkan.zig-v1.4.366#55733e2a81ddde650d3d37aa52b2412fec323ba5",
-            .hash = "glfw_zig-1.0.0-NrvYoy89GgA8KD232u6xMeHbhIi5S0mgdapEB22vY3qp",
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=wayland-protocols-1.50#b58e9d68f50faef8e3dcf0449554624e1226f4e7",
+            .hash = "glfw_zig-1.0.0-NrvYo0o9GgDaQe_8WIZ0lOH4Wc0ZbXElnD3iLSArrXQ2",
             .lazy = true,
         },
         .translate_c = .{

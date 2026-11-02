@@ -21,12 +21,12 @@ namespace cimgui
 // Dear Bindings version retrieval functionality
 CIMGUI_API const char* cimgui::DearBindings_GetVersion()
 {
-    return "0.26";
+    return "0.27";
 }
 
 CIMGUI_API int cimgui::DearBindings_GetVersionNumber()
 {
-    return 26;
+    return 27;
 }
 
 // Manual helpers
