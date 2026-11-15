@@ -10,7 +10,7 @@ on:
 
 jobs:
   linter:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -26,15 +26,17 @@ jobs:
         uses: mlugg/setup-zig@v2
         with:
           version: 'master'
-          cache-key: "${{ github.job }}_${{ runner.os }}_zig_${{ matrix.repo || '' }}_${{ steps.lastcommit.outputs.sha }}"
+          use-cache: false
       - name: Check zig is canonical
         shell: 'bash'
-        run: zig fmt --check .
+        run: |
+          rm -rf .zig-* zig-* ~/.cache/zig
+          zig fmt --check .
   examples:
     strategy:
       matrix:
         os:
-          - ubuntu-24.04
+          - ubuntu-26.04
           - windows-2025
           # TODO: add it again later: - macos-15
     runs-on: "${{ matrix.os }}"
@@ -53,7 +55,7 @@ jobs:
         uses: mlugg/setup-zig@v2
         with:
           version: 'master'
-          cache-key: "${{ github.job }}_${{ runner.os }}_zig_${{ matrix.repo || '' }}_${{ steps.lastcommit.outputs.sha }}"
+          use-cache: false
       - if: matrix.os == 'windows-2025'
         shell: pwsh
         run: ren "C:\Strawberry\perl\bin\pkg-config.bat" "pkg-config.bat~"
@@ -61,11 +63,12 @@ jobs:
         shell: 'bash'
         run: |
           set -x
+          rm -rf .zig-* zig-* ~/.cache/zig
           unset ZIG_LOCAL_CACHE_DIR
           env -C "${GITHUB_WORKSPACE}/examples" zig build -freference-trace --verbose
           env -C "${GITHUB_WORKSPACE}/examples" zig build -Ddocking -freference-trace --verbose
   maintainance:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Install packages
         shell: 'bash'
@@ -89,7 +92,7 @@ jobs:
         uses: mlugg/setup-zig@v2
         with:
           version: "master"
-          cache-key: "${{ github.job }}_${{ runner.os }}_zig_${{ matrix.repo || '' }}_${{ steps.lastcommit.outputs.sha }}"
+          use-cache: false
 
       - name: Activate python virtual env & install pip packages
         env:
@@ -108,6 +111,7 @@ jobs:
         run: |
           set -x
           source "${RUNNER_TMP}/venv/${ACTIVATE_DIR:-Scripts}/activate"
+          rm -rf .zig-* zig-* ~/.cache/zig
           renderers="$(zig build -Dlist-renderers -Dseparator=, -freference-trace --verbose)"
           renderers="${renderers:+"-Drenderers={${renderers}}"}"
           platforms="$(zig build -Dlist-platforms -Dseparator=, -freference-trace --verbose)"
